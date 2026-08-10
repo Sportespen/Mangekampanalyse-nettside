@@ -1,0 +1,17 @@
+{
+  "name": "Mangekampanalyse Pro",
+  "short_name": "Mangekampanalyse",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07182b",
+  "theme_color": "#07182b",
+  "icons": [
+    {
+      "src": "../assets/mangekampanalyse_icon.png",
+      "sizes": "132x132",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
