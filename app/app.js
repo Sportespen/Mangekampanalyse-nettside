@@ -24,6 +24,44 @@ const ROOT={
 };
 let currentType='men';
 let D=ROOT[currentType];
+let analyseSort={key:'combinedPB',dir:'desc'};
+
+const analyseHeaderMeta=[
+  {key:'qp',type:'number',tip:'QP: kvalifiseringsplassering / inngangsplassering i kvalifiseringsgrunnlaget.'},
+  {key:'wr',type:'number',tip:'WR: utøverens plassering på World Athletics verdensranking.'},
+  {key:'nation',type:'text',tip:'Nasjon: landet utøveren representerer.'},
+  {key:'name',type:'text',tip:'Utøver: navn på utøveren. Klikk på en utøverrad for flere detaljer.'},
+  {key:'birth',type:'number',tip:'Født: utøverens fødselsår.'},
+  {key:'combinedPB',type:'number',tip:'Personlig rekord i den valgte mangekampen.'},
+  {key:'theoreticalPB',type:'number',tip:'Teoretisk PB: summen av poengene fra utøverens personlige beste i hver enkelt øvelse.'},
+  {key:'utilization',type:'number',tip:'Utnyttelse: mangekamp-PB som prosent av teoretisk PB.'},
+  {key:'potential',type:'number',tip:'Uutnyttet potensial: forskjellen i poeng mellom teoretisk PB og mangekamp-PB.'},
+  {key:'diffTop',type:'number',tip:'Diff. topp: poengforskjell til høyeste mangekamp-PB i startfeltet.'}
+];
+
+function setupAnalyseHeaders(){
+  document.querySelectorAll('#analyse thead th').forEach((th,i)=>{
+    const meta=analyseHeaderMeta[i]; if(!meta)return;
+    th.classList.add('sortable-head');
+    th.dataset.sortKey=meta.key;
+    th.title=meta.tip+' Klikk på overskriften for å sortere.';
+    th.onclick=()=>{
+      if(analyseSort.key===meta.key) analyseSort.dir=analyseSort.dir==='asc'?'desc':'asc';
+      else analyseSort={key:meta.key,dir:meta.type==='text'?'asc':'desc'};
+      renderAnalyse();
+    };
+  });
+}
+
+function sortValue(x,key,top){
+  if(key==='diffTop') return (Number(x.combinedPB)||0)-top;
+  if(key==='birth') return Number(String(x.birth??'').match(/\d{4}/)?.[0]||x.birth||0);
+  if(key==='qp'||key==='wr'){
+    const n=Number(String(x[key]??'').replace(/[^0-9.-]/g,''));
+    return Number.isFinite(n)?n:999999;
+  }
+  return x[key];
+}
 
 function showTab(id){document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active-panel'));document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));$('#'+id)?.classList.add('active-panel');document.querySelector(`[data-tab="${id}"]`)?.classList.add('active');}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
@@ -42,9 +80,21 @@ function setType(type){
 document.querySelectorAll('.event-switch-btn').forEach(b=>b.onclick=()=>setType(b.dataset.type));
 
 function renderAnalyse(){
-  const a=[...D.athletes].sort((x,y)=>y.combinedPB-x.combinedPB);
-  const top=a[0]?.combinedPB||0;
-  $('#analyseBody').innerHTML=a.map(x=>`<tr data-name="${esc(x.name)}"><td>${esc(x.qp)}</td><td>${esc(x.wr)}</td><td>${esc(x.nation)}</td><td class="name">${esc(x.name)}</td><td>${esc(x.birth)}</td><td>${x.combinedPB}</td><td>${x.theoreticalPB}</td><td>${fmt(x.utilization,1)} %</td><td>${x.potential}</td><td>${x.combinedPB-top}</td></tr>`).join('');
+  const base=[...D.athletes];
+  const top=base.length?Math.max(...base.map(x=>Number(x.combinedPB)||0)):0;
+  const meta=analyseHeaderMeta.find(m=>m.key===analyseSort.key)||analyseHeaderMeta[5];
+  const a=base.sort((x,y)=>{
+    let xv=sortValue(x,analyseSort.key,top),yv=sortValue(y,analyseSort.key,top);
+    let c;
+    if(meta.type==='text') c=String(xv??'').localeCompare(String(yv??''),'nb',{sensitivity:'base'});
+    else c=(Number(xv)||0)-(Number(yv)||0);
+    return analyseSort.dir==='asc'?c:-c;
+  });
+  document.querySelectorAll('#analyse thead th').forEach(th=>{
+    th.classList.remove('sort-asc','sort-desc');
+    if(th.dataset.sortKey===analyseSort.key) th.classList.add(analyseSort.dir==='asc'?'sort-asc':'sort-desc');
+  });
+  $('#analyseBody').innerHTML=a.map(x=>`<tr data-name="${esc(x.name)}"><td>${esc(x.qp)}</td><td>${esc(x.wr)}</td><td>${esc(x.nation)}</td><td class="name">${esc(x.name)}</td><td>${esc(x.birth)}</td><td>${x.combinedPB}</td><td>${x.theoreticalPB}</td><td>${fmt(x.utilization,1)} %</td><td>${x.potential}</td><td>${(Number(x.combinedPB)||0)-top}</td></tr>`).join('');
   const avg=a.length?Math.round(a.reduce((s,x)=>s+x.combinedPB,0)/a.length):0;
   const u=a.length?a.reduce((s,x)=>s+x.utilization,0)/a.length:0;
   const p=[...a].sort((x,y)=>y.potential-x.potential)[0];
@@ -61,4 +111,5 @@ function fillSteps(){let s=$('#stepSelect');s.innerHTML=['0 – Før start',...D
 function predict(x,i){let vals=x.recent?.[i]||[];if(vals.length<3)return x.best?.[i]??null;let a=[...vals];let lower=['100m','400m','110mh','1500m','100mh','200m','800m'].includes(D.events[i]);a.sort((p,q)=>lower?p-q:q-p);let best3=a.slice(0,3);return best3.reduce((s,v)=>s+v,0)/best3.length;}
 function renderTest(){let step=+($('#stepSelect').value||0);$('#testBanner').textContent=`TESTMODUS Götzis 2026 · ${step?'replay oppdatert etter '+D.events[step-1]:'før start'} · ${D.testAthletes.length} utøvere`;let rows=D.testAthletes.map(x=>{let vals=D.events.map((e,i)=>i<step?(x.actual?.[i]??predict(x,i)):predict(x,i));let actualPts=vals.slice(0,step).reduce((s,v,i)=>s+scoreEvent(i,v),0);let total=vals.reduce((s,v,i)=>s+scoreEvent(i,v),0);return{x,vals,actualPts,total}}).sort((a,b)=>step?b.actualPts-a.actualPts:b.total-a.total);let forecastRank=[...rows].sort((a,b)=>b.total-a.total);let rankMap=new Map(forecastRank.map((r,i)=>[r.x.name,i+1]));$('#forecastHead').innerHTML='<tr><th>Plass nå</th><th>Nasjon</th><th>Utøver</th>'+D.events.map(e=>`<th>${e}</th>`).join('')+'<th>POENG NÅ</th><th>Forventet sluttpoeng</th><th>Forventet sluttplass</th><th>Endring</th></tr>';$('#forecastBody').innerHTML=rows.map((r,idx)=>{let fr=rankMap.get(r.x.name),change=step?(idx+1)-fr:0;return `<tr><td>${step?idx+1:''}</td><td>${r.x.nation}</td><td class="name">${esc(r.x.name)}</td>${r.vals.map((v,i)=>`<td class="${i<step?'actual':'pred'}">${displayMark(D.events[i],v)}</td>`).join('')}<td class="points">${step?r.actualPts:''}</td><td>${step?r.total:''}</td><td>${step?fr:''}</td><td class="${change>0?'up':change<0?'down':''}">${step?(change>0?'▲ '+change:change<0?'▼ '+Math.abs(change):'–'):''}</td></tr>`}).join('');}
 $('#showTest').onclick=()=>showTab('test');
+setupAnalyseHeaders();
 setType('men');
