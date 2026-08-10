@@ -1,62 +1,53 @@
-import asyncio
 import json
+import re
+from urllib.parse import urljoin
 
-from playwright.async_api import async_playwright
+import requests
+from bs4 import BeautifulSoup
 
-BASE = 'https://live.european-athletics.com/birmingham-test-2026'
+PUBLIC = 'https://live.european-athletics.com/birmingham-test-2026'
+ORIGIN = 'https://ea-webliveresults-production-asp.azurewebsites.net/'
+HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/151 Safari/537.36'}
 
 
-async def main():
-    report = {'base': BASE, 'title': '', 'url': '', 'responses': [], 'links': []}
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
-        context = await browser.new_context(
-            viewport={'width': 1440, 'height': 1000},
-            locale='en-GB',
-            user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/151 Safari/537.36'
-        )
-        page = await context.new_page()
+def get(url):
+    r = requests.get(url, headers=HEADERS, timeout=30)
+    return r.status_code, r.headers.get('content-type',''), r.text
 
-        async def capture(response):
-            url = response.url
-            content_type = response.headers.get('content-type', '')
-            if ('json' in content_type.lower() or any(word in url.lower() for word in ('api', 'result', 'event', 'competition', 'schedule'))):
-                item = {'url': url, 'status': response.status, 'content_type': content_type}
-                if 'json' in content_type.lower():
-                    try:
-                        text = await response.text()
-                        item['sample'] = text[:4000]
-                    except Exception:
-                        pass
-                report['responses'].append(item)
 
-        page.on('response', capture)
+def main():
+    report = {'public': PUBLIC, 'origin': ORIGIN, 'pages': [], 'scripts': [], 'api_hints': []}
+    urls = [ORIGIN, urljoin(ORIGIN, 'birmingham-test-2026'), urljoin(ORIGIN, 'birmingham-test-2026/timetable')]
+    scripts = set()
+
+    for url in urls:
         try:
-            await page.goto(BASE, wait_until='domcontentloaded', timeout=90000)
-            await page.wait_for_timeout(12000)
+            status, content_type, text = get(url)
+            report['pages'].append({'url':url,'status':status,'content_type':content_type,'length':len(text),'title':BeautifulSoup(text,'html.parser').title.string if BeautifulSoup(text,'html.parser').title else ''})
+            soup = BeautifulSoup(text, 'html.parser')
+            for tag in soup.find_all('script', src=True):
+                scripts.add(urljoin(url, tag['src']))
         except Exception as exc:
-            report['navigation_error'] = str(exc)
+            report['pages'].append({'url':url,'error':str(exc)})
 
-        report['title'] = await page.title()
-        report['url'] = page.url
+    hints = set()
+    for script in sorted(scripts):
         try:
-            report['links'] = await page.eval_on_selector_all('a[href]', 'els => els.map(a => a.href)')
-        except Exception:
-            pass
-        html = await page.content()
-        with open('ea-live-page.html', 'w', encoding='utf-8') as f:
-            f.write(html)
-        await browser.close()
+            status, content_type, text = get(script)
+            report['scripts'].append({'url':script,'status':status,'length':len(text)})
+            for match in re.findall(r'https?://[^\"\'\s)]+', text):
+                low = match.lower()
+                if any(key in low for key in ('api','azure','result','athletics')):
+                    hints.add(match[:500])
+        except Exception as exc:
+            report['scripts'].append({'url':script,'error':str(exc)})
 
-    dedup = {}
-    for item in report['responses']:
-        dedup[item['url']] = item
-    report['responses'] = list(dedup.values())
-    report['links'] = sorted(set(report['links']))
-    with open('ea-live-probe.json', 'w', encoding='utf-8') as f:
-        json.dump(report, f, ensure_ascii=False, indent=2)
-    print(json.dumps(report, ensure_ascii=False, indent=2)[:30000])
-
+    report['api_hints'] = sorted(hints)[:200]
+    with open('ea-live-probe.json','w',encoding='utf-8') as f:
+        json.dump(report,f,ensure_ascii=False,indent=2)
+    with open('ea-live-page.html','w',encoding='utf-8') as f:
+        f.write(json.dumps(report,ensure_ascii=False,indent=2))
+    print(json.dumps(report,ensure_ascii=False,indent=2)[:30000])
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    main()
