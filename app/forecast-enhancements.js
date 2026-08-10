@@ -9,12 +9,15 @@
   }
 
   function applyBeforeStartBlank(){
-    if(currentStep()===0){
-      const body=document.querySelector('#forecastBody');
-      if(body) body.innerHTML='';
-      const banner=document.querySelector('#testBanner');
-      if(banner) banner.textContent='TESTMODUS Götzis 2026 · før start · tabellen fylles når første øvelse er fullført';
+    if(currentStep()!==0) return;
+    const body=document.querySelector('#forecastBody');
+    if(body){
+      const athletes=D.testAthletes||[];
+      const blankEventCells=D.events.map(()=>'<td></td>').join('');
+      body.innerHTML=athletes.map(x=>`<tr><td></td><td>${esc(x.nation||'')}</td><td class="name">${esc(x.name||'')}</td>${blankEventCells}<td></td><td></td><td></td><td></td></tr>`).join('');
     }
+    const banner=document.querySelector('#testBanner');
+    if(banner) banner.textContent=`TESTMODUS Götzis 2026 · før start · ${D.testAthletes.length} utøvere`;
   }
 
   function showBasis(athlete,eventIndex){
