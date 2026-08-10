@@ -29,7 +29,6 @@
     <button class="tab feature-card active" data-tab="analyse"><span class="feature-logo"><img src="assets/feature_start.webp" alt="Start analyse"></span><span class="feature-copy"><strong>START ANALYSE</strong><small>Kjør full analyse av denne konkurransen</small></span></button>
     <button class="tab feature-card" data-tab="ranking"><span class="feature-logo"><img src="assets/feature_ranking.webp" alt="Personlig beste pr. øvelse"></span><span class="feature-copy"><strong>PERSONLIG BESTE<br>PR. ØVELSE</strong><small>Se beste resultater i hver øvelse</small></span></button>
     <button class="tab feature-card" data-tab="forecast"><span class="feature-logo"><img src="assets/feature_forecast.webp" alt="Forventet resultat"></span><span class="feature-copy"><strong>FORVENTET<br>RESULTAT</strong><small>Prognose for gjenværende øvelser og sluttpoeng</small></span></button>
-    <button class="tab test-tab" data-tab="test">▣ TESTMODUS GÖTZIS</button>
   </nav>
 
   <section id="analyse" class="panel active-panel"><div class="panel-head"><div><h3 id="analyseTitle">Startanalyse – EM Birmingham 2026</h3><p id="analyseSub">PB, teoretisk PB, utnyttelse og uutnyttet potensial.</p></div><div class="pill" id="athleteCount">Utøvere</div></div><div class="table-wrap"><table><thead><tr><th>QP</th><th>WR</th><th>Nasjon</th><th>Utøver</th><th>Født</th><th id="pbHead">Mangekamp-PB</th><th>Teoretisk PB</th><th>Utnyttelse</th><th>Uutnyttet potensial</th><th>Diff. topp</th></tr></thead><tbody id="analyseBody"></tbody></table></div><div class="stats" id="stats"></div></section>
@@ -41,8 +40,6 @@
     <div class="test-banner" id="forecastBanner">Venter på første fullførte øvelse i Birmingham.</div>
     <div class="table-wrap"><table class="forecast-table"><thead id="liveForecastHead"></thead><tbody id="liveForecastBody"></tbody></table></div>
   </section>
-
-  <section id="test" class="panel"><div class="panel-head"><div><h3 id="testTitle">TEST – Götzis 2026 Replay</h3><p>Brukes for å kontrollere at webmotoren gir samme logikk som programmet.</p></div><label class="control">Siste fullførte øvelse <select id="stepSelect"></select></label></div><div class="test-banner" id="testBanner"></div><div class="table-wrap"><table class="forecast-table"><thead id="forecastHead"></thead><tbody id="forecastBody"></tbody></table></div></section>
 </main>
 <footer class="site-footer">
   <div><strong>© 2026 Mangekampanalyse Pro – Espen Ødegaard.</strong> Alle rettigheter forbeholdt.</div>
