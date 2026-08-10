@@ -4,6 +4,10 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '*/5 * * * *'
+  push:
+    paths:
+      - '.github/workflows/update-live-birmingham.yml'
+      - 'tools/update_birmingham_live.py'
 
 permissions:
   contents: write
