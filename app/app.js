@@ -1,14 +1,35 @@
-const ROOT=window.MANGEKAMP_DATA;
+const RAW=window.MANGEKAMP_DATA;
 const $=s=>document.querySelector(s);
-let currentType='men';
-let D=ROOT[currentType];
 const fmt=(v,d=0)=>v==null?'—':Number(v).toFixed(d);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+function normalizeSection(section,type){
+  const events=section.events||[];
+  const source=section.athletes||section.birmingham||[];
+  const athletes=source.map(x=>({
+    ...x,
+    combinedPB:x.combinedPB??x.pb??0,
+    theoreticalPB:x.theoreticalPB??x.theoretical??0,
+    best:x.best??events.map(e=>x.bests?.[e]?.mark??null),
+    recent:x.recent??events.map(e=>(x.expected?.[e]?.recent||[]).map(r=>r.mark).filter(v=>v!=null)),
+    potential:x.potential??((x.theoretical??0)-(x.pb??0)),
+    utilization:x.utilization??0
+  }));
+  return {...section,athletes,testAthletes:section.testAthletes||athletes.slice(0,8)};
+}
+
+const ROOT={
+  men:normalizeSection(RAW.men,'men'),
+  women:normalizeSection(RAW.women,'women')
+};
+let currentType='men';
+let D=ROOT[currentType];
+
 function showTab(id){document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active-panel'));document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));$('#'+id).classList.add('active-panel');document.querySelector(`[data-tab="${id}"]`)?.classList.add('active');}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 function setType(type){currentType=type;D=ROOT[type];document.querySelectorAll('.event-switch-btn').forEach(b=>b.classList.toggle('active',b.dataset.type===type));$('#eventTitle').textContent=D.label;$('#pbHead').textContent=type==='men'?'Tikamp-PB':'Sjukamp-PB';$('#athleteCount').textContent=D.athletes.length+' utøvere';$('#forecastReady').textContent='Klar for EM Birmingham – '+D.label.toLowerCase();$('#testTitle').textContent='TEST – Götzis 2026 Replay – '+D.label;renderAnalyse();fillEvents();renderRanking();fillSteps();renderTest();}
 document.querySelectorAll('.event-switch-btn').forEach(b=>b.onclick=()=>setType(b.dataset.type));
-function renderAnalyse(){let a=[...D.athletes].sort((x,y)=>y.combinedPB-x.combinedPB);let top=a[0]?.combinedPB||0;$('#analyseBody').innerHTML=a.map(x=>`<tr data-name="${esc(x.name)}"><td>${esc(x.qp)}</td><td>${esc(x.wr)}</td><td>${esc(x.nation)}</td><td class="name">${esc(x.name)}</td><td>${esc(x.birth)}</td><td>${x.combinedPB}</td><td>${x.theoreticalPB}</td><td>${fmt(x.utilization,1)} %</td><td>${x.potential}</td><td>${x.combinedPB-top}</td></tr>`).join('');let avg=Math.round(a.reduce((s,x)=>s+x.combinedPB,0)/a.length),u=a.reduce((s,x)=>s+x.utilization,0)/a.length,p=[...a].sort((x,y)=>y.potential-x.potential)[0];$('#stats').innerHTML=`<div class="stat">◉ Utøvere: <b>${a.length}</b></div><div class="stat">☆ Snitt ${currentType==='men'?'tikamp':'sjukamp'}-PB: <b>${avg}</b></div><div class="stat">◷ Snitt utnyttelse: <b>${fmt(u,1)} %</b></div><div class="stat">♛ Størst uutnyttet potensial: <b>${p.potential} (${esc(p.name)})</b></div>`;document.querySelectorAll('#analyseBody tr').forEach(r=>r.onclick=()=>openAthlete(r.dataset.name));}
+function renderAnalyse(){let a=[...D.athletes].sort((x,y)=>y.combinedPB-x.combinedPB);let top=a[0]?.combinedPB||0;$('#analyseBody').innerHTML=a.map(x=>`<tr data-name="${esc(x.name)}"><td>${esc(x.qp)}</td><td>${esc(x.wr)}</td><td>${esc(x.nation)}</td><td class="name">${esc(x.name)}</td><td>${esc(x.birth)}</td><td>${x.combinedPB}</td><td>${x.theoreticalPB}</td><td>${fmt(x.utilization,1)} %</td><td>${x.potential}</td><td>${x.combinedPB-top}</td></tr>`).join('');let avg=a.length?Math.round(a.reduce((s,x)=>s+x.combinedPB,0)/a.length):0,u=a.length?a.reduce((s,x)=>s+x.utilization,0)/a.length:0,p=[...a].sort((x,y)=>y.potential-x.potential)[0];$('#stats').innerHTML=a.length?`<div class="stat">◉ Utøvere: <b>${a.length}</b></div><div class="stat">☆ Snitt ${currentType==='men'?'tikamp':'sjukamp'}-PB: <b>${avg}</b></div><div class="stat">◷ Snitt utnyttelse: <b>${fmt(u,1)} %</b></div><div class="stat">♛ Størst uutnyttet potensial: <b>${p.potential} (${esc(p.name)})</b></div>`:'';document.querySelectorAll('#analyseBody tr').forEach(r=>r.onclick=()=>openAthlete(r.dataset.name));}
 function openAthlete(name){let x=D.athletes.find(a=>a.name===name);if(!x)return;$('#modalContent').innerHTML=`<h2>${esc(x.name)}</h2><p>${esc(x.nation)} • født ${esc(x.birth)}</p><div class="detail-grid"><div><small>${currentType==='men'?'Tikamp':'Sjukamp'}-PB</small><b>${x.combinedPB}</b></div><div><small>Teoretisk PB</small><b>${x.theoreticalPB}</b></div><div><small>Utnyttelse</small><b>${fmt(x.utilization,1)} %</b></div></div>`;$('#modal').classList.add('open')}
 $('#modalClose').onclick=()=>$('#modal').classList.remove('open');$('#modal').onclick=e=>{if(e.target.id==='modal')$('#modal').classList.remove('open')};
 function fillEvents(){let s=$('#eventSelect');s.innerHTML=D.events.map((e,i)=>`<option value="${i}">${esc(e)}</option>`).join('');s.onchange=renderRanking;}
