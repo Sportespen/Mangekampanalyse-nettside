@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Mangekampanalyse Pro Web</title>
-<link rel="stylesheet" href="styles.css?v=20260810-1150">
+<link rel="stylesheet" href="styles.css?v=20260810-1200">
 </head>
 <body>
 <header class="topbar">
@@ -14,7 +14,7 @@
   <section class="hero-row">
     <div class="hero-left">
       <label class="competition-label" for="competitionSelect">Konkurranse</label>
-      <div class="competition-select-wrap"><span class="competition-icon">🏆</span><select id="competitionSelect"><option value="birmingham">EM Birmingham 2026</option></select></div>
+      <div class="competition-select-wrap"><span class="competition-icon">▣</span><select id="competitionSelect"><option value="birmingham">EM Birmingham 2026</option></select></div>
       <div class="event-switch" role="group" aria-label="Velg mangekamp">
         <button class="event-switch-btn active" data-type="men">Tikamp menn</button>
         <button class="event-switch-btn" data-type="women">Sjukamp kvinner</button>
@@ -27,18 +27,18 @@
 
   <nav class="tabs feature-tabs">
     <button class="tab feature-card active" data-tab="analyse">
-      <span class="feature-image crop-start"><img src="../Mangekampanalyse-nettside/assets/start_tile.png" alt=""></span>
+      <span class="feature-icon feature-icon-start">↗</span>
       <span class="feature-copy"><strong>START ANALYSE</strong><small>Kjør full analyse av denne konkurransen</small></span>
     </button>
     <button class="tab feature-card" data-tab="ranking">
-      <span class="feature-image crop-ranking"><img src="../Mangekampanalyse-nettside/assets/ranking_tile.png" alt=""></span>
+      <span class="feature-icon feature-icon-ranking">▥</span>
       <span class="feature-copy"><strong>RANGERING<br>PR. ØVELSE</strong><small>Se beste resultater i hver øvelse</small></span>
     </button>
     <button class="tab feature-card" data-tab="forecast">
-      <span class="feature-image crop-forecast"><img src="../Mangekampanalyse-nettside/assets/forventet_resultat_tile.png" alt=""></span>
+      <span class="feature-icon feature-icon-forecast">⌁</span>
       <span class="feature-copy"><strong>FORVENTET<br>RESULTAT</strong><small>Prognose for gjenværende øvelser og sluttpoeng</small></span>
     </button>
-    <button class="tab test-tab" data-tab="test">⌂ TESTMODUS GÖTZIS</button>
+    <button class="tab test-tab" data-tab="test">▣ TESTMODUS GÖTZIS</button>
   </nav>
 
   <section id="analyse" class="panel active-panel">
@@ -54,7 +54,7 @@
 
   <section id="forecast" class="panel">
     <div class="panel-head"><div><h3>Forventet sluttresultat</h3><p>Faktiske poeng brukes i ferdige øvelser. I gjenstående øvelser brukes snittet av tre av de fire siste resultatene etter at det svakeste er utelatt.</p></div><div class="pill muted">LIVE KLAR</div></div>
-    <div class="empty-state"><img src="../Mangekampanalyse-nettside/assets/forventet_resultat_tile.png" alt=""><h4 id="forecastReady">Klar for EM Birmingham</h4><p id="forecastText">Før start holdes live-tabellen blank. Når første øvelse er fullført, fylles faktisk resultat inn og resten av øvelsene prognostiseres automatisk.</p><button id="showTest">Vis fungerende testmodus</button></div>
+    <div class="empty-state"><h4 id="forecastReady">Klar for EM Birmingham</h4><p id="forecastText">Før start holdes live-tabellen blank. Når første øvelse er fullført, fylles faktisk resultat inn og resten av øvelsene prognostiseres automatisk.</p><button id="showTest">Vis fungerende testmodus</button></div>
   </section>
 
   <section id="test" class="panel">
@@ -67,5 +67,5 @@
 <script src="data/00_base.js"></script>
 <script src="data/men_b_01.js"></script><script src="data/men_b_02.js"></script><script src="data/men_b_03.js"></script><script src="data/men_rest.js"></script><script src="data/men_g.js"></script>
 <script src="data/women_b_a.js"></script><script src="data/women_b_b.js"></script><script src="data/women_g.js"></script>
-<script src="app.js?v=20260810-1150"></script>
+<script src="app.js?v=20260810-1200"></script>
 </body></html>
