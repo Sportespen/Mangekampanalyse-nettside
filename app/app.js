@@ -1,7 +1,7 @@
 const RAW=window.MANGEKAMP_DATA||{};
 const $=s=>document.querySelector(s);
 const fmt=(v,d=0)=>v==null?'—':Number(v).toFixed(d);
-const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[m]));
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
 function normalizeSection(section={},type){
   const events=section.events||[];
