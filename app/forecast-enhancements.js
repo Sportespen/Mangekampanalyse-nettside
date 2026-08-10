@@ -20,27 +20,54 @@
     if(banner) banner.textContent=`TESTMODUS Götzis 2026 · før start · ${D.testAthletes.length} utøvere`;
   }
 
+  function normalizeRecentEntry(entry){
+    if(entry==null) return null;
+    if(typeof entry==='number') return {mark:Number(entry),venue:'',year:'',date:''};
+    if(typeof entry==='string'){
+      const n=Number(entry.replace(',','.'));
+      return Number.isFinite(n)?{mark:n,venue:'',year:'',date:''}:null;
+    }
+    const mark=Number(entry.mark??entry.value??entry.result??entry.result_mark);
+    if(!Number.isFinite(mark)) return null;
+    const date=String(entry.result_date??entry.date??'');
+    const year=String(entry.year??(date.match(/\b(19|20)\d{2}\b/)?.[0]||''));
+    return {
+      mark,
+      venue:String(entry.venue??entry.place??entry.location??''),
+      year,
+      date
+    };
+  }
+
+  function recentEntriesFor(athlete,eventIndex){
+    const rich=athlete.recentDetails?.[eventIndex]||athlete.recent_details?.[eventIndex]||athlete.history?.[eventIndex];
+    const source=rich||athlete.recent?.[eventIndex]||[];
+    return (Array.isArray(source)?source:[]).map(normalizeRecentEntry).filter(Boolean);
+  }
+
   function showBasis(athlete,eventIndex){
     const eventName=D.events[eventIndex];
-    const recent=(athlete.recent?.[eventIndex]||[]).filter(v=>v!=null).map(Number);
+    const entries=recentEntriesFor(athlete,eventIndex);
     const lower=isTimeEvent(eventName);
-    const sorted=[...recent].sort((a,b)=>lower?a-b:b-a);
-    const used=sorted.slice(0,3);
-    const prediction=used.length?used.reduce((s,v)=>s+v,0)/used.length:(athlete.best?.[eventIndex]??null);
-    const weakest=recent.length>=4?(lower?Math.max(...recent):Math.min(...recent)):null;
+    const sorted=[...entries].sort((a,b)=>lower?a.mark-b.mark:b.mark-a.mark);
+    const usedEntries=sorted.slice(0,3);
+    const prediction=usedEntries.length?usedEntries.reduce((s,r)=>s+r.mark,0)/usedEntries.length:(athlete.best?.[eventIndex]??null);
+    const weakest=entries.length>=4?(lower?Math.max(...entries.map(r=>r.mark)):Math.min(...entries.map(r=>r.mark))):null;
+    let weakestUsed=false;
 
-    const rows=recent.length
-      ? recent.map((v,i)=>{
-          const discarded=recent.length>=4 && v===weakest && recent.indexOf(v)===i;
-          return `<tr><td>${i+1}</td><td>${displayMark(eventName,v)}</td><td>${discarded?'Utelatt':'Med i grunnlaget'}</td></tr>`;
+    const rows=entries.length
+      ? entries.map((r,i)=>{
+          let discarded=false;
+          if(entries.length>=4 && !weakestUsed && r.mark===weakest){discarded=true;weakestUsed=true;}
+          return `<tr><td>${i+1}</td><td>${displayMark(eventName,r.mark)}</td><td>${esc(r.venue||'—')}</td><td>${esc(r.year||'—')}</td><td>${discarded?'Utelatt':'Med i grunnlaget'}</td></tr>`;
         }).join('')
-      : '<tr><td colspan="3">Ingen registrerte nylige resultater. Personlig beste brukes som reservegrunnlag.</td></tr>';
+      : '<tr><td colspan="5">Ingen registrerte nylige resultater med historikk. Personlig beste brukes som reservegrunnlag.</td></tr>';
 
-    const usedText=used.length?used.map(v=>displayMark(eventName,v)).join(' + '):'—';
+    const usedText=usedEntries.length?usedEntries.map(r=>displayMark(eventName,r.mark)).join(' + '):'—';
     document.querySelector('#modalContent').innerHTML=`
       <h2>${esc(athlete.name)} – ${esc(eventName)}</h2>
       <p>Grunnlag for forventet resultat. Det svakeste av de fire siste resultatene utelates, og snittet av de tre beste brukes.</p>
-      <div class="table-wrap"><table class="ranking-table"><thead><tr><th>#</th><th>Resultat</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="table-wrap"><table class="ranking-table"><thead><tr><th>#</th><th>Resultat</th><th>Sted</th><th>År</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>
       <div class="detail-grid">
         <div><small>Tre resultater brukt</small><b>${usedText}</b></div>
         <div><small>Forventet resultat</small><b>${prediction==null?'—':displayMark(eventName,prediction)}</b></div>
