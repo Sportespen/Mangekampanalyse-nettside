@@ -1,0 +1,29 @@
+name: Probe European Athletics live feed
+
+on:
+  push:
+    paths:
+      - '.github/workflows/probe-ea-live.yml'
+      - 'tools/probe_ea_live.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install probe dependencies
+        run: pip install requests beautifulsoup4
+      - name: Probe Birmingham test platform
+        run: python tools/probe_ea_live.py
+      - name: Upload probe report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ea-live-probe
+          path: ea-live-probe.json
