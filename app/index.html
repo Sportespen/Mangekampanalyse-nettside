@@ -12,11 +12,9 @@
 </header>
 <main>
   <section class="hero-row">
-    <div class="selection-block">
+    <div class="hero-left">
       <label class="competition-label" for="competitionSelect">Konkurranse</label>
-      <select id="competitionSelect" class="competition-select">
-        <option value="birmingham">EM Birmingham 2026</option>
-      </select>
+      <div class="competition-select-wrap"><span class="competition-icon">🏆</span><select id="competitionSelect"><option value="birmingham">EM Birmingham 2026</option></select></div>
       <div class="event-switch" role="group" aria-label="Velg mangekamp">
         <button class="event-switch-btn active" data-type="men">Tikamp menn</button>
         <button class="event-switch-btn" data-type="women">Sjukamp kvinner</button>
@@ -26,25 +24,39 @@
     </div>
     <div class="status"><span class="dot"></span><div><b>Før konkurransestart</b><small>Live-resultater kobles inn når European Athletics publiserer dem.</small></div></div>
   </section>
+
   <nav class="tabs feature-tabs">
-    <button class="tab feature-tab active" data-tab="analyse"><img src="../Mangekampanalyse-nettside/assets/start_tile.png" alt="Start analyse"></button>
-    <button class="tab feature-tab" data-tab="ranking"><img src="../Mangekampanalyse-nettside/assets/ranking_tile.png" alt="Rangering pr. øvelse"></button>
-    <button class="tab feature-tab" data-tab="forecast"><img src="../Mangekampanalyse-nettside/assets/forventet_resultat_tile.png" alt="Forventet resultat"></button>
-    <button class="tab test-tab" data-tab="test">⚗ TESTMODUS GÖTZIS</button>
+    <button class="tab feature-card active" data-tab="analyse">
+      <span class="feature-image crop-start"><img src="../Mangekampanalyse-nettside/assets/start_tile.png" alt=""></span>
+      <span class="feature-copy"><strong>START ANALYSE</strong><small>Kjør full analyse av denne konkurransen</small></span>
+    </button>
+    <button class="tab feature-card" data-tab="ranking">
+      <span class="feature-image crop-ranking"><img src="../Mangekampanalyse-nettside/assets/ranking_tile.png" alt=""></span>
+      <span class="feature-copy"><strong>RANGERING<br>PR. ØVELSE</strong><small>Se beste resultater i hver øvelse</small></span>
+    </button>
+    <button class="tab feature-card" data-tab="forecast">
+      <span class="feature-image crop-forecast"><img src="../Mangekampanalyse-nettside/assets/forventet_resultat_tile.png" alt=""></span>
+      <span class="feature-copy"><strong>FORVENTET<br>RESULTAT</strong><small>Prognose for gjenværende øvelser og sluttpoeng</small></span>
+    </button>
+    <button class="tab test-tab" data-tab="test">⌂ TESTMODUS GÖTZIS</button>
   </nav>
+
   <section id="analyse" class="panel active-panel">
-    <div class="panel-head"><div><h3 id="analyseTitle">Startanalyse – Birmingham 2026</h3><p id="analyseSub">PB, teoretisk PB, utnyttelse og uutnyttet potensial.</p></div><div class="pill" id="athleteCount">25 utøvere</div></div>
+    <div class="panel-head"><div><h3 id="analyseTitle">Startanalyse – EM Birmingham 2026</h3><p id="analyseSub">PB, teoretisk PB, utnyttelse og uutnyttet potensial.</p></div><div class="pill" id="athleteCount">25 utøvere</div></div>
     <div class="table-wrap"><table><thead><tr><th>QP</th><th>WR</th><th>Nasjon</th><th>Utøver</th><th>Født</th><th id="pbHead">Mangekamp-PB</th><th>Teoretisk PB</th><th>Utnyttelse</th><th>Uutnyttet potensial</th><th>Diff. topp</th></tr></thead><tbody id="analyseBody"></tbody></table></div>
     <div class="stats" id="stats"></div>
   </section>
+
   <section id="ranking" class="panel">
-    <div class="panel-head"><div><h3>Rangering pr. øvelse</h3><p id="rankingSub">Rangerer valgt felt etter beste registrerte enkeltresultat.</p></div><select id="eventSelect"></select></div>
+    <div class="panel-head"><div><h3>Rangering pr. øvelse</h3><p id="rankingSub">Rangerer valgt konkurranse etter beste registrerte enkeltresultat.</p></div><select id="eventSelect"></select></div>
     <div class="table-wrap"><table class="ranking-table"><thead><tr><th>Plass</th><th>Nasjon</th><th>Utøver</th><th>Resultat</th><th>Poeng</th></tr></thead><tbody id="rankingCards"></tbody></table></div>
   </section>
+
   <section id="forecast" class="panel">
     <div class="panel-head"><div><h3>Forventet sluttresultat</h3><p>Faktiske poeng brukes i ferdige øvelser. I gjenstående øvelser brukes snittet av tre av de fire siste resultatene etter at det svakeste er utelatt.</p></div><div class="pill muted">LIVE KLAR</div></div>
-    <div class="empty-state"><img src="../Mangekampanalyse-nettside/assets/forventet_resultat_tile.png" alt=""><h4 id="forecastReady">Klar for valgt konkurranse</h4><p id="forecastText">Før start holdes live-tabellen blank. Når første øvelse er fullført, fylles faktisk resultat inn og resten av øvelsene prognostiseres automatisk.</p><button id="showTest">Vis fungerende testmodus</button></div>
+    <div class="empty-state"><img src="../Mangekampanalyse-nettside/assets/forventet_resultat_tile.png" alt=""><h4 id="forecastReady">Klar for EM Birmingham</h4><p id="forecastText">Før start holdes live-tabellen blank. Når første øvelse er fullført, fylles faktisk resultat inn og resten av øvelsene prognostiseres automatisk.</p><button id="showTest">Vis fungerende testmodus</button></div>
   </section>
+
   <section id="test" class="panel">
     <div class="panel-head"><div><h3 id="testTitle">TEST – Götzis 2026 Replay</h3><p>Brukes for å kontrollere at webmotoren gir samme logikk som programmet.</p></div><label class="control">Siste fullførte øvelse <select id="stepSelect"></select></label></div>
     <div class="test-banner" id="testBanner"></div>
@@ -52,6 +64,8 @@
   </section>
 </main>
 <div id="modal" class="modal"><div class="modal-card"><button class="close" id="modalClose">×</button><div id="modalContent"></div></div></div>
-<script src="data.js"></script>
+<script src="data/00_base.js"></script>
+<script src="data/men_b_01.js"></script><script src="data/men_b_02.js"></script><script src="data/men_b_03.js"></script><script src="data/men_rest.js"></script><script src="data/men_g.js"></script>
+<script src="data/women_b_a.js"></script><script src="data/women_b_b.js"></script><script src="data/women_g.js"></script>
 <script src="app.js"></script>
 </body></html>
