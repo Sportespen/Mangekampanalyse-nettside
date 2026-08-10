@@ -18,10 +18,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install browser probe
-        run: |
-          pip install playwright
-          python -m playwright install --with-deps chromium
+      - name: Install probe dependencies
+        run: pip install requests beautifulsoup4
       - name: Probe Birmingham test platform
         run: python tools/probe_ea_live.py
       - name: Upload probe report
