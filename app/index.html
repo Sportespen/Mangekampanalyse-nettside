@@ -8,7 +8,7 @@
 <body>
 <header class="topbar">
   <div class="brand"><img src="../Mangekampanalyse-nettside/assets/mangekampanalyse_icon.png" alt="Mangekampanalyse"><div><h1>MANGEKAMPANALYSE</h1><div class="tagline">Analyse • Statistikk • Forventet resultat • Live</div></div></div>
-  <div class="version">WEB PROTOTYPE 0.7</div>
+  <div class="version">WEB PROTOTYPE 0.8</div>
 </header>
 <main>
   <section class="hero-row">
@@ -36,7 +36,11 @@
 
   <section id="ranking" class="panel"><div class="panel-head"><div><h3>Personlig beste pr. øvelse</h3><p id="rankingSub">Rangerer valgt konkurranse etter beste registrerte enkeltresultat.</p></div><select id="eventSelect"></select></div><div class="table-wrap"><table class="ranking-table"><thead><tr><th>Plass</th><th>Nasjon</th><th>Utøver</th><th>Resultat</th><th>Poeng</th></tr></thead><tbody id="rankingCards"></tbody></table></div></section>
 
-  <section id="forecast" class="panel"><div class="panel-head"><div><h3>Forventet sluttresultat</h3><p>Faktiske poeng brukes i ferdige øvelser. I gjenstående øvelser brukes snittet av tre av de fire siste resultatene etter at det svakeste er utelatt.</p></div><div class="pill muted">LIVE KLAR</div></div><div class="empty-state"><h4 id="forecastReady">Klar for EM Birmingham</h4><p id="forecastText">Før start holdes live-tabellen blank. Når første øvelse er fullført, fylles faktisk resultat inn og resten av øvelsene prognostiseres automatisk.</p><button id="showTest">Vis fungerende testmodus</button></div></section>
+  <section id="forecast" class="panel">
+    <div class="panel-head"><div><h3>Forventet sluttresultat</h3><p>Faktiske resultater brukes i ferdige øvelser. I gjenstående øvelser brukes snittet av de tre beste av de fire siste resultatene.</p></div><div class="pill muted" id="forecastLivePill">LIVE KLAR</div></div>
+    <div class="test-banner" id="forecastBanner">Venter på første fullførte øvelse i Birmingham.</div>
+    <div class="table-wrap"><table class="forecast-table"><thead id="liveForecastHead"></thead><tbody id="liveForecastBody"></tbody></table></div>
+  </section>
 
   <section id="test" class="panel"><div class="panel-head"><div><h3 id="testTitle">TEST – Götzis 2026 Replay</h3><p>Brukes for å kontrollere at webmotoren gir samme logikk som programmet.</p></div><label class="control">Siste fullførte øvelse <select id="stepSelect"></select></label></div><div class="test-banner" id="testBanner"></div><div class="table-wrap"><table class="forecast-table"><thead id="forecastHead"></thead><tbody id="forecastBody"></tbody></table></div></section>
 </main>
@@ -46,9 +50,9 @@
 <script src="data/women_b_a.js"></script><script src="data/women_b_b.js"></script><script src="data/women_g.js"></script>
 <script src="data/history_web.js?v=20260810-2328"></script>
 <script src="data/history_bridge.js?v=20260810-2328"></script>
-<script src="data/live_birmingham.js?v=20260810-2338"></script>
+<script src="data/live_birmingham.js?v=20260811-0000"></script>
 <script src="app.js?v=20260810-history"></script>
 <script src="ranking-sort.js?v=20260810-1"></script>
 <script src="forecast-enhancements.js?v=20260810-3"></script>
-<script src="live-engine.js?v=20260810-2338"></script>
+<script src="live-engine.js?v=20260811-0000"></script>
 </body></html>
