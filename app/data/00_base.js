@@ -1,0 +1,1 @@
+window.MANGEKAMP_DATA={"version":"Web prototype 0.6","men":{"label":"Tikamp menn","events":["100m","Lengde","Kule","Høyde","400m","110mh","Diskos","Stav","Spyd","1500m"],"birmingham":[],"gotzis":[]},"women":{"label":"Sjukamp kvinner","events":["100mh","Høyde","Kule","200m","Lengde","Spyd","800m"],"birmingham":[],"gotzis":[]}};
