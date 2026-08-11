@@ -34,4 +34,21 @@
   patch('men','Makenson Gletty','Kule',
     {display:'16.95',mark:16.95,points:910,venue:'Emirates Arena, Glasgow (GBR) (i)',date:'02 MAR 2024'},
     {theoretical:8909,utilization:96.6,potential:303,diff_top:-408});
+
+  // Tomas Järvinen: 8425 was his U20 decathlon (junior implements/hurdles), not a senior decathlon PB.
+  // World Athletics lists senior decathlon PB 8400 at Götzis on 31 May 2026.
+  // 13.61 was over U20 99.0 cm hurdles; senior 106.7 cm PB is 14.07 (Ostrava, 17 May 2026).
+  // 49.18 was with the U20 1.75 kg discus; senior 2 kg PB is 43.76 (Götzis, 31 May 2026).
+  patch('men','Tomas Järvinen','110mh',
+    {display:'14.07',mark:14.07,points:965,venue:'Mestský Stadion, Ostrava (CZE)',date:'17 MAY 2026'},
+    {pb:8400,theoretical:8626,utilization:97.4,potential:226,diff_top:-691});
+  patch('men','Tomas Järvinen','Diskos',
+    {display:'43.76',mark:43.76,points:741,venue:'Mösle-Stadium, Götzis (AUT)',date:'31 MAY 2026'},
+    {pb:8400,theoretical:8626,utilization:97.4,potential:226,diff_top:-691});
+
+  // Dai Keïta: 42.38 was with the U20 1.75 kg discus (Arona 2024).
+  // Best verified senior 2 kg mark is 39.43 in Leuven on 4 Jul 2026.
+  patch('men','Dai Keïta','Diskos',
+    {display:'39.43',mark:39.43,points:653,venue:'Atletiek Arena Gaston Roelants, Leuven (BEL)',date:'04 JUL 2026'},
+    {theoretical:8297,utilization:96.6,potential:286,diff_top:-1020});
 })();
