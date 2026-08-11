@@ -1,4 +1,4 @@
-name: WA PB bulk fetch
+name: WA PB bulk audit
 permissions:
   contents: write
 on:
@@ -8,71 +8,134 @@ on:
       - '.github/workflows/wa-pb-bulk.yml'
   workflow_dispatch:
 jobs:
-  fetch:
+  audit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Fetch World Athletics profiles
+      - name: Fetch and compare all Birmingham men's senior PBs
         run: |
           node <<'NODE'
-          const fs = require('fs');
-          const names = [
-            'Johannes Erm','Sander Skotheim','Leo Neugebauer','Niklas Kaul',
-            'Makenson Gletty','Sven Roosen','Karel Tilga','Tomas Järvinen',
-            'Amadeus Gräber','Rasmus Roosleht','Dario Dester','Vilém Stráský',
-            'Antoine Ferranti','Ondřej Kopecký','Andrin Huber','Risto Lillemets',
-            'Jeff Tesselaar','Luuk Pelkmans','Edgaras Benkunskas','Dai Keïta',
-            'Zsombor Gálpál','Nino Portmann','Alberto Nonino','Leon Krummenacher','Emil Uhlin'
-          ];
+          const fs=require('fs');
+          global.window={};
+          for(const p of [
+            './app/data/00_base.js','./app/data/men_b_01.js','./app/data/men_b_02.js',
+            './app/data/men_b_03.js','./app/data/men_rest.js','./app/data/pb_corrections.js'
+          ]) require(p);
+
+          const men=window.MANGEKAMP_DATA.men.birmingham;
+          if(men.length!==25) throw new Error(`Expected 25 Birmingham men, found ${men.length}`);
+          const names=men.map(a=>a.name);
           const base='https://worldathletics.nimarion.de';
+          const eventMap={
+            '100m':'100 Metres','Lengde':'Long Jump','Kule':'Shot Put','Høyde':'High Jump',
+            '400m':'400 Metres','110mh':'110 Metres Hurdles','Diskos':'Discus Throw',
+            'Stav':'Pole Vault','Spyd':'Javelin Throw','1500m':'1500 Metres'
+          };
           const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-          function arr(x){
-            if(Array.isArray(x)) return x;
-            if(!x||typeof x!=='object') return [];
-            for(const k of ['items','results','data','athletes']) if(Array.isArray(x[k])) return x[k];
-            for(const v of Object.values(x)) if(Array.isArray(v)) return v;
-            return [];
-          }
-          function athleteId(o){
-            if(!o||typeof o!=='object') return null;
-            for(const k of ['id','athleteId','aaId','competitorId']) if(o[k]!=null) return o[k];
-            for(const [k,v] of Object.entries(o)) if(/id$/i.test(k)&&v!=null&&(typeof v==='string'||typeof v==='number')) return v;
-            return null;
-          }
+          const arr=x=>Array.isArray(x)?x:(x&&typeof x==='object'?(x.items||x.results||x.data||x.athletes||[]):[]);
+          const athleteId=o=>o&&(o.id??o.athleteId??o.aaId??o.competitorId);
           async function getJson(url){
-            const r=await fetch(url,{headers:{'accept':'application/json','user-agent':'Mangekampanalyse-Pro/1.0'}});
-            const text=await r.text();
-            let body; try{body=JSON.parse(text)}catch{body={_raw:text}}
-            if(!r.ok) throw new Error(`${r.status} ${url} ${text.slice(0,300)}`);
-            return body;
+            const r=await fetch(url,{headers:{accept:'application/json','user-agent':'Mangekampanalyse-Pro/1.0'}});
+            const t=await r.text();
+            if(!r.ok) throw new Error(`${r.status} ${url} ${t.slice(0,200)}`);
+            return JSON.parse(t);
           }
-          (async()=>{
-            const out={generatedAt:new Date().toISOString(),source:base,athletes:{}};
-            for(const name of names){
-              try{
-                const search=await getJson(`${base}/athletes/search?name=${encodeURIComponent(name)}`);
-                const list=arr(search);
-                const first=list[0]||search?.[0]||null;
-                const id=athleteId(first);
-                let profile=null;
-                if(id!=null) profile=await getJson(`${base}/athletes/${id}`);
-                out.athletes[name]={id,search,profile};
-              }catch(e){
-                out.athletes[name]={error:String(e)};
-              }
-              await sleep(120);
+          function value(event,mark){
+            if(event==='1500m'){
+              const m=String(mark).match(/^(\d+):(\d+(?:\.\d+)?)$/);
+              return m?Number(m[1])*60+Number(m[2]):Number(mark);
             }
-            fs.writeFileSync('app/data/wa_bulk_raw.json',JSON.stringify(out,null,2));
+            return Number(String(mark).replace(',','.'));
+          }
+          function score(event,v){
+            const map={
+              '100m':[25.4347,18,1.81,'time'],'Lengde':[0.14354,220,1.4,'cm'],
+              'Kule':[51.39,1.5,1.05,'field'],'Høyde':[0.8465,75,1.42,'cm'],
+              '400m':[1.53775,82,1.81,'time'],'110mh':[5.74352,28.5,1.92,'time'],
+              'Diskos':[12.91,4,1.1,'field'],'Stav':[0.2797,100,1.35,'cm'],
+              'Spyd':[10.14,7,1.08,'field'],'1500m':[0.03768,480,1.85,'time']
+            };
+            let [A,B,C,type]=map[event];
+            if(type==='time') return Math.floor(A*Math.pow(B-v,C));
+            if(type==='cm') v*=100;
+            return Math.floor(A*Math.pow(v-B,C));
+          }
+          function venue(row){
+            const l=row?.location||{};
+            const first=[l.stadium,l.city].filter(Boolean).join(', ');
+            const country=l.country?` (${l.country})`:'';
+            const indoor=l.indoor?' (i)':'';
+            return `${first}${country}${indoor}`.trim();
+          }
+          function isoDate(row){return row?.date?String(row.date).slice(0,10):''}
+          function jsQuote(x){return JSON.stringify(x)}
+
+          (async()=>{
+            const raw={generatedAt:new Date().toISOString(),source:base,athletes:{}};
+            const audit={generatedAt:raw.generatedAt,source:'World Athletics profile data via structured proxy',summary:{athletes:25,expected:250,found:0,matches:0,mismatches:0,missing:0},athletes:{},mismatches:[],missing:[]};
+            const verified={};
+            for(const athlete of men){
+              const name=athlete.name;
+              const search=await getJson(`${base}/athletes/search?name=${encodeURIComponent(name)}`);
+              const list=arr(search);
+              const exact=list.find(x=>`${x.firstname||''} ${x.lastname||''}`.trim().normalize('NFC').toLowerCase()===name.normalize('NFC').toLowerCase())||list[0];
+              const id=athleteId(exact);
+              if(!id) throw new Error(`No WA id for ${name}`);
+              const profile=await getJson(`${base}/athletes/${id}`);
+              raw.athletes[name]={id,profile};
+              const pbs=Array.isArray(profile.personalbests)?profile.personalbests:[];
+              audit.athletes[name]={waId:id,events:{}};
+              verified[name]={};
+              for(const [event,discipline] of Object.entries(eventMap)){
+                // Exact senior discipline name is deliberate: junior implements/hurdle heights have suffixes.
+                const candidates=pbs.filter(r=>r.discipline===discipline && r.legal!==false);
+                let row=candidates[0]||null;
+                // In the unlikely event of duplicate rows, take the actual best.
+                if(candidates.length>1){
+                  const lower=['100m','400m','110mh','1500m'].includes(event);
+                  row=[...candidates].sort((a,b)=>lower?value(event,a.mark)-value(event,b.mark):value(event,b.mark)-value(event,a.mark))[0];
+                }
+                if(!row){
+                  audit.summary.missing++;
+                  const similar=pbs.filter(r=>String(r.discipline||'').startsWith(discipline.split(' (')[0])).map(r=>({discipline:r.discipline,mark:r.mark,date:isoDate(r)}));
+                  const miss={athlete:name,event,discipline,similar};
+                  audit.missing.push(miss); audit.athletes[name].events[event]={status:'MISSING',similar};
+                  continue;
+                }
+                audit.summary.found++;
+                const wa=value(event,row.mark);
+                const project=Number(athlete.bests?.[event]?.mark);
+                const ok=Number.isFinite(project)&&Math.abs(project-wa)<0.0005;
+                const rec={status:ok?'MATCH':'MISMATCH',project:athlete.bests?.[event]?.display??project,wa:row.mark,discipline:row.discipline,date:isoDate(row),venue:venue(row),legal:row.legal!==false};
+                audit.athletes[name].events[event]=rec;
+                if(ok) audit.summary.matches++;
+                else {audit.summary.mismatches++; audit.mismatches.push({athlete:name,event,...rec});}
+                verified[name][event]={display:String(row.mark),mark:wa,points:score(event,wa),venue:venue(row),date:isoDate(row)};
+              }
+              await sleep(80);
+            }
+
+            // Generate a single authoritative override from exact senior WA PB disciplines.
+            let js=`// AUTO-GENERATED by .github/workflows/wa-pb-bulk.yml\n// Exact senior disciplines only. Junior implement/hurdle variants are intentionally excluded.\n(function(){\n const R=window.MANGEKAMP_DATA; if(!R?.men?.birmingham)return;\n const V=${JSON.stringify(verified)};\n for(const a of R.men.birmingham){ const rows=V[a.name]; if(!rows)continue; let theoretical=0; for(const [e,p] of Object.entries(rows)){ if(a.bests?.[e]) Object.assign(a.bests[e],p); theoretical+=Number(p.points)||0; } if(Object.keys(rows).length===10){ a.theoretical=theoretical; a.theoreticalPB=theoretical; a.potential=theoretical-(Number(a.pb)||0); a.utilization=Number(a.pb)?Math.round((Number(a.pb)/theoretical)*1000)/10:0; } }\n})();\n`;
+            fs.writeFileSync('app/data/wa_men_pb_audit.json',JSON.stringify(audit,null,2));
+            fs.writeFileSync('app/data/wa_men_pb_verified.js',js);
+            fs.writeFileSync('app/data/wa_bulk_raw.json',JSON.stringify(raw,null,2));
+            console.log('AUDIT_SUMMARY '+JSON.stringify(audit.summary));
+            if(audit.summary.found!==250){
+              console.log('MISSING '+JSON.stringify(audit.missing));
+              process.exitCode=2;
+            }
           })().catch(e=>{console.error(e);process.exit(1)});
           NODE
-      - name: Commit fetched data
+      - name: Commit audit and verified override
+        if: always()
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/data/wa_bulk_raw.json
+          git add app/data/wa_bulk_raw.json app/data/wa_men_pb_audit.json app/data/wa_men_pb_verified.js
           git diff --cached --quiet && exit 0
-          git commit -m 'Fetch WA PB profiles for Birmingham men'
+          git commit -m 'Audit all Birmingham men senior PBs from WA profiles'
           git push
