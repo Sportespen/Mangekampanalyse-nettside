@@ -17,11 +17,17 @@
     {display:'15.00',mark:15.00,points:790,venue:'Tallinna Kergejõustikuhall, Tallinn (EST) (i)',date:'01 FEB 2025'},
     {theoretical:9238,utilization:96.4,potential:329,diff_top:-79});
 
-  // Luuk Pelkmans: 16m+ marks in the U20 database use the 6 kg implement.
-  // Senior 7.26 kg PB: 15.70, Randal Tyson Indoor Center, Fayetteville, AR (USA), 31 Jan 2026.
+  // Luuk Pelkmans: Birmingham seed data mixed U20 and senior specifications.
+  // Senior PBs: decathlon 8079 (11 Jun 2026), shot 15.70 (7.26 kg), 110H 14.20 (106.7 cm), discus 43.53 (2 kg).
   patch('men','Luuk Pelkmans','Kule',
     {display:'15.70',mark:15.70,points:833,venue:'Randal Tyson Indoor Center, Fayetteville, AR (USA) (i)',date:'31 JAN 2026'},
-    {theoretical:8591,utilization:96.5,potential:298,diff_top:-726});
+    {pb:8079,theoretical:8487,utilization:95.2,potential:408,diff_top:-830});
+  patch('men','Luuk Pelkmans','110mh',
+    {display:'14.20',mark:14.20,points:949,date:'08 MAY 2026'},
+    {pb:8079,theoretical:8487,utilization:95.2,potential:408,diff_top:-830});
+  patch('men','Luuk Pelkmans','Diskos',
+    {display:'43.53',mark:43.53,points:737,venue:'Percy Beard Track, Gainesville, FL (USA)',date:'18 APR 2026'},
+    {pb:8079,theoretical:8487,utilization:95.2,potential:408,diff_top:-830});
 
   // Leon Krummenacher: 50.08 was with the U20 1.75 kg discus.
   // Senior 2 kg PB: 47.00, Landhaus, Teufen (SUI), 28 Jun 2026.
