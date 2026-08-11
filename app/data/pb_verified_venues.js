@@ -49,6 +49,18 @@
         "Stav":{venue:"Khalifa International Stadium, Doha (QAT)",date:"03 OCT 2019"},
         "Spyd":{venue:"Khalifa International Stadium, Doha (QAT)",date:"03 OCT 2019"},
         "1500m":{venue:"Olympiastadion, München (GER)",date:"16 AUG 2022"}
+      },
+      "Sven Roosen":{
+        "100m":{venue:"Mösle-Stadium, Götzis (AUT)",date:"18 MAY 2024"},
+        "Lengde":{venue:"Stade de France, Paris (FRA)",date:"02 AUG 2024"},
+        "Kule":{venue:"Stade de France, Paris (FRA)",date:"02 AUG 2024"},
+        "Høyde":{venue:"Mösle-Stadium, Götzis (AUT)",date:"18 MAY 2024"},
+        "400m":{venue:"Stade de France, Paris (FRA)",date:"02 AUG 2024"},
+        "110mh":{venue:"Atletiekbaan Breda, Breda (NED)",date:"20 JUL 2024"},
+        "Diskos":{venue:"AtletiekArena Gaston Roelants Kessel-Lo / Hal 5, Leuven (BEL)",date:"16 AUG 2025"},
+        "Stav":{venue:"AtletiekArena Gaston Roelants Kessel-Lo / Hal 5, Leuven (BEL)",date:"16 AUG 2025"},
+        "Spyd":{venue:"Mösle-Stadium, Götzis (AUT)",date:"31 MAY 2026"},
+        "1500m":{venue:"Olympiastadion, München (GER)",date:"16 AUG 2022"}
       }
     },
     women:{}
