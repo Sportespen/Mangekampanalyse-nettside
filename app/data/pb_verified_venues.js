@@ -61,6 +61,18 @@
         "Stav":{venue:"AtletiekArena Gaston Roelants Kessel-Lo / Hal 5, Leuven (BEL)",date:"16 AUG 2025"},
         "Spyd":{venue:"Mösle-Stadium, Götzis (AUT)",date:"31 MAY 2026"},
         "1500m":{venue:"Olympiastadion, München (GER)",date:"16 AUG 2022"}
+      },
+      "Karel Tilga":{
+        "100m":{venue:"Nemzeti Atlétikai Központ, Budapest (HUN)",date:"25 AUG 2023"},
+        "Lengde":{venue:"Spec Towns Track, Athens, GA (USA)",date:"09 APR 2021"},
+        "Kule":{venue:"Stadionring, Ratingen (GER)",date:"22 JUN 2024"},
+        "Høyde":{venue:"Tartu (EST) (i)",date:"19 JAN 2018"},
+        "400m":{venue:"Nemzeti Atlétikai Központ, Budapest (HUN)",date:"25 AUG 2023"},
+        "110mh":{venue:"Mösle-Stadium, Götzis (AUT)",date:"31 MAY 2026"},
+        "Diskos":{venue:"Mösle-Stadium, Götzis (AUT)",date:"01 JUN 2025"},
+        "Stav":{venue:"Randal Tyson Indoor Center, Fayetteville, AR (USA) (i)",date:"12 MAR 2021"},
+        "Spyd":{venue:"Olympic Stadium, Tokyo (JPN)",date:"05 AUG 2021"},
+        "1500m":{venue:"Nemzeti Atlétikai Központ, Budapest (HUN)",date:"26 AUG 2023"}
       }
     },
     women:{}
