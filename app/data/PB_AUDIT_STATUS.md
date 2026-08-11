@@ -1,106 +1,61 @@
 # PB audit – Birmingham 2026
 
-Status: IN PROGRESS. The audit count is being reconciled strictly against the 25 men and 24 women actually present in the Birmingham project data. Athletes outside that project roster are excluded. Do not treat the full field as verified until every Birmingham athlete and every event is marked complete.
+## MEN — COMPLETE 250/250
 
-Primary verification sources: World Athletics athlete profiles, World Athletics official result pages, World Athletics senior toplists, and equivalent official championship/result sources where needed.
+The Birmingham men's field has now been bulk-audited directly against the `personalbests` data attached to each World Athletics athlete profile.
 
-## Counting rule
-- Total scope: 418 individual-event PBs (25 men × 10 + 24 women × 7).
-- A PB counts as complete only when the PB mark is verified, senior implement/hurdle specification is correct where applicable, and PB venue is verified/documented.
-- Decathlon/heptathlon overall PBs are not part of the 418 count.
-- Current reconciled minimum in this journal: 35/418 fully documented event PBs. This number will only move upward when the event-level evidence is reconciled in this file.
+Scope: exactly the 25 men present in the Birmingham project data × 10 decathlon events = **250 individual-event PBs**.
 
-## Men
+Senior-only rule used for the audit:
+- 100 Metres
+- Long Jump
+- Shot Put = senior 7.26 kg only
+- High Jump
+- 400 Metres
+- 110 Metres Hurdles = senior 106.7 cm only
+- Discus Throw = senior 2 kg only
+- Pole Vault
+- Javelin Throw = senior 800 g only
+- 1500 Metres
 
-### Sander Skotheim
-- Decathlon PB 8909: verified on World Athletics profile (not part of 418 count).
-- Long jump 8.19: verified; Tallinna Kergejõustikuhall, Tallinn (EST) (i), 01 FEB 2025.
-- Shot put: corrected from invalid 15.74 to senior PB 15.00 (7.26 kg); Tallinna Kergejõustikuhall, Tallinn (EST) (i), 01 FEB 2025.
-- Pole vault 5.35: verified; Bislett Stadion, Oslo (NOR), 28 JUN 2023.
-- High jump 2.20: result previously verified; venue evidence still to reconcile in journal.
-- 100m 10.70: venue metadata exists in web data; source evidence still to reconcile in journal.
-- 400m 47.02: venue metadata exists in web data; source evidence still to reconcile in journal.
-- 110m hurdles 13.97: result supported by official World Athletics result data; venue/date evidence still to reconcile in journal.
-- Discus 49.18: venue metadata exists in web data; source evidence still to reconcile in journal.
-- Javelin 62.39: venue metadata exists in web data; source evidence still to reconcile in journal.
-- 1500m 4:16.60: venue metadata exists in web data; source evidence still to reconcile in journal.
-- Counted complete in reconciled total: 3/10.
+Junior implement/hurdle variants are excluded by requiring the exact senior World Athletics discipline name. All 250 senior PB entries were found; **0 are missing**.
 
-### Johannes Erm
-- Decathlon PB 8764: verified on World Athletics profile (not part of 418 count).
-- Long jump 7.98: result previously verified; venue metadata exists in web data but evidence still to reconcile in journal.
-- Pole vault 5.37: verified; Stade Pierre Paul Bernard, Talence (FRA), 15 SEP 2024.
-- Remaining event-level source evidence still to reconcile in journal.
-- Counted complete in reconciled total: 1/10.
+### Bulk comparison result
+- Athletes: **25/25**
+- Senior PBs found and verified: **250/250**
+- Values already matching after the earlier correction layer: **235**
+- Remaining discrepancies found by the bulk audit: **15**
+- Missing WA senior PB entries: **0**
 
-### Leo Neugebauer
-- Decathlon PB 8961: verified on World Athletics profile (not part of 418 count).
-- Long jump 8.00: result previously verified; venue metadata exists in web data but evidence still to reconcile in journal.
-- Pole vault 5.30: verified; Enwag-Stadion, Wetzlar (GER), 21 JUL 2024.
-- Remaining event-level source evidence still to reconcile in journal.
-- Counted complete in reconciled total: 1/10.
+The complete machine-readable audit is stored in `app/data/wa_men_pb_audit.json`.
+The authoritative generated web override is stored in `app/data/wa_men_pb_verified.js` and contains all 250 verified senior PB marks, event points, PB date and PB venue.
 
-### Niklas Kaul — COMPLETE 10/10
-- 100m 11.12: verified senior PB; Mösle-Stadium, Götzis (AUT), 31 MAY 2025.
-- Long jump 7.44: verified; Stadio Olimpico, Roma (ITA), 10 JUN 2024.
-- Shot put 15.21: verified senior 7.26 kg PB; Mösle-Stadium, Götzis (AUT), 30 MAY 2026.
-- High jump 2.11: verified; Olympic Stadium, Tokyo (JPN), 04 AUG 2021.
-- 400m 47.87: verified; Olympiastadion, München (GER), 15 AUG 2022.
-- 110m hurdles 14.17: verified senior 106.7 cm hurdles; Michael-Hoffmann-Stadion, Mannheim (GER), 20 MAY 2024.
-- Discus: project seed 49.92 was incorrect. Verified senior 2 kg PB is 49.89; Stadio Olimpico, Roma (ITA), 11 JUN 2024. Corrected in project data; event points 869 -> 868, theoretical PB 9019 -> 9018, potential 328 -> 327.
-- Pole vault 5.00: verified; Khalifa International Stadium, Doha (QAT), 03 OCT 2019.
-- Javelin 79.05: verified senior 800 g PB; Khalifa International Stadium, Doha (QAT), 03 OCT 2019.
-- 1500m 4:10.04: verified; Olympiastadion, München (GER), 16 AUG 2022.
-- Counted complete in reconciled total: 10/10.
+## 15 residual discrepancies found and corrected by the bulk audit
 
-### Sven Roosen — COMPLETE 10/10
-- 100m 10.49: verified legal senior PB; Mösle-Stadium, Götzis (AUT), 18 MAY 2024.
-- Long jump 7.56: verified legal PB; Stade de France, Paris (FRA), 02 AUG 2024.
-- Shot put 15.10: verified senior 7.26 kg PB; Stade de France, Paris (FRA), 02 AUG 2024.
-- High jump 1.91: verified PB; Mösle-Stadium, Götzis (AUT), 18 MAY 2024.
-- 400m 46.40: verified PB; Stade de France, Paris (FRA), 02 AUG 2024.
-- 110m hurdles: project seed 13.64 was incorrect. World Athletics lists legal senior 106.7 cm PB 13.96 (+0.2); Atletiekbaan Breda, Breda (NED), 20 JUL 2024. The 13.64 at that meeting belonged to another athlete. Corrected in project data; event points 1022 -> 980, theoretical PB 8843 -> 8801, potential 236 -> 194, utilization 97.3 -> 97.8.
-- Discus 48.58: verified senior 2 kg PB; AtletiekArena Gaston Roelants Kessel-Lo / Hal 5, Leuven (BEL), 16 AUG 2025.
-- Pole vault 5.00: verified PB; AtletiekArena Gaston Roelants Kessel-Lo / Hal 5, Leuven (BEL), 16 AUG 2025.
-- Javelin 65.07: verified senior 800 g PB; Mösle-Stadium, Götzis (AUT), 31 MAY 2026.
-- 1500m 4:18.43: verified PB; Olympiastadion, München (GER), 16 AUG 2022.
-- Counted complete in reconciled total: 10/10.
+1. Amadeus Gräber — Shot Put: **14.77 → 13.61** (senior Shot Put), Mösle-Stadium, Götzis (AUT), 2026-05-30.
+2. Amadeus Gräber — 110 Metres Hurdles: **13.95 → 14.53** (senior hurdles), Rhein-Wied-Stadion, Neuwied (GER), 2026-05-16.
+3. Rasmus Roosleht — Shot Put: **16.59 → 16.62** (senior Shot Put), Spordikooli Kergejõustikuhall, Pärnu (EST) (i), 2024-12-27.
+4. Rasmus Roosleht — Discus Throw: **52.83 → 49.30** (senior Discus Throw), Malmö Stadion, Malmö (SWE), 2022-07-17.
+5. Dario Dester — Discus Throw: **45.98 → 43.83** (senior Discus Throw), Stadionring, Ratingen (GER), 2026-06-28.
+6. Ondřej Kopecký — 110 Metres Hurdles: **14.04 → 14.06** (senior hurdles), Stadion Juliska, Praha (CZE), 2023-05-20.
+7. Andrin Huber — Shot Put: **15.19 → 14.87** (senior Shot Put), Landhaus, Teufen (SUI), 2026-06-27.
+8. Andrin Huber — 110 Metres Hurdles: **14.00 → 14.12** (senior hurdles), Kleine Allmend, Frauenfeld (SUI), 2025-08-24.
+9. Dai Keïta — Discus Throw: **39.43 → 41.32** (senior Discus Throw), Stadionring, Ratingen (GER), 2026-06-28.
+10. Zsombor Gálpál — Discus Throw: **45.10 → 42.04** (senior Discus Throw), Ikarus BSE Sporttelep, Budapest (HUN), 2025-06-09.
+11. Alberto Nonino — Shot Put: **13.39 → 13.09** (senior Shot Put), Centro Gabre Gabric, Brescia (ITA), 2026-04-25.
+12. Alberto Nonino — 110 Metres Hurdles: **14.27 → 14.60** (senior hurdles), Centro Gabre Gabric, Brescia (ITA), 2026-04-26.
+13. Alberto Nonino — Discus Throw: **43.98 → 42.26** (senior Discus Throw), Stadio M.S. Cozzoli, Molfetta (ITA), 2026-07-11.
+14. Leon Krummenacher — 110 Metres Hurdles: **14.52 → 14.54** (senior hurdles), Landhaus, Teufen (SUI), 2026-06-28.
+15. Leon Krummenacher — Discus Throw: **47.00 → 47.58** (senior Discus Throw), Letzigrund, Zürich (SUI), 2026-07-26.
 
-### Karel Tilga — COMPLETE 10/10
-- 100m 10.84: verified legal senior PB (-0.1); Nemzeti Atlétikai Központ, Budapest (HUN), 25 AUG 2023.
-- Long jump 7.69: verified legal PB (0.0); Spec Towns Track, Athens, GA (USA), 09 APR 2021.
-- Shot put 16.59: verified senior 7.26 kg PB; Stadionring, Ratingen (GER), 22 JUN 2024.
-- High jump 2.10: verified PB; Tartu (EST) (i), 19 JAN 2018.
-- 400m 48.49: verified PB; Nemzeti Atlétikai Központ, Budapest (HUN), 25 AUG 2023.
-- 110m hurdles 14.59: verified legal senior 106.7 cm PB (-1.7); Mösle-Stadium, Götzis (AUT), 31 MAY 2026.
-- Discus 51.47: verified senior 2 kg PB; Mösle-Stadium, Götzis (AUT), 01 JUN 2025.
-- Pole vault 4.96: verified PB; Randal Tyson Indoor Center, Fayetteville, AR (USA) (i), 12 MAR 2021.
-- Javelin 73.36: verified senior 800 g PB; Olympic Stadium, Tokyo (JPN), 05 AUG 2021.
-- 1500m 4:20.73: verified PB; Nemzeti Atlétikai Központ, Budapest (HUN), 26 AUG 2023.
-- Counted complete in reconciled total: 10/10.
+## Earlier senior/junior corrections retained
 
-### Other Birmingham men with documented corrections already applied
-These corrections remain in project data, but each athlete's full 10-event audit must still be reconciled before the athlete can be marked complete:
-- Luuk Pelkmans: senior shot / 110H / discus corrections.
-- Leon Krummenacher: senior 2 kg discus correction.
-- Makenson Gletty: senior shot / 110H / javelin corrections/verification.
-- Tomas Järvinen: senior decathlon context plus senior 110H / 2 kg discus corrections.
-- Dai Keïta: senior 2 kg discus correction.
-- Risto Lillemets: senior shot verified.
-- Zsombor Gálpál: senior shot correction.
+The bulk audit was run after the existing correction layer, so earlier documented corrections such as Sander Skotheim shot put, Sven Roosen 110H, Tomas Järvinen 110H/discus, Makenson Gletty shot, Luuk Pelkmans senior implement/hurdle values and Zsombor Gálpál shot were already represented in the effective project values. The generated `wa_men_pb_verified.js` now supersedes these piecemeal corrections for the Birmingham men's single-event PB display by applying the complete set of 250 exact senior World Athletics PBs.
+
+## Web publication
+
+`app/index.html` loads `data/wa_men_pb_verified.js` after the older correction/venue files, so the verified senior World Athletics values and PB venues are authoritative in the Birmingham men's web view.
 
 ## Women
-- All Birmingham athletes/events: pending systematic event-by-event audit and journal reconciliation.
 
-## Known correction log
-1. Sander Skotheim shot put: 15.74 -> 15.00 (senior 7.26 kg). Derived theoretical PB updated 9283 -> 9238; potential 374 -> 329; utilization -> 96.4%.
-2. Luuk Pelkmans: junior/senior specification mix corrected for shot, 110H and discus; senior decathlon summary corrected.
-3. Leon Krummenacher discus: U20 1.75 kg 50.08 -> senior 2 kg 47.00.
-4. Makenson Gletty: senior shot 16.95, senior 110H 13.84 and javelin 62.89 documented.
-5. Tomas Järvinen: U20/senior mix corrected; senior 110H 14.07 and senior 2 kg discus 43.76.
-6. Dai Keïta discus: U20 42.38 -> senior 2 kg 39.43.
-7. Zsombor Gálpál shot: invalid senior value 17.11 -> verified senior 15.79.
-8. Niklas Kaul discus: 49.92 -> verified senior 2 kg PB 49.89; theoretical PB 9019 -> 9018; potential 328 -> 327.
-9. Sven Roosen 110H: 13.64 -> verified legal senior PB 13.96; theoretical PB 8843 -> 8801; potential 236 -> 194; utilization 97.3 -> 97.8.
-
-This file is the authoritative audit trail for the web project and must be updated on every audit pass until the entire Birmingham men’s and women’s fields are complete.
+Women are not included in this completed men's audit. Their 24 × 7 audit remains a separate task.
