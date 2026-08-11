@@ -25,6 +25,18 @@
         "Stav":{venue:"Stade Pierre Paul Bernard, Talence (FRA)",date:"15 SEP 2024"},
         "Spyd":{venue:"Stadio Olimpico, Roma (ITA)",date:"11 JUN 2024"},
         "1500m":{venue:"Stade de France, Paris (FRA)",date:"03 AUG 2024"}
+      },
+      "Leo Neugebauer":{
+        "100m":{venue:"Mike A. Myers Stadium, Austin, TX (USA)",date:"07 JUN 2023"},
+        "Lengde":{venue:"Nemzeti Atlétikai Központ, Budapest (HUN)",date:"25 AUG 2023"},
+        "Kule":{venue:"Hayward Field, Eugene, OR (USA)",date:"05 JUN 2024"},
+        "Høyde":{venue:"The Track at New Balance, Boston, MA (USA) (i)",date:"08 MAR 2024"},
+        "400m":{venue:"Mike A. Myers Stadium, Austin, TX (USA)",date:"07 JUN 2023"},
+        "110mh":{venue:"Mike A. Myers Stadium, Austin, TX (USA)",date:"30 MAR 2023"},
+        "Diskos":{venue:"Hilmer Lodge Stadium, Walnut, CA (USA)",date:"19 APR 2024"},
+        "Stav":{venue:"Enwag-Stadion, Wetzlar (GER)",date:"21 JUL 2024"},
+        "Spyd":{venue:"Japan National Stadium, Tokyo (JPN)",date:"21 SEP 2025"},
+        "1500m":{venue:"Japan National Stadium, Tokyo (JPN)",date:"21 SEP 2025"}
       }
     },
     women:{}
