@@ -8,7 +8,7 @@ Primary verification sources: World Athletics athlete profiles, World Athletics 
 - Total scope: 418 individual-event PBs (25 men × 10 + 24 women × 7).
 - A PB counts as complete only when the PB mark is verified, senior implement/hurdle specification is correct where applicable, and PB venue is verified/documented.
 - Decathlon/heptathlon overall PBs are not part of the 418 count.
-- Current reconciled minimum in this journal: 25/418 fully documented event PBs. This number will only move upward when the event-level evidence is reconciled in this file.
+- Current reconciled minimum in this journal: 28/418 fully documented event PBs. This number will only move upward when the event-level evidence is reconciled in this file.
 
 ## Men
 
@@ -65,6 +65,13 @@ Primary verification sources: World Athletics athlete profiles, World Athletics 
 - Javelin 65.07: verified senior 800 g PB; Mösle-Stadium, Götzis (AUT), 31 MAY 2026.
 - 1500m 4:18.43: verified PB; Olympiastadion, München (GER), 16 AUG 2022.
 - Counted complete in reconciled total: 10/10.
+
+### Karel Tilga
+- 100m 10.84: verified legal senior PB (-0.1) in the official World Athletics Budapest 2023 decathlon result; Nemzeti Atlétikai Központ, Budapest (HUN), 25 AUG 2023.
+- Javelin 73.36: verified senior 800 g PB in the official World Athletics Tokyo Olympic decathlon result; Olympic Stadium, Tokyo (JPN), 05 AUG 2021.
+- 1500m 4:20.73: verified PB in the official World Athletics Budapest 2023 decathlon result; Nemzeti Atlétikai Központ, Budapest (HUN), 26 AUG 2023.
+- Long jump 7.69, shot 16.59, high jump 2.10, 400m 48.49, 110H 14.59, discus 51.47 and pole vault 4.96 remain to reconcile with exact PB-setting venue/date evidence.
+- Counted complete in reconciled total: 3/10.
 
 ### Other Birmingham men with documented corrections already applied
 These corrections remain in project data, but each athlete's full 10-event audit must still be reconciled before the athlete can be marked complete:
