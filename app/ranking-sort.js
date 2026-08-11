@@ -4,8 +4,8 @@ const rankingHeaderMeta=[
   {key:'nation',type:'text',tip:'Nasjon utøveren representerer.'},
   {key:'name',type:'text',tip:'Utøverens navn.'},
   {key:'result',type:'number',tip:'Utøverens personlige beste i valgt øvelse.'},
-  {key:'venue',type:'text',tip:'Stedet der det personlige beste-resultatet ble oppnådd.'},
-  {key:'points',type:'number',tip:'Mangekamppoeng for det personlige beste-resultatet.'}
+  {key:'points',type:'number',tip:'Mangekamppoeng for det personlige beste-resultatet.'},
+  {key:'venue',type:'text',tip:'Stedet der det personlige beste-resultatet ble oppnådd.'}
 ];
 function setupRankingHeaders(){
   document.querySelectorAll('#ranking thead th').forEach((th,i)=>{
@@ -42,7 +42,7 @@ renderRanking=function(){
     th.classList.remove('sort-asc','sort-desc');
     if(th.dataset.rankingSortKey===rankingSort.key) th.classList.add(rankingSort.dir==='asc'?'sort-asc':'sort-desc');
   });
-  $('#rankingCards').innerHTML=arr.map(o=>`<tr><td>${o.rank}</td><td>${esc(o.x.nation)}</td><td>${esc(o.x.name)}</td><td>${displayMark(e,o.v)}</td><td>${esc(pbVenue(o.x,i))}</td><td>${scoreEvent(i,o.v)}</td></tr>`).join('');
+  $('#rankingCards').innerHTML=arr.map(o=>`<tr><td>${o.rank}</td><td>${esc(o.x.nation)}</td><td>${esc(o.x.name)}</td><td>${displayMark(e,o.v)}</td><td>${scoreEvent(i,o.v)}</td><td>${esc(pbVenue(o.x,i))}</td></tr>`).join('');
 };
 setupRankingHeaders();
 $('#eventSelect').onchange=renderRanking;
