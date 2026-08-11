@@ -4,11 +4,12 @@ Mål: 418 enkeltøvelses-PB-er (25 menn × 10 + 24 kvinner × 7).
 
 ## Status
 
-**33 / 418 verifisert**
+**43 / 418 verifisert**
 
 Ferdig verifiserte utøvere:
 - Sander Skotheim – 10/10
 - Johannes Erm – 10/10
+- Janek Õiglane – 10/10
 
 Delvis verifisert tidligere:
 - Luuk Pelkmans
@@ -19,6 +20,24 @@ Delvis verifisert tidligere:
 - Risto Lillemets
 - Niklas Kaul
 - Zsombor Gálpál
+
+## Janek Õiglane – fullført 11. august 2026
+
+Alle ti seniorøvelser kontrollert mot World Athletics/offisielle mesterskapsresultater, med supplerende kontroll mot Estlands friidrettsforbund for Knoxville-PB-en. Seniorredskap/hekk kontrollert: kule 7.26 kg, diskos 2.00 kg, spyd 800 g og 110 m hekk 106.7 cm.
+
+Verifiserte PB-er:
+- 100 m 10.89 – Knoxville, TN (USA), 07 APR 2022; tangert Paris (FRA), 02 AUG 2024
+- Lengde 7.47 – Nemzeti Atlétikai Központ, Budapest (HUN), 25 AUG 2023
+- Kule 15.50 – Emirates Arena, Glasgow (GBR) (i), 02 MAR 2019
+- Høyde 2.05 – senior-PB bekreftet av World Athletics; også tangert Hayward Field, Eugene, OR (USA), 23 JUL 2022
+- 400 m 48.02 – Stade de France, Paris (FRA), 02 AUG 2024
+- 110 m hekk 14.33 – Knoxville, TN (USA), 08 APR 2022
+- Diskos 45.94 – Kadrioru staadion, Tallinn (EST), 27 JUN 2021
+- Stav 5.30 – Stade de France, Paris (FRA), 03 AUG 2024
+- Spyd 72.46 – Khalifa International Stadium, Doha (QAT), 03 OCT 2019
+- 1500 m 4:23.43 – Nemzeti Atlétikai Központ, Budapest (HUN), 26 AUG 2023
+
+Merknad: World Athletics' 2021 topliste viser 45.94 i diskos i Tallinn i Janeks 8056-serie. WA-profiler/startlister bekrefter at 45.94 er senior-PB med 2.00 kg diskos.
 
 ## Johannes Erm – fullført 11. august 2026
 
