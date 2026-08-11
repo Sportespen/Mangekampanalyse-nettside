@@ -65,9 +65,12 @@
   patch('men','Risto Lillemets','Kule',
     {display:'15.81',mark:15.81,points:840,venue:'Mösle-Stadium, Götzis (AUT)',date:'30 MAY 2026'});
 
-  // Niklas Kaul: 15.21 is a valid senior (7.26 kg) PB from Götzis 2026.
+  // Niklas Kaul: senior PB audit completed. Shot is valid 7.26 kg. Discus seed 49.92 was incorrect; verified senior 2 kg PB is 49.89 from Rome 2024.
   patch('men','Niklas Kaul','Kule',
     {display:'15.21',mark:15.21,points:803,venue:'Mösle-Stadium, Götzis (AUT)',date:'30 MAY 2026'});
+  patch('men','Niklas Kaul','Diskos',
+    {display:'49.89',mark:49.89,points:868,venue:'Stadio Olimpico, Roma (ITA)',date:'11 JUN 2024'},
+    {theoretical:9018,utilization:96.4,potential:327});
 
   // Zsombor Gálpál: 17.11 was not a senior 7.26 kg result. Verified senior PB is 15.79.
   patch('men','Zsombor Gálpál','Kule',
