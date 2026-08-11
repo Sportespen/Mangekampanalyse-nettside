@@ -37,6 +37,18 @@
         "Stav":{venue:"Enwag-Stadion, Wetzlar (GER)",date:"21 JUL 2024"},
         "Spyd":{venue:"Japan National Stadium, Tokyo (JPN)",date:"21 SEP 2025"},
         "1500m":{venue:"Japan National Stadium, Tokyo (JPN)",date:"21 SEP 2025"}
+      },
+      "Niklas Kaul":{
+        "100m":{venue:"Mösle-Stadium, Götzis (AUT)",date:"31 MAY 2025"},
+        "Lengde":{venue:"Stadio Olimpico, Roma (ITA)",date:"10 JUN 2024"},
+        "Kule":{venue:"Mösle-Stadium, Götzis (AUT)",date:"30 MAY 2026"},
+        "Høyde":{venue:"Olympic Stadium, Tokyo (JPN)",date:"04 AUG 2021"},
+        "400m":{venue:"Olympiastadion, München (GER)",date:"15 AUG 2022"},
+        "110mh":{venue:"Michael-Hoffmann-Stadion, Mannheim (GER)",date:"20 MAY 2024"},
+        "Diskos":{venue:"Stadio Olimpico, Roma (ITA)",date:"11 JUN 2024"},
+        "Stav":{venue:"Khalifa International Stadium, Doha (QAT)",date:"03 OCT 2019"},
+        "Spyd":{venue:"Khalifa International Stadium, Doha (QAT)",date:"03 OCT 2019"},
+        "1500m":{venue:"Olympiastadion, München (GER)",date:"16 AUG 2022"}
       }
     },
     women:{}
