@@ -13,54 +13,15 @@
 <link rel="stylesheet" href="styles.css?v=20260811-launch">
 </head>
 <body>
-<header class="topbar">
-  <div class="brand"><img src="../Mangekampanalyse-nettside/assets/mangekampanalyse_icon.png" alt="Mangekampanalyse"><div><h1>MANGEKAMPANALYSE</h1><div class="tagline">Analyse • Statistikk • Forventet resultat • Live</div></div></div>
-</header>
+<header class="topbar"><div class="brand"><img src="../Mangekampanalyse-nettside/assets/mangekampanalyse_icon.png" alt="Mangekampanalyse"><div><h1>MANGEKAMPANALYSE</h1><div class="tagline">Analyse • Statistikk • Forventet resultat • Live</div></div></div></header>
 <main>
-  <section class="hero-row">
-    <div class="hero-left">
-      <label class="competition-label" for="competitionSelect">Konkurranse</label>
-      <div class="competition-select-wrap"><span class="competition-icon">▣</span><select id="competitionSelect"><option value="birmingham">EM Birmingham 2026</option></select></div>
-      <div class="event-switch" role="group" aria-label="Velg mangekamp">
-        <button class="event-switch-btn active" data-type="men">Tikamp menn</button>
-        <button class="event-switch-btn" data-type="women">Sjukamp kvinner</button>
-      </div>
-      <h2 id="eventTitle">Tikamp menn</h2>
-      <p id="eventIntro">Analyse- og prognosemotor fra Mangekampanalyse Pro.</p>
-    </div>
-    <div class="status"><span class="dot"></span><div><b>Før konkurransestart</b><small>Live-resultater kobles inn når arrangøren publiserer dem.</small></div></div>
-  </section>
-
-  <nav class="tabs feature-tabs">
-    <button class="tab feature-card active" data-tab="analyse"><span class="feature-logo"><img src="assets/feature_start.webp" alt="Start analyse"></span><span class="feature-copy"><strong>START ANALYSE</strong><small>Kjør full analyse av denne konkurransen</small></span></button>
-    <button class="tab feature-card" data-tab="ranking"><span class="feature-logo"><img src="assets/feature_ranking.webp" alt="Personlig beste pr. øvelse"></span><span class="feature-copy"><strong>PERSONLIG BESTE<br>PR. ØVELSE</strong><small>Se beste resultater i hver øvelse</small></span></button>
-    <button class="tab feature-card" data-tab="forecast"><span class="feature-logo"><img src="assets/feature_forecast.webp" alt="Forventet resultat"></span><span class="feature-copy"><strong>FORVENTET<br>RESULTAT</strong><small>Prognose for gjenværende øvelser og sluttpoeng</small></span></button>
-  </nav>
-
-  <section id="analyse" class="panel active-panel"><div class="panel-head"><div><h3 id="analyseTitle">Startanalyse</h3><p id="analyseSub">PB, teoretisk PB, utnyttelse og uutnyttet potensial.</p></div><div class="pill" id="athleteCount">Utøvere</div></div><div class="table-wrap"><table><thead><tr><th>QP</th><th>WR</th><th>Nasjon</th><th>Utøver</th><th>Født</th><th id="pbHead">Mangekamp-PB</th><th>Teoretisk PB</th><th>Utnyttelse</th><th>Uutnyttet potensial</th><th>Diff. topp</th></tr></thead><tbody id="analyseBody"></tbody></table></div><div class="stats" id="stats"></div></section>
-
-  <section id="ranking" class="panel"><div class="panel-head"><div><h3>Personlig beste pr. øvelse</h3><p id="rankingSub">Rangerer valgt konkurranse etter beste registrerte enkeltresultat.</p></div><select id="eventSelect"></select></div><div class="table-wrap"><table class="ranking-table"><thead><tr><th>Plass</th><th>Nasjon</th><th>Utøver</th><th>Resultat</th><th>Poeng</th></tr></thead><tbody id="rankingCards"></tbody></table></div></section>
-
-  <section id="forecast" class="panel">
-    <div class="panel-head"><div><h3>Forventet sluttresultat</h3><p>Faktiske resultater brukes i ferdige øvelser. I gjenstående øvelser brukes snittet av de tre beste av de fire siste resultatene.</p></div><div class="pill muted" id="forecastLivePill">LIVE KLAR</div></div>
-    <div class="test-banner" id="forecastBanner">Venter på arrangørens live-resultater.</div>
-    <div class="table-wrap"><table class="forecast-table"><thead id="liveForecastHead"></thead><tbody id="liveForecastBody"></tbody></table></div>
-  </section>
+<section class="hero-row"><div class="hero-left"><label class="competition-label" for="competitionSelect">Konkurranse</label><div class="competition-select-wrap"><span class="competition-icon">▣</span><select id="competitionSelect"><option value="birmingham">EM Birmingham 2026</option></select></div><div class="event-switch" role="group" aria-label="Velg mangekamp"><button class="event-switch-btn active" data-type="men">Tikamp menn</button><button class="event-switch-btn" data-type="women">Sjukamp kvinner</button></div><h2 id="eventTitle">Tikamp menn</h2><p id="eventIntro">Analyse- og prognosemotor fra Mangekampanalyse Pro.</p></div><div class="status"><span class="dot"></span><div><b>Før konkurransestart</b><small>Live-resultater kobles inn når arrangøren publiserer dem.</small></div></div></section>
+<nav class="tabs feature-tabs"><button class="tab feature-card active" data-tab="analyse"><span class="feature-logo"><img src="assets/feature_start.webp" alt="Start analyse"></span><span class="feature-copy"><strong>START ANALYSE</strong><small>Kjør full analyse av denne konkurransen</small></span></button><button class="tab feature-card" data-tab="ranking"><span class="feature-logo"><img src="assets/feature_ranking.webp" alt="Personlig beste pr. øvelse"></span><span class="feature-copy"><strong>PERSONLIG BESTE<br>PR. ØVELSE</strong><small>Se beste resultater i hver øvelse</small></span></button><button class="tab feature-card" data-tab="forecast"><span class="feature-logo"><img src="assets/feature_forecast.webp" alt="Forventet resultat"></span><span class="feature-copy"><strong>FORVENTET<br>RESULTAT</strong><small>Prognose for gjenværende øvelser og sluttpoeng</small></span></button></nav>
+<section id="analyse" class="panel active-panel"><div class="panel-head"><div><h3 id="analyseTitle">Startanalyse</h3><p id="analyseSub">PB, teoretisk PB, utnyttelse og uutnyttet potensial.</p></div><div class="pill" id="athleteCount">Utøvere</div></div><div class="table-wrap"><table><thead><tr><th>QP</th><th>WR</th><th>Nasjon</th><th>Utøver</th><th>Født</th><th id="pbHead">Mangekamp-PB</th><th>Teoretisk PB</th><th>Utnyttelse</th><th>Uutnyttet potensial</th><th>Diff. topp</th></tr></thead><tbody id="analyseBody"></tbody></table></div><div class="stats" id="stats"></div></section>
+<section id="ranking" class="panel"><div class="panel-head"><div><h3>Personlig beste pr. øvelse</h3><p id="rankingSub">Rangerer valgt konkurranse etter beste registrerte enkeltresultat.</p></div><select id="eventSelect"></select></div><div class="table-wrap"><table class="ranking-table"><thead><tr><th>Plass</th><th>Nasjon</th><th>Utøver</th><th>Resultat</th><th>Sted</th><th>Poeng</th></tr></thead><tbody id="rankingCards"></tbody></table></div></section>
+<section id="forecast" class="panel"><div class="panel-head"><div><h3>Forventet sluttresultat</h3><p>Faktiske resultater brukes i ferdige øvelser. I gjenstående øvelser brukes snittet av de tre beste av de fire siste resultatene.</p></div><div class="pill muted" id="forecastLivePill">LIVE KLAR</div></div><div class="test-banner" id="forecastBanner">Venter på arrangørens live-resultater.</div><div class="table-wrap"><table class="forecast-table"><thead id="liveForecastHead"></thead><tbody id="liveForecastBody"></tbody></table></div></section>
 </main>
-<footer class="site-footer">
-  <div><strong>© 2026 Mangekampanalyse Pro – Espen Ødegaard.</strong> Alle rettigheter forbeholdt.</div>
-  <div>Analyse og prognoser er basert på offentlig tilgjengelige resultatdata. Mangekampanalyse Pro er et uavhengig analyseverktøy og er ikke tilknyttet World Athletics, European Athletics eller arrangørene.</div>
-  <div>Kontakt: <a href="mailto:sportespen@gmail.com">sportespen@gmail.com</a></div>
-</footer>
+<footer class="site-footer"><div><strong>© 2026 Mangekampanalyse Pro – Espen Ødegaard.</strong> Alle rettigheter forbeholdt.</div><div>Analyse og prognoser er basert på offentlig tilgjengelige resultatdata. Mangekampanalyse Pro er et uavhengig analyseverktøy og er ikke tilknyttet World Athletics, European Athletics eller arrangørene.</div><div>Kontakt: <a href="mailto:sportespen@gmail.com">sportespen@gmail.com</a></div></footer>
 <div id="modal" class="modal"><div class="modal-card"><button class="close" id="modalClose">×</button><div id="modalContent"></div></div></div>
-<script src="data/00_base.js"></script>
-<script src="data/men_b_01.js"></script><script src="data/men_b_02.js"></script><script src="data/men_b_03.js"></script><script src="data/men_rest.js"></script><script src="data/men_g.js"></script>
-<script src="data/women_b_a.js"></script><script src="data/women_b_b.js"></script><script src="data/women_g.js"></script>
-<script src="data/history_web.js?v=20260810-2328"></script>
-<script src="data/history_bridge.js?v=20260810-2328"></script>
-<script src="data/live_birmingham.js?v=20260811-launch"></script>
-<script src="app.js?v=20260811-wrblank-2"></script>
-<script src="ranking-sort.js?v=20260810-1"></script>
-<script src="forecast-enhancements.js?v=20260811-launch"></script>
-<script src="live-engine.js?v=20260811-launch"></script>
+<script src="data/00_base.js"></script><script src="data/men_b_01.js"></script><script src="data/men_b_02.js"></script><script src="data/men_b_03.js"></script><script src="data/men_rest.js"></script><script src="data/men_g.js"></script><script src="data/women_b_a.js"></script><script src="data/women_b_b.js"></script><script src="data/women_g.js"></script><script src="data/history_web.js?v=20260810-2328"></script><script src="data/history_bridge.js?v=20260810-2328"></script><script src="data/live_birmingham.js?v=20260811-launch"></script><script src="app.js?v=20260811-pbvenue"></script><script src="ranking-sort.js?v=20260810-1"></script><script src="forecast-enhancements.js?v=20260811-launch"></script><script src="live-engine.js?v=20260811-launch"></script>
 </body></html>
