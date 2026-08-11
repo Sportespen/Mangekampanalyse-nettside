@@ -35,11 +35,14 @@
     {display:'47.00',mark:47.00,points:808,venue:'Landhaus, Teufen (SUI)',date:'28 JUN 2026'},
     {theoretical:8063,utilization:99.1,potential:75,diff_top:-1254});
 
-  // Makenson Gletty: 17.07 is not the senior 7.26 kg PB. World Athletics lists 16.95 as the PB,
-  // achieved at the 2024 World Indoor Championships in Glasgow.
+  // Makenson Gletty: senior-event PB corrections/venue verification.
   patch('men','Makenson Gletty','Kule',
     {display:'16.95',mark:16.95,points:910,venue:'Emirates Arena, Glasgow (GBR) (i)',date:'02 MAR 2024'},
     {theoretical:8909,utilization:96.6,potential:303,diff_top:-408});
+  patch('men','Makenson Gletty','110mh',
+    {display:'13.84',mark:13.84,points:995,venue:'Stadionring, Ratingen (GER)',date:'28 JUN 2026'});
+  patch('men','Makenson Gletty','Spyd',
+    {display:'62.89',mark:62.89,points:781,venue:'Japan National Stadium, Tokyo (JPN)',date:'21 SEP 2025'});
 
   // Tomas Järvinen: 8425 was his U20 decathlon (junior implements/hurdles), not a senior decathlon PB.
   // World Athletics lists senior decathlon PB 8400 at Götzis on 31 May 2026.
