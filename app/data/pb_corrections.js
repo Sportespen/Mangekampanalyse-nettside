@@ -57,4 +57,17 @@
   patch('men','Dai Keïta','Diskos',
     {display:'39.43',mark:39.43,points:653,venue:'Atletiek Arena Gaston Roelants, Leuven (BEL)',date:'04 JUL 2026'},
     {theoretical:8297,utilization:96.6,potential:286,diff_top:-1020});
+
+  // Risto Lillemets: 15.81 is a valid senior (7.26 kg) PB from Götzis 2026, not a junior-implement error.
+  patch('men','Risto Lillemets','Kule',
+    {display:'15.81',mark:15.81,points:840,venue:'Mösle-Stadium, Götzis (AUT)',date:'30 MAY 2026'});
+
+  // Niklas Kaul: 15.21 is a valid senior (7.26 kg) PB from Götzis 2026.
+  patch('men','Niklas Kaul','Kule',
+    {display:'15.21',mark:15.21,points:803,venue:'Mösle-Stadium, Götzis (AUT)',date:'30 MAY 2026'});
+
+  // Zsombor Gálpál: 17.11 was not a senior 7.26 kg result. Verified senior PB is 15.79.
+  patch('men','Zsombor Gálpál','Kule',
+    {display:'15.79',mark:15.79,points:838,venue:'Nyíregyházi Atlétikai Centrum, Nyíregyháza (HUN) (i)',date:'22 FEB 2025'},
+    {theoretical:8396,utilization:95.4,potential:390,diff_top:-921});
 })();
