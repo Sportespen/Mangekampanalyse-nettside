@@ -8,7 +8,7 @@ Primary verification sources: World Athletics athlete profiles, World Athletics 
 - Total scope: 418 individual-event PBs (25 men × 10 + 24 women × 7).
 - A PB counts as complete only when the PB mark is verified, senior implement/hurdle specification is correct where applicable, and PB venue is verified/documented.
 - Decathlon/heptathlon overall PBs are not part of the 418 count.
-- Current reconciled minimum in this journal: 15/418 fully documented event PBs. This number will only move upward when the event-level evidence is reconciled in this file.
+- Current reconciled minimum in this journal: 25/418 fully documented event PBs. This number will only move upward when the event-level evidence is reconciled in this file.
 
 ## Men
 
@@ -53,6 +53,19 @@ Primary verification sources: World Athletics athlete profiles, World Athletics 
 - 1500m 4:10.04: verified; Olympiastadion, München (GER), 16 AUG 2022.
 - Counted complete in reconciled total: 10/10.
 
+### Sven Roosen — COMPLETE 10/10
+- 100m 10.49: verified legal senior PB; Mösle-Stadium, Götzis (AUT), 18 MAY 2024.
+- Long jump 7.56: verified legal PB; Stade de France, Paris (FRA), 02 AUG 2024.
+- Shot put 15.10: verified senior 7.26 kg PB; Stade de France, Paris (FRA), 02 AUG 2024.
+- High jump 1.91: verified PB; Mösle-Stadium, Götzis (AUT), 18 MAY 2024.
+- 400m 46.40: verified PB; Stade de France, Paris (FRA), 02 AUG 2024.
+- 110m hurdles: project seed 13.64 was incorrect. World Athletics lists legal senior 106.7 cm PB 13.96 (+0.2); Atletiekbaan Breda, Breda (NED), 20 JUL 2024. The 13.64 at that meeting belonged to another athlete. Corrected in project data; event points 1022 -> 980, theoretical PB 8843 -> 8801, potential 236 -> 194, utilization 97.3 -> 97.8.
+- Discus 48.58: verified senior 2 kg PB; AtletiekArena Gaston Roelants Kessel-Lo / Hal 5, Leuven (BEL), 16 AUG 2025.
+- Pole vault 5.00: verified PB; AtletiekArena Gaston Roelants Kessel-Lo / Hal 5, Leuven (BEL), 16 AUG 2025.
+- Javelin 65.07: verified senior 800 g PB; Mösle-Stadium, Götzis (AUT), 31 MAY 2026.
+- 1500m 4:18.43: verified PB; Olympiastadion, München (GER), 16 AUG 2022.
+- Counted complete in reconciled total: 10/10.
+
 ### Other Birmingham men with documented corrections already applied
 These corrections remain in project data, but each athlete's full 10-event audit must still be reconciled before the athlete can be marked complete:
 - Luuk Pelkmans: senior shot / 110H / discus corrections.
@@ -75,5 +88,6 @@ These corrections remain in project data, but each athlete's full 10-event audit
 6. Dai Keïta discus: U20 42.38 -> senior 2 kg 39.43.
 7. Zsombor Gálpál shot: invalid senior value 17.11 -> verified senior 15.79.
 8. Niklas Kaul discus: 49.92 -> verified senior 2 kg PB 49.89; theoretical PB 9019 -> 9018; potential 328 -> 327.
+9. Sven Roosen 110H: 13.64 -> verified legal senior PB 13.96; theoretical PB 8843 -> 8801; potential 236 -> 194; utilization 97.3 -> 97.8.
 
 This file is the authoritative audit trail for the web project and must be updated on every audit pass until the entire Birmingham men’s and women’s fields are complete.
