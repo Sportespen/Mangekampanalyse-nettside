@@ -44,6 +44,12 @@
   patch('men','Makenson Gletty','Spyd',
     {display:'62.89',mark:62.89,points:781,venue:'Japan National Stadium, Tokyo (JPN)',date:'21 SEP 2025'});
 
+  // Sven Roosen: Birmingham seed incorrectly used 13.64 for 110H.
+  // World Athletics lists his legal senior PB as 13.96 (+0.2), Breda, 20 Jul 2024; 13.64 at that meeting belonged to Junxi Liu.
+  patch('men','Sven Roosen','110mh',
+    {display:'13.96',mark:13.96,points:980,venue:'Atletiekbaan Breda, Breda (NED)',date:'20 JUL 2024'},
+    {theoretical:8801,utilization:97.8,potential:194,diff_top:-516});
+
   // Tomas Järvinen: 8425 was his U20 decathlon (junior implements/hurdles), not a senior decathlon PB.
   // World Athletics lists senior decathlon PB 8400 at Götzis on 31 May 2026.
   // 13.61 was over U20 99.0 cm hurdles; senior 106.7 cm PB is 14.07 (Ostrava, 17 May 2026).
