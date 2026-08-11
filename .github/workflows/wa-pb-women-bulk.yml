@@ -1,0 +1,133 @@
+name: WA PB women bulk audit
+permissions:
+  contents: write
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/wa-pb-women-bulk.yml'
+  workflow_dispatch:
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Fetch and compare all Birmingham women's senior PBs
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          global.window={};
+          for(const p of [
+            './app/data/00_base.js','./app/data/women_b_a.js','./app/data/women_b_b.js',
+            './app/data/pb_corrections.js','./app/data/pb_verified_venues.js'
+          ]) require(p);
+
+          const women=window.MANGEKAMP_DATA.women.birmingham;
+          if(women.length!==24) throw new Error(`Expected 24 Birmingham women, found ${women.length}`);
+          const base='https://worldathletics.nimarion.de';
+          const eventMap={
+            '100mh':'100 Metres Hurdles','Høyde':'High Jump','Kule':'Shot Put','200m':'200 Metres',
+            'Lengde':'Long Jump','Spyd':'Javelin Throw','800m':'800 Metres'
+          };
+          const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+          const arr=x=>Array.isArray(x)?x:(x&&typeof x==='object'?(x.items||x.results||x.data||x.athletes||[]):[]);
+          const athleteId=o=>o&&(o.id??o.athleteId??o.aaId??o.competitorId);
+          async function getJson(url){
+            const r=await fetch(url,{headers:{accept:'application/json','user-agent':'Mangekampanalyse-Pro/1.0'}});
+            const t=await r.text();
+            if(!r.ok) throw new Error(`${r.status} ${url} ${t.slice(0,200)}`);
+            return JSON.parse(t);
+          }
+          function value(event,mark){
+            if(event==='800m'){
+              const m=String(mark).match(/^(\d+):(\d+(?:\.\d+)?)$/);
+              return m?Number(m[1])*60+Number(m[2]):Number(mark);
+            }
+            return Number(String(mark).replace(',','.'));
+          }
+          function score(event,v){
+            const map={
+              '100mh':[9.23076,26.7,1.835,'time'],'Høyde':[1.84523,75,1.348,'cm'],
+              'Kule':[56.0211,1.5,1.05,'field'],'200m':[4.99087,42.5,1.81,'time'],
+              'Lengde':[0.188807,210,1.41,'cm'],'Spyd':[15.9803,3.8,1.04,'field'],
+              '800m':[0.11193,254,1.88,'time']
+            };
+            let [A,B,C,type]=map[event];
+            if(type==='time') return Math.floor(A*Math.pow(B-v,C));
+            if(type==='cm') v*=100;
+            return Math.floor(A*Math.pow(v-B,C));
+          }
+          function venue(row){
+            const l=row?.location||{};
+            const first=[l.stadium,l.city].filter(Boolean).join(', ');
+            const country=l.country?` (${l.country})`:'';
+            const indoor=l.indoor?' (i)':'';
+            return `${first}${country}${indoor}`.trim();
+          }
+          function isoDate(row){return row?.date?String(row.date).slice(0,10):''}
+
+          (async()=>{
+            const raw={generatedAt:new Date().toISOString(),source:base,athletes:{}};
+            const audit={generatedAt:raw.generatedAt,source:'World Athletics profile data via structured proxy',summary:{athletes:24,expected:168,found:0,matches:0,mismatches:0,missing:0},athletes:{},mismatches:[],missing:[]};
+            const verified={};
+            for(const athlete of women){
+              const name=athlete.name;
+              const search=await getJson(`${base}/athletes/search?name=${encodeURIComponent(name)}`);
+              const list=arr(search);
+              const norm=s=>String(s||'').normalize('NFC').toLowerCase();
+              const exact=list.find(x=>norm(`${x.firstname||''} ${x.lastname||''}`.trim())===norm(name) && x.sex==='W') || list.find(x=>x.sex==='W') || list[0];
+              const id=athleteId(exact);
+              if(!id) throw new Error(`No WA id for ${name}`);
+              const profile=await getJson(`${base}/athletes/${id}`);
+              if(profile.sex!=='W') throw new Error(`Wrong-sex WA profile for ${name}: ${id}`);
+              raw.athletes[name]={id,profile};
+              const pbs=Array.isArray(profile.personalbests)?profile.personalbests:[];
+              audit.athletes[name]={waId:id,events:{}};
+              verified[name]={};
+              for(const [event,discipline] of Object.entries(eventMap)){
+                // Exact senior discipline names only; age-group variants with suffixes are excluded.
+                const candidates=pbs.filter(r=>r.discipline===discipline && r.legal!==false);
+                let row=candidates[0]||null;
+                if(candidates.length>1){
+                  const lower=['100mh','200m','800m'].includes(event);
+                  row=[...candidates].sort((a,b)=>lower?value(event,a.mark)-value(event,b.mark):value(event,b.mark)-value(event,a.mark))[0];
+                }
+                if(!row){
+                  audit.summary.missing++;
+                  const stem=discipline.split(' (')[0];
+                  const similar=pbs.filter(r=>String(r.discipline||'').startsWith(stem)).map(r=>({discipline:r.discipline,mark:r.mark,date:isoDate(r)}));
+                  audit.missing.push({athlete:name,event,discipline,similar});
+                  audit.athletes[name].events[event]={status:'MISSING',similar};
+                  continue;
+                }
+                audit.summary.found++;
+                const wa=value(event,row.mark);
+                const project=Number(athlete.bests?.[event]?.mark);
+                const ok=Number.isFinite(project)&&Math.abs(project-wa)<0.0005;
+                const rec={status:ok?'MATCH':'MISMATCH',project:athlete.bests?.[event]?.display??project,wa:row.mark,discipline:row.discipline,date:isoDate(row),venue:venue(row),legal:row.legal!==false};
+                audit.athletes[name].events[event]=rec;
+                if(ok) audit.summary.matches++;
+                else {audit.summary.mismatches++; audit.mismatches.push({athlete:name,event,...rec});}
+                verified[name][event]={display:String(row.mark),mark:wa,points:score(event,wa),venue:venue(row),date:isoDate(row)};
+              }
+              await sleep(80);
+            }
+            let js=`// AUTO-GENERATED by .github/workflows/wa-pb-women-bulk.yml\n// Exact senior disciplines only. Age-group variants are intentionally excluded.\n(function(){\n const R=window.MANGEKAMP_DATA; if(!R?.women?.birmingham)return;\n const V=${JSON.stringify(verified)};\n for(const a of R.women.birmingham){ const rows=V[a.name]; if(!rows)continue; let theoretical=0; for(const [e,p] of Object.entries(rows)){ if(a.bests?.[e]) Object.assign(a.bests[e],p); theoretical+=Number(p.points)||0; } if(Object.keys(rows).length===7){ a.theoretical=theoretical; a.theoreticalPB=theoretical; a.potential=theoretical-(Number(a.pb)||0); a.utilization=Number(a.pb)?Math.round((Number(a.pb)/theoretical)*1000)/10:0; } }\n})();\n`;
+            fs.writeFileSync('app/data/wa_women_pb_audit.json',JSON.stringify(audit,null,2));
+            fs.writeFileSync('app/data/wa_women_pb_verified.js',js);
+            fs.writeFileSync('app/data/wa_women_bulk_raw.json',JSON.stringify(raw,null,2));
+            console.log('AUDIT_SUMMARY '+JSON.stringify(audit.summary));
+            if(audit.summary.found!==168){ console.log('MISSING '+JSON.stringify(audit.missing)); process.exitCode=2; }
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+      - name: Commit audit and verified override
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/data/wa_women_bulk_raw.json app/data/wa_women_pb_audit.json app/data/wa_women_pb_verified.js
+          git diff --cached --quiet && exit 0
+          git commit -m 'Audit all Birmingham women senior PBs from WA profiles'
+          git push
