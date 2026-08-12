@@ -36,4 +36,13 @@
       [248.31,'4:08.31','Mösle-Stadium, Götzis','2025','2025-06-01']
     ]
   });
+
+  const sander=H['Sander Skotheim']||{};
+  H['Sander Skotheim']=Object.assign({},sander,{
+    'Spyd':[
+      [62.39,'62.39','Friidrettsstadion, Jessheim','2025','2025-08-23'],
+      [61.72,'61.72','Meeting de Albufeira, Albufeira','2025',''],
+      [61.46,'61.46','Mösle-Stadium, Götzis','2025','2025-06-01']
+    ]
+  });
 })();
