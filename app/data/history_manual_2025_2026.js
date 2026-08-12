@@ -10,7 +10,18 @@
     '1500m':[[258.40,'4:18.40','Mösle-Stadium, Götzis','2026','2026-05-31'],[254.54,'4:14.54','Fana Stadion, Bergen','2025','2025-07-20'],[248.31,'4:08.31','Mösle-Stadium, Götzis','2025','2025-06-01']]
   });
   const sander=H['Sander Skotheim']||{};
-  H['Sander Skotheim']=Object.assign({},sander,{'Spyd':[[62.39,'62.39','Friidrettsstadion, Jessheim','2025','2025-08-23'],[61.72,'61.72','Meeting de Albufeira, Albufeira','2025',''],[61.46,'61.46','Mösle-Stadium, Götzis','2025','2025-06-01']]});
+  H['Sander Skotheim']=Object.assign({},sander,{
+    '100m':[[10.95,'10.95','Stadionring, Ratingen','2026','2026-06-27'],[10.94,'10.94','Trondheim Stadion, Trondheim','2026',''],[10.91,'10.91','National Stadium, Tokyo','2025','2025-09-20'],[10.70,'10.70','Mösle-Stadium, Götzis','2025','2025-05-31']],
+    'Lengde':[[7.80,'7.80','Stadionring, Ratingen','2026','2026-06-27'],[7.47,'7.47','Trondheim Stadion, Trondheim','2026',''],[7.32,'7.32','2026 WA competition','2026',''],[7.97,'7.97','National Stadium, Tokyo','2025','2025-09-20']],
+    'Kule':[[14.45,'14.45','Stadionring, Ratingen','2026','2026-06-27'],[14.07,'14.07','Trondheim Stadion, Trondheim','2026',''],[14.50,'14.50','National Stadium, Tokyo','2025','2025-09-20'],[13.98,'13.98','Mösle-Stadium, Götzis','2025','2025-05-31']],
+    'Høyde':[[2.08,'2.08','Trondheim Stadion, Trondheim','2026',''],[1.91,'1.91','Stadionring, Ratingen','2026','2026-06-27'],[2.14,'2.14','National Stadium, Tokyo','2025','2025-09-20'],[2.15,'2.15','Mösle-Stadium, Götzis','2025','2025-05-31']],
+    '400m':[[47.86,'47.86','National Stadium, Tokyo','2025','2025-09-20'],[47.47,'47.47','Mösle-Stadium, Götzis','2025','2025-05-31']],
+    '110mh':[[14.12,'14.12','Mösle-Stadium, Götzis','2025','2025-06-01']],
+    'Diskos':[[45.85,'45.85','Trondheim Stadion, Trondheim','2026',''],[49.18,'49.18','Mösle-Stadium, Götzis','2025','2025-06-01']],
+    'Stav':[[5.00,'5.00','2026 WA competition','2026',''],[4.80,'4.80','National Stadium, Tokyo','2025','2025-09-21'],[5.10,'5.10','Mösle-Stadium, Götzis','2025','2025-06-01'],[5.00,'5.00','2025 WA competition','2025','']],
+    'Spyd':[[62.39,'62.39','Friidrettsstadion, Jessheim','2025','2025-08-23'],[61.72,'61.72','Meeting de Albufeira, Albufeira','2025',''],[61.46,'61.46','Mösle-Stadium, Götzis','2025','2025-06-01']],
+    '1500m':[[263.88,'4:23.88','Mösle-Stadium, Götzis','2025','2025-06-01']]
+  });
   const erm=H['Johannes Erm']||{};
   H['Johannes Erm']=Object.assign({},erm,{
     '100m':[[10.88,'10.88','Pärnu (EST)','2026',''],[10.78,'10.78','National Stadium, Tokyo','2025','2025-09-20'],[10.87,'10.87','Stade Pierre Paul Bernard, Talence','2025','2025-07-05']],
