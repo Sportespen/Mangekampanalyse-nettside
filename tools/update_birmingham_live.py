@@ -55,7 +55,6 @@ def parse_mark(event: str, value):
     text = str(value).strip().replace(',', '.')
     if not text or text.upper() in {'DNS', 'DNF', 'DQ', 'NM', 'NH', '—', '-'}:
         return None
-    # Strip common qualification/record annotations while keeping the mark.
     text = re.sub(r'\s*(?:PB|SB|NR|CR|WL|EL|WR|Q|q)\b.*$', '', text, flags=re.I).strip()
     if ':' in text and event in {'1500m', '800m'}:
         parts = text.split(':')
@@ -100,13 +99,40 @@ def statuses_map():
 
 
 def extract_rows(payload):
+    if isinstance(payload, list):
+        return payload
     if not isinstance(payload, dict):
         return []
-    for key in ('combinedEventResults', 'results', 'participants'):
+    for key in ('combinedEventResults', 'results', 'participants', 'rankings', 'athletes'):
         rows = payload.get(key)
         if isinstance(rows, list):
             return rows
+    for value in payload.values():
+        rows = extract_rows(value)
+        if rows:
+            return rows
     return []
+
+
+def first_value(row, keys):
+    for key in keys:
+        if key in row and row.get(key) not in (None, ''):
+            return row.get(key)
+    return None
+
+
+def fetch_event_payload(phase_id: str):
+    # EA may expose partial live marks before an event is marked Finished.
+    # Try both summary and full variants and keep the first one that has rows.
+    for is_summary in (True, False):
+        payload = query(
+            'liveResults.getCombinedEventResultsFeed',
+            {'event': phase_id, 'competitionCode': COMPETITION_CODE, 'isSummary': is_summary},
+            allow_404=True,
+        )
+        if payload is not None and extract_rows(payload):
+            return payload
+    return None
 
 
 def collect_section(event_defs, names, statuses):
@@ -116,34 +142,40 @@ def collect_section(event_defs, names, statuses):
     for event_name, phase_id in event_defs:
         status = statuses.get(phase_id, '')
         event_status[event_name] = status
-        is_complete = status.casefold() in {'finished', 'official'}
-        if not is_complete:
+        status_cf = status.casefold()
+
+        # Read live data as soon as an event becomes active, not only after Finished/Official.
+        if status_cf in {'scheduled', 'entries', 'startlist', ''}:
             continue
-        payload = query(
-            'liveResults.getCombinedEventResultsFeed',
-            {'event': phase_id, 'competitionCode': COMPETITION_CODE, 'isSummary': True},
-            allow_404=True,
-        )
+
+        payload = fetch_event_payload(phase_id)
         if payload is None:
             continue
+
         rows = extract_rows(payload)
         added = 0
         for row in rows:
-            athlete_id = str(row.get('athleteId') or row.get('participantId') or '')
-            name = names.get(athlete_id) or normalize_name(row.get('fullName') or row.get('name') or '')
-            mark = parse_mark(event_name, row.get('result') if 'result' in row else row.get('mark'))
+            if not isinstance(row, dict):
+                continue
+            athlete_id = str(first_value(row, ('athleteId', 'participantId', 'id', 'competitorId')) or '')
+            name = names.get(athlete_id) or normalize_name(first_value(row, ('fullName', 'name', 'athleteName', 'participantName')) or '')
+            raw_mark = first_value(row, ('result', 'mark', 'performance', 'resultValue', 'value'))
+            mark = parse_mark(event_name, raw_mark)
             if not name or mark is None:
                 continue
+            points = first_value(row, ('points', 'resultPoints', 'eventPoints', 'score', 'totalPoints'))
             results.setdefault(name, {})[event_name] = {
                 'mark': mark,
-                'display': str(row.get('result') or row.get('mark') or ''),
-                'points': row.get('points') or row.get('resultPoints') or row.get('totalPoints'),
-                'status': row.get('status') or status,
+                'display': str(raw_mark or ''),
+                'points': points,
+                'status': first_value(row, ('status', 'resultStatus')) or status,
             }
             added += 1
-        # Count the discipline as completed only once the feed actually contains results.
-        if added:
+
+        # Finished/Official counts as completed only when rows actually exist.
+        if added and status_cf in {'finished', 'official'}:
             completed += 1
+
     return {'completedEvents': completed, 'results': results, 'eventStatus': event_status}
 
 
@@ -179,6 +211,7 @@ def main():
     else:
         fresh['updatedAt'] = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
         print(f"Live-data endret: menn {fresh['men']['completedEvents']}/10, kvinner {fresh['women']['completedEvents']}/7")
+        print(f"Aktive resultatrader: menn {sum(len(v) for v in fresh['men']['results'].values())}, kvinner {sum(len(v) for v in fresh['women']['results'].values())}")
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(
