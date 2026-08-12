@@ -13,6 +13,66 @@
     b.textContent=text;
   }
 
+  function normalizeName(value){
+    return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9]+/g,' ').trim().toLowerCase();
+  }
+
+  function mergeResults(oldResults={},newResults={}){
+    const byKey=new Map();
+    for(const [name,value] of Object.entries(oldResults||{})){
+      byKey.set(normalizeName(name),{name,value:{...(value||{})}});
+    }
+    for(const [name,value] of Object.entries(newResults||{})){
+      const key=normalizeName(name);
+      const old=byKey.get(key);
+      // New fields overwrite old fields, but absent fields NEVER delete an
+      // already observed result. This protects against partial EA snapshots.
+      byKey.set(key,{
+        name:old?.name||name,
+        value:{...(old?.value||{}),...(value||{})}
+      });
+    }
+    const out={};
+    for(const entry of byKey.values())out[entry.name]=entry.value;
+    return out;
+  }
+
+  function mergeSection(oldSection={},newSection={}){
+    return {
+      ...oldSection,
+      ...newSection,
+      completedEvents:Math.max(Number(oldSection.completedEvents||0),Number(newSection.completedEvents||0)),
+      results:mergeResults(oldSection.results,newSection.results),
+      eventStatus:{...(oldSection.eventStatus||{}),...(newSection.eventStatus||{})},
+      eventHasMarks:{...(oldSection.eventHasMarks||{}),...(newSection.eventHasMarks||{})}
+    };
+  }
+
+  function mergeLive(oldLive={},newLive={}){
+    if(!oldLive||typeof oldLive!=='object')return newLive;
+    if(!newLive||typeof newLive!=='object')return oldLive;
+    return {
+      ...oldLive,
+      ...newLive,
+      men:mergeSection(oldLive.men||{},newLive.men||{}),
+      women:mergeSection(oldLive.women||{},newLive.women||{})
+    };
+  }
+
+  // Guard the global live object. Any later assignment, whether it comes from
+  // the API or a fallback/static script, is merged rather than replacing a
+  // more complete snapshot.
+  let guardedLive=window.MANGEKAMP_LIVE||{};
+  try{
+    Object.defineProperty(window,'MANGEKAMP_LIVE',{
+      configurable:true,
+      get(){return guardedLive;},
+      set(next){guardedLive=mergeLive(guardedLive,next||{});}
+    });
+  }catch(_err){
+    // Older browsers: apply() still performs the same merge explicitly.
+  }
+
   async function fetchFreshLive(){
     const controller=new AbortController();
     const timer=setTimeout(()=>controller.abort(),25000);
@@ -32,10 +92,14 @@
   }
 
   function apply(data){
-    window.MANGEKAMP_LIVE=data;
+    const merged=mergeLive(window.MANGEKAMP_LIVE||{},data);
+    window.MANGEKAMP_LIVE=merged;
     lastSuccessful=new Date();
     if(typeof setType==='function'){
       setType(typeof currentType!=='undefined'?currentType:'men');
+    }
+    if(typeof syncLive==='function'){
+      try{syncLive();}catch(_err){}
     }
   }
 
