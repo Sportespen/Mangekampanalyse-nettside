@@ -13,7 +13,7 @@
         const rows=Array.isArray(item.events[eventName])?item.events[eventName]:[];
         if(!rows.length)return;
         athlete.recent[i]=rows.map(r=>Number(r.mark)).filter(Number.isFinite).slice(0,4);
-        athlete.recentDetails[i]=rows.slice(0,4).map(r=>({mark:Number(r.mark),display:r.display||'',venue:r.venue||'',year:r.year||'',date:r.date||'',competition:r.competition||''}));
+        athlete.recentDetails[i]=rows.slice(0,4).map(r=>({mark:Number(r.mark),display:r.display||'',venue:r.venue||'',year:r.year||'',date:r.date||'',competition:r.competition||''})).filter(r=>Number.isFinite(r.mark));
       });
     }
     if(typeof renderLiveForecast==='function')renderLiveForecast();
@@ -30,6 +30,10 @@
       window.MANGEKAMP_HISTORY_LIVE=data;
     }catch(e){console.warn('WA historikkoppdatering feilet:',e);}
   }
+  function start(){
+    setTimeout(refresh,800);
+    document.querySelectorAll('.event-switch-btn').forEach(btn=>btn.addEventListener('click',()=>setTimeout(refresh,250)));
+  }
   window.refreshMangekampHistory=refresh;
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(refresh,800),{once:true});else setTimeout(refresh,800);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
