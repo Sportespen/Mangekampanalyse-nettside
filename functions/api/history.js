@@ -1,6 +1,6 @@
 const SOURCE='https://worldathletics.nimarion.de';
 const MEN=['Johannes Erm','Sander Skotheim','Leo Neugebauer','Niklas Kaul','Makenson Gletty','Sven Roosen','Karel Tilga','Tomas Järvinen','Amadeus Gräber','Rasmus Roosleht','Dario Dester','Vilém Stráský','Antoine Ferranti','Ondřej Kopecký','Andrin Huber','Risto Lillemets','Jeff Tesselaar','Luuk Pelkmans','Edgaras Benkunskas','Dai Keïta','Zsombor Gálpál','Nino Portmann','Alberto Nonino','Leon Krummenacher','Emil Uhlin','Jip de Greef'];
-const WOMEN=[];
+const WOMEN=['Annik Kälin',"Kate O'Connor",'Emma Oosterwegel','Sofie Dokter','Katarina Johnson-Thompson','Sophie Weißenberg','Sandrina Sprengel','Adrianna Sułek-Schubert','Sveva Gerevini',"Jade O'Dowda",'Vanessa Grimm','Szabina Szűcs','Beatričė Juškevičiūtė','Noor Vidts','María Vicente','Lovisa Karlsson','Jéssica Barreira','Sarolta Kriszt','Jana Koščak','Erika Wärff','Verena Mayr','Sofia Cosculluela','Anastasia Ntragkomirova','Adéla Tkáčová'];
 const EVENT_MAP=[
   [/^100 metres$/i,'100m'],[/^100m$/i,'100m'],
   [/long jump/i,'Lengde'],[/shot put/i,'Kule'],[/high jump/i,'Høyde'],[/^400 metres$/i,'400m'],[/^400m$/i,'400m'],
