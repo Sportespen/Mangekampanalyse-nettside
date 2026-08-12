@@ -8,14 +8,17 @@
     const date=String(entry.result_date??entry.date??'');const year=String(entry.year??(date.match(/\b(19|20)\d{2}\b/)?.[0]||''));
     return {mark,venue:String(entry.venue??entry.place??entry.location??''),year,date};
   }
-  function recentEntriesFor(athlete,eventIndex){const rich=athlete.recentDetails?.[eventIndex]||athlete.recent_details?.[eventIndex]||athlete.history?.[eventIndex];const source=rich||athlete.recent?.[eventIndex]||[];return(Array.isArray(source)?source:[]).map(normalizeRecentEntry).filter(Boolean);}
+  function recentEntriesFor(athlete,eventIndex){const rich=athlete.recentDetails?.[eventIndex]||athlete.recent_details?.[eventIndex]||athlete.history?.[eventIndex];const source=rich||athlete.recent?.[eventIndex]||[];return(Array.isArray(source)?source:[]).map(normalizeRecentEntry).filter(Boolean).slice(0,4);}
   function showBasis(athlete,eventIndex){
-    const eventName=D.events[eventIndex],entries=recentEntriesFor(athlete,eventIndex),lower=isTimeEvent(eventName),sorted=[...entries].sort((a,b)=>lower?a.mark-b.mark:b.mark-a.mark),usedEntries=sorted.slice(0,3);
-    const prediction=usedEntries.length?usedEntries.reduce((s,r)=>s+r.mark,0)/usedEntries.length:(athlete.best?.[eventIndex]??null);
-    const weakest=entries.length>=4?(lower?Math.max(...entries.map(r=>r.mark)):Math.min(...entries.map(r=>r.mark))):null;let weakestUsed=false;
-    const rows=entries.length?entries.map((r,i)=>{let discarded=false;if(entries.length>=4&&!weakestUsed&&r.mark===weakest){discarded=true;weakestUsed=true;}return `<tr><td>${i+1}</td><td>${displayMark(eventName,r.mark)}</td><td>${esc(r.venue||'—')}</td><td>${esc(r.year||'—')}</td><td>${discarded?'Utelatt':'Med i grunnlaget'}</td></tr>`;}).join(''):'<tr><td colspan="5">Ingen registrerte nylige resultater med historikk. Personlig beste brukes som reservegrunnlag.</td></tr>';
+    const eventName=D.events[eventIndex],entries=recentEntriesFor(athlete,eventIndex),lower=isTimeEvent(eventName);
+    const enough=entries.length===4;
+    const sorted=[...entries].sort((a,b)=>lower?a.mark-b.mark:b.mark-a.mark),usedEntries=enough?sorted.slice(0,3):[];
+    const prediction=enough?usedEntries.reduce((s,r)=>s+r.mark,0)/3:null;
+    const weakest=enough?(lower?Math.max(...entries.map(r=>r.mark)):Math.min(...entries.map(r=>r.mark))):null;let weakestUsed=false;
+    const rows=entries.length?entries.map((r,i)=>{let discarded=false;if(enough&&!weakestUsed&&r.mark===weakest){discarded=true;weakestUsed=true;}return `<tr><td>${i+1}</td><td>${displayMark(eventName,r.mark)}</td><td>${esc(r.venue||'—')}</td><td>${esc(r.year||'—')}</td><td>${enough?(discarded?'Utelatt':'Med i grunnlaget'):'Ikke nok data'}</td></tr>`;}).join(''):'<tr><td colspan="5">Ingen registrerte nylige resultater.</td></tr>';
     const usedText=usedEntries.length?usedEntries.map(r=>displayMark(eventName,r.mark)).join(' + '):'—';
-    document.querySelector('#modalContent').innerHTML=`<h2>${esc(athlete.name)} – ${esc(eventName)}</h2><p>Grunnlag for forventet resultat. Det svakeste av de fire siste resultatene utelates, og snittet av de tre beste brukes.</p><div class="table-wrap"><table class="ranking-table"><thead><tr><th>#</th><th>Resultat</th><th>Sted</th><th>År</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div><div class="detail-grid"><div><small>Tre resultater brukt</small><b>${usedText}</b></div><div><small>Forventet resultat</small><b>${prediction==null?'—':displayMark(eventName,prediction)}</b></div><div><small>Forventede poeng</small><b>${prediction==null?'—':scoreEvent(eventIndex,prediction)}</b></div></div>`;
+    const warning=enough?'':`<p style="color:#ff9b36;font-weight:700">Mangler grunnlag: ${entries.length} av 4 nødvendige resultater er registrert. Prognose beregnes ikke.</p>`;
+    document.querySelector('#modalContent').innerHTML=`<h2>${esc(athlete.name)} – ${esc(eventName)}</h2><p>Grunnlag for forventet resultat. De fire siste resultatene brukes; det svakeste utelates og snittet av de tre beste beregnes.</p>${warning}<div class="table-wrap"><table class="ranking-table"><thead><tr><th>#</th><th>Resultat</th><th>Sted</th><th>År</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div><div class="detail-grid"><div><small>Tre resultater brukt</small><b>${usedText}</b></div><div><small>Forventet resultat</small><b>${prediction==null?'—':displayMark(eventName,prediction)}</b></div><div><small>Forventede poeng</small><b>${prediction==null?'—':scoreEvent(eventIndex,prediction)}</b></div></div>`;
     document.querySelector('#modal').classList.add('open');
   }
   window.bindLiveForecastBasis=function(){
