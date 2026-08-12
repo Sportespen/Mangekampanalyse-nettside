@@ -48,4 +48,17 @@
     'Spyd':[[57.03,'57.03','Stadionring, Ratingen','2026','2026-06-28'],[58.46,'58.46','Mösle-Stadium, Götzis','2026','2026-05-31'],[64.34,'64.34','National Stadium, Tokyo','2025','2025-09-21']],
     '1500m':[[283.02,'4:43.02','Stadionring, Ratingen','2026','2026-06-28'],[279.33,'4:39.33','Mösle-Stadium, Götzis','2026','2026-05-31'],[271.89,'4:31.89','National Stadium, Tokyo','2025','2025-09-21']]
   });
+  const kaul=H['Niklas Kaul']||{};
+  H['Niklas Kaul']=Object.assign({},kaul,{
+    '100m':[[11.30,'11.30','Mösle-Stadium, Götzis','2026','2026-05-30'],[11.34,'11.34','National Stadium, Tokyo','2025','2025-09-20'],[11.12,'11.12','Mösle-Stadium, Götzis','2025','2025-05-31']],
+    'Lengde':[[7.09,'7.09','Mösle-Stadium, Götzis','2026','2026-05-30'],[7.21,'7.21','National Stadium, Tokyo','2025','2025-09-20'],[7.34,'7.34','Mösle-Stadium, Götzis','2025','2025-05-31']],
+    'Kule':[[15.21,'15.21','Mösle-Stadium, Götzis','2026','2026-05-30'],[14.58,'14.58','National Stadium, Tokyo','2025','2025-09-20'],[15.09,'15.09','Mösle-Stadium, Götzis','2025','2025-05-31']],
+    'Høyde':[[2.00,'2.00','Mösle-Stadium, Götzis','2026','2026-05-30'],[2.05,'2.05','National Stadium, Tokyo','2025','2025-09-20'],[2.03,'2.03','Mösle-Stadium, Götzis','2025','2025-05-31']],
+    '400m':[[48.42,'48.42','Mösle-Stadium, Götzis','2026','2026-05-30'],[48.13,'48.13','National Stadium, Tokyo','2025','2025-09-20'],[48.16,'48.16','Mösle-Stadium, Götzis','2025','2025-05-31']],
+    '110mh':[[14.51,'14.51','Mösle-Stadium, Götzis','2026','2026-05-31'],[14.45,'14.45','National Stadium, Tokyo','2025','2025-09-21'],[14.69,'14.69','Mösle-Stadium, Götzis','2025','2025-06-01']],
+    'Diskos':[[47.14,'47.14','Mösle-Stadium, Götzis','2026','2026-05-31'],[47.29,'47.29','National Stadium, Tokyo','2025','2025-09-21'],[47.77,'47.77','Mösle-Stadium, Götzis','2025','2025-06-01']],
+    'Stav':[[4.90,'4.90','Mösle-Stadium, Götzis','2026','2026-05-31'],[4.70,'4.70','National Stadium, Tokyo','2025','2025-09-21'],[4.80,'4.80','Mösle-Stadium, Götzis','2025','2025-06-01']],
+    'Spyd':[[78.21,'78.21','Mösle-Stadium, Götzis','2026','2026-05-31'],[78.19,'78.19','National Stadium, Tokyo','2025','2025-09-21'],[72.13,'72.13','Mösle-Stadium, Götzis','2025','2025-06-01']],
+    '1500m':[[263.67,'4:23.67','Mösle-Stadium, Götzis','2026','2026-05-31'],[260.76,'4:20.76','National Stadium, Tokyo','2025','2025-09-21'],[256.40,'4:16.40','Mösle-Stadium, Götzis','2025','2025-06-01']]
+  });
 })();
