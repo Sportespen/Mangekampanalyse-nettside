@@ -1,0 +1,538 @@
+{
+  "generatedAt": "2026-08-12T18:42:01.761Z",
+  "source": "mirror",
+  "coverage": {
+    "men": {
+      "Johannes Erm": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Sander Skotheim": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Leo Neugebauer": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Niklas Kaul": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Makenson Gletty": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Sven Roosen": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Karel Tilga": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Tomas Järvinen": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 3,
+        "Høyde": 4,
+        "400m": 3,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 1
+      },
+      "Amadeus Gräber": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 2,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 2
+      },
+      "Rasmus Roosleht": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Dario Dester": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Vilém Stráský": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Antoine Ferranti": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Ondřej Kopecký": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Andrin Huber": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Risto Lillemets": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Jeff Tesselaar": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Luuk Pelkmans": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Edgaras Benkunskas": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Dai Keïta": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Zsombor Gálpál": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Nino Portmann": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Alberto Nonino": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Leon Krummenacher": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Emil Uhlin": {
+        "100m": 4,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 4,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 4,
+        "1500m": 4
+      },
+      "Jip de Greef": {
+        "100m": 2,
+        "Lengde": 4,
+        "Kule": 4,
+        "Høyde": 4,
+        "400m": 1,
+        "110mh": 4,
+        "Diskos": 4,
+        "Stav": 4,
+        "Spyd": 1,
+        "1500m": 1
+      }
+    },
+    "women": {
+      "Annik Kälin": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "Kate O'Connor": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "Emma Oosterwegel": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "Sofie Dokter": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "Katarina Johnson-Thompson": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "Sophie Weißenberg": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "Sandrina Sprengel": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "Adrianna Sułek-Schubert": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "Sveva Gerevini": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "Jade O'Dowda": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "Vanessa Grimm": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "Szabina Szűcs": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "Beatričė Juškevičiūtė": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "Noor Vidts": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "María Vicente": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "Lovisa Karlsson": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "Jéssica Barreira": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "Sarolta Kriszt": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "Jana Koščak": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "Erika Wärff": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "Verena Mayr": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "Sofia Cosculluela": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "Anastasia Ntragkomirova": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      },
+      "Adéla Tkáčová": {
+        "100mh": 4,
+        "Høyde": 4,
+        "Kule": 4,
+        "200m": 4,
+        "Lengde": 4,
+        "Spyd": 4,
+        "800m": 4
+      }
+    }
+  }
+}
