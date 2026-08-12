@@ -2,6 +2,7 @@
   function isTimeEvent(eventName){return ['100m','400m','110mh','1500m','100mh','200m','800m'].includes(eventName);}
   function normalizeRecentEntry(entry){
     if(entry==null)return null;
+    if(Array.isArray(entry)){const mark=Number(entry[0]);if(!Number.isFinite(mark))return null;return{mark,venue:String(entry[2]||''),year:String(entry[3]||''),date:String(entry[4]||'')};}
     if(typeof entry==='number')return {mark:Number(entry),venue:'',year:'',date:''};
     if(typeof entry==='string'){const n=Number(entry.replace(',','.'));return Number.isFinite(n)?{mark:n,venue:'',year:'',date:''}:null;}
     const mark=Number(entry.mark??entry.value??entry.result??entry.result_mark);if(!Number.isFinite(mark))return null;
@@ -9,10 +10,14 @@
     return {mark,venue:String(entry.venue??entry.place??entry.location??''),year,date};
   }
   function recentEntriesFor(athlete,eventIndex){
-    const rich=athlete.recentDetails?.[eventIndex]||athlete.recent_details?.[eventIndex]||athlete.history?.[eventIndex];
-    const source=rich||athlete.recent?.[eventIndex]||[];
+    const eventName=D.events[eventIndex];
+    const globalRows=window.MANGEKAMP_HISTORY?.[athlete.name]?.[eventName]||[];
+    const rich=athlete.recentDetails?.[eventIndex]||athlete.recent_details?.[eventIndex]||athlete.history?.[eventIndex]||[];
+    const simple=athlete.recent?.[eventIndex]||[];
+    // Verified global history is authoritative, but merge every source so a live WA row can supplement it.
+    const source=[...(Array.isArray(globalRows)?globalRows:[]),...(Array.isArray(rich)?rich:[]),...(Array.isArray(simple)?simple:[])];
     const seen=new Set(),out=[];
-    for(const raw of (Array.isArray(source)?source:[])){
+    for(const raw of source){
       const r=normalizeRecentEntry(raw);if(!r)continue;
       const key=[r.mark,r.venue,r.year].join('|');if(seen.has(key))continue;
       seen.add(key);out.push(r);if(out.length===4)break;
