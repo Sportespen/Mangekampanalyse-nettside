@@ -7,11 +7,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Mangekampanalyse">
-<script>window.MANGEKAMP_APP_BUILD='20260812-live60';</script>
+<script>window.MANGEKAMP_APP_BUILD='20260812-history-source-fix';</script>
 <link rel="icon" type="image/png" href="../assets/mangekampanalyse_icon.png">
 <link rel="apple-touch-icon" href="../assets/mangekampanalyse_icon.png">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="styles.css?v=20260811-launch">
+<link rel="stylesheet" href="styles.css?v=20260812-history-source-fix">
 </head>
 <body>
 <header class="topbar"><div class="brand"><img src="../Mangekampanalyse-nettside/assets/mangekampanalyse_icon.png" alt="Mangekampanalyse"><div><h1>MANGEKAMPANALYSE</h1><div class="tagline">Analyse • Statistikk • Forventet resultat • Live</div></div></div></header>
@@ -24,18 +24,19 @@
 </main>
 <footer class="site-footer"><div><strong>© 2026 Mangekampanalyse Pro – Espen Ødegaard.</strong> Alle rettigheter forbeholdt.</div><div>Analyse og prognoser er basert på offentlig tilgjengelige resultatdata. Mangekampanalyse Pro er et uavhengig analyseverktøy og er ikke tilknyttet World Athletics, European Athletics eller arrangørene.</div><div>Kontakt: <a href="mailto:sportespen@gmail.com">sportespen@gmail.com</a></div></footer>
 <div id="modal" class="modal"><div class="modal-card"><button class="close" id="modalClose">×</button><div id="modalContent"></div></div></div>
-<script src="data/00_base.js"></script><script src="data/men_b_01.js"></script><script src="data/men_b_02.js"></script><script src="data/men_b_03.js"></script><script src="data/men_rest.js"></script><script src="data/men_g.js"></script><script src="data/jip_de_greef.js?v=20260812-1535"></script><script src="data/women_b_a.js"></script><script src="data/women_b_b.js"></script><script src="data/women_g.js"></script><script src="data/pb_corrections.js?v=20260811-2"></script><script src="data/pb_verified_venues.js?v=20260811-3"></script><script src="data/wa_men_pb_verified.js?v=20260811-1513"></script><script src="data/wa_women_pb_verified.js?v=20260811-1523"></script><script src="data/history_web.js?v=20260810-2328"></script><script src="data/history_bridge.js?v=20260812-1700-final"></script><script src="data/live_birmingham.js?v=20260812-live3"></script><script src="app.js?v=20260812-1610-flex"></script><script src="forecast-recent-fix.js?v=20260812-1710"></script><script src="ranking-sort.js?v=20260812-pbyear-separate"></script><script src="forecast-enhancements.js?v=20260812-1720-distinct"></script><script src="history-refresh-api.js?v=20260812-1745"></script><script>
+<script src="data/00_base.js?v=20260812-history-source-fix"></script><script src="data/men_b_01.js?v=20260812-history-source-fix"></script><script src="data/men_b_02.js?v=20260812-history-source-fix"></script><script src="data/men_b_03.js?v=20260812-history-source-fix"></script><script src="data/men_rest.js?v=20260812-history-source-fix"></script><script src="data/men_g.js?v=20260812-history-source-fix"></script><script src="data/jip_de_greef.js?v=20260812-history-source-fix"></script><script src="data/women_b_a.js?v=20260812-history-source-fix"></script><script src="data/women_b_b.js?v=20260812-history-source-fix"></script><script src="data/women_g.js?v=20260812-history-source-fix"></script><script src="data/pb_corrections.js?v=20260812-history-source-fix"></script><script src="data/pb_verified_venues.js?v=20260812-history-source-fix"></script><script src="data/wa_men_pb_verified.js?v=20260812-history-source-fix"></script><script src="data/wa_women_pb_verified.js?v=20260812-history-source-fix"></script><script src="data/history_web.js?v=20260812-history-source-fix"></script><script src="data/history_bridge.js?v=20260812-history-source-fix"></script><script src="data/live_birmingham.js?v=20260812-history-source-fix"></script><script src="app.js?v=20260812-history-source-fix"></script><script src="forecast-recent-fix.js?v=20260812-history-source-fix"></script><script src="ranking-sort.js?v=20260812-history-source-fix"></script><script src="history-refresh-api.js?v=20260812-history-source-fix"></script><script>
 const nativeSetInterval=window.setInterval;
-window.setInterval=function(fn,ms,...args){
-  if(ms===60000&&String(fn).includes('reloadLiveData'))return 0;
-  return nativeSetInterval(fn,ms,...args);
-};
+window.setInterval=function(fn,ms,...args){if(ms===60000&&String(fn).includes('reloadLiveData'))return 0;return nativeSetInterval(fn,ms,...args);};
 const liveEngine=document.createElement('script');
-liveEngine.src='live-engine.js?v='+Date.now();
+liveEngine.src='live-engine.js?v=20260812-history-source-fix-'+Date.now();
 liveEngine.onload=function(){
   window.setInterval=nativeSetInterval;
+  const forecastBasis=document.createElement('script');
+  forecastBasis.src='forecast-enhancements.js?v=20260812-history-source-fix-'+Date.now();
+  forecastBasis.onload=function(){if(typeof window.bindLiveForecastBasis==='function')window.bindLiveForecastBasis();};
+  document.body.appendChild(forecastBasis);
   const direct=document.createElement('script');
-  direct.src='live-refresh-api.js?v=20260812-live60-'+Date.now();
+  direct.src='live-refresh-api.js?v=20260812-history-source-fix-'+Date.now();
   document.body.appendChild(direct);
 };
 document.body.appendChild(liveEngine);
