@@ -2,47 +2,26 @@
   const H=window.MANGEKAMP_HISTORY=window.MANGEKAMP_HISTORY||{};
   const current=H['Jeff Tesselaar']||{};
   H['Jeff Tesselaar']=Object.assign({},current,{
-    '400m':[
-      [47.35,'47.35','Mösle-Stadium, Götzis','2026','2026-05-30'],
-      [47.54,'47.54','Fana Stadion, Bergen','2025','2025-07-19'],
-      [47.13,'47.13','Mösle-Stadium, Götzis','2025','2025-05-31']
-    ],
-    '110mh':[
-      [14.60,'14.60','Mösle-Stadium, Götzis','2026','2026-05-31'],
-      [14.37,'14.37','Sportpark Ter Specke, Lisse','2026','2026-05-09'],
-      [14.82,'14.82','Mösle-Stadium, Götzis','2025','2025-06-01'],
-      [14.37,'14.37','Sportpark Ter Specke, Lisse','2025','2025-05-10']
-    ],
-    'Diskos':[
-      [44.62,'44.62','Mösle-Stadium, Götzis','2026','2026-05-31'],
-      [48.37,'48.37','Sportpark Ter Specke, Lisse','2026','2026-05-09'],
-      [44.59,'44.59','Fana Stadion, Bergen','2025','2025-07-20'],
-      [46.00,'46.00','Mösle-Stadium, Götzis','2025','2025-06-01']
-    ],
-    'Stav':[
-      [4.80,'4.80','Sportpark De Hondsheuvels, Eindhoven','2026','2026-07-18'],
-      [4.50,'4.50','Mösle-Stadium, Götzis','2026','2026-05-31'],
-      [4.70,'4.70','Kujawy Pomorze 26, Toruń','2026','2026-03-21'],
-      [4.61,'4.61','Omnisport Apeldoorn','2026','2026-01-31']
-    ],
-    'Spyd':[
-      [53.79,'53.79','Mösle-Stadium, Götzis','2026','2026-05-31'],
-      [53.33,'53.33','Fana Stadion, Bergen','2025','2025-07-20'],
-      [54.66,'54.66','Mösle-Stadium, Götzis','2025','2025-06-01']
-    ],
-    '1500m':[
-      [258.40,'4:18.40','Mösle-Stadium, Götzis','2026','2026-05-31'],
-      [254.54,'4:14.54','Fana Stadion, Bergen','2025','2025-07-20'],
-      [248.31,'4:08.31','Mösle-Stadium, Götzis','2025','2025-06-01']
-    ]
+    '400m':[[47.35,'47.35','Mösle-Stadium, Götzis','2026','2026-05-30'],[47.54,'47.54','Fana Stadion, Bergen','2025','2025-07-19'],[47.13,'47.13','Mösle-Stadium, Götzis','2025','2025-05-31']],
+    '110mh':[[14.60,'14.60','Mösle-Stadium, Götzis','2026','2026-05-31'],[14.37,'14.37','Sportpark Ter Specke, Lisse','2026','2026-05-09'],[14.82,'14.82','Mösle-Stadium, Götzis','2025','2025-06-01'],[14.37,'14.37','Sportpark Ter Specke, Lisse','2025','2025-05-10']],
+    'Diskos':[[44.62,'44.62','Mösle-Stadium, Götzis','2026','2026-05-31'],[48.37,'48.37','Sportpark Ter Specke, Lisse','2026','2026-05-09'],[44.59,'44.59','Fana Stadion, Bergen','2025','2025-07-20'],[46.00,'46.00','Mösle-Stadium, Götzis','2025','2025-06-01']],
+    'Stav':[[4.80,'4.80','Sportpark De Hondsheuvels, Eindhoven','2026','2026-07-18'],[4.50,'4.50','Mösle-Stadium, Götzis','2026','2026-05-31'],[4.70,'4.70','Kujawy Pomorze 26, Toruń','2026','2026-03-21'],[4.61,'4.61','Omnisport Apeldoorn','2026','2026-01-31']],
+    'Spyd':[[53.79,'53.79','Mösle-Stadium, Götzis','2026','2026-05-31'],[53.33,'53.33','Fana Stadion, Bergen','2025','2025-07-20'],[54.66,'54.66','Mösle-Stadium, Götzis','2025','2025-06-01']],
+    '1500m':[[258.40,'4:18.40','Mösle-Stadium, Götzis','2026','2026-05-31'],[254.54,'4:14.54','Fana Stadion, Bergen','2025','2025-07-20'],[248.31,'4:08.31','Mösle-Stadium, Götzis','2025','2025-06-01']]
   });
-
   const sander=H['Sander Skotheim']||{};
-  H['Sander Skotheim']=Object.assign({},sander,{
-    'Spyd':[
-      [62.39,'62.39','Friidrettsstadion, Jessheim','2025','2025-08-23'],
-      [61.72,'61.72','Meeting de Albufeira, Albufeira','2025',''],
-      [61.46,'61.46','Mösle-Stadium, Götzis','2025','2025-06-01']
-    ]
+  H['Sander Skotheim']=Object.assign({},sander,{'Spyd':[[62.39,'62.39','Friidrettsstadion, Jessheim','2025','2025-08-23'],[61.72,'61.72','Meeting de Albufeira, Albufeira','2025',''],[61.46,'61.46','Mösle-Stadium, Götzis','2025','2025-06-01']]});
+  const erm=H['Johannes Erm']||{};
+  H['Johannes Erm']=Object.assign({},erm,{
+    '100m':[[10.88,'10.88','Pärnu (EST)','2026',''],[10.78,'10.78','National Stadium, Tokyo','2025','2025-09-20'],[10.87,'10.87','Stade Pierre Paul Bernard, Talence','2025','2025-07-05']],
+    'Lengde':[[7.49,'7.49','Pärnu (EST)','2026',''],[7.63,'7.63','National Stadium, Tokyo','2025','2025-09-20'],[7.09,'7.09','Stade Pierre Paul Bernard, Talence','2025','2025-07-05'],[7.77,'7.77','2025 WA competition','2025','']],
+    'Kule':[[14.55,'14.55','Pärnu (EST)','2026',''],[13.87,'13.87','2026 WA competition','2026',''],[15.18,'15.18','National Stadium, Tokyo','2025','2025-09-20'],[14.51,'14.51','Stade Pierre Paul Bernard, Talence','2025','2025-07-05']],
+    'Høyde':[[1.99,'1.99','Pärnu (EST)','2026',''],[1.95,'1.95','2026 WA competition','2026',''],[1.96,'1.96','National Stadium, Tokyo','2025','2025-09-20'],[1.91,'1.91','Stade Pierre Paul Bernard, Talence','2025','2025-07-05']],
+    '400m':[[47.51,'47.51','National Stadium, Tokyo','2025','2025-09-20'],[48.13,'48.13','Stade Pierre Paul Bernard, Talence','2025','2025-07-05']],
+    '110mh':[[14.52,'14.52','National Stadium, Tokyo','2025','2025-09-21'],[14.34,'14.34','Stade Pierre Paul Bernard, Talence','2025','2025-07-06'],[14.54,'14.54','2025 WA competition','2025','']],
+    'Diskos':[[45.21,'45.21','National Stadium, Tokyo','2025','2025-09-21'],[44.13,'44.13','Stade Pierre Paul Bernard, Talence','2025','2025-07-06'],[46.02,'46.02','2025 WA competition','2025','']],
+    'Stav':[[5.10,'5.10','National Stadium, Tokyo','2025','2025-09-21'],[4.93,'4.93','Stade Pierre Paul Bernard, Talence','2025','2025-07-06'],[5.30,'5.30','2025 WA competition','2025',''],[5.30,'5.30','2025 WA competition','2025','']],
+    'Spyd':[[56.32,'56.32','National Stadium, Tokyo','2025','2025-09-21'],[53.53,'53.53','Stade Pierre Paul Bernard, Talence','2025','2025-07-06'],[56.29,'56.29','2025 WA competition','2025','']],
+    '1500m':[[269.15,'4:29.15','National Stadium, Tokyo','2025','2025-09-21'],[272.45,'4:32.45','Stade Pierre Paul Bernard, Talence','2025','2025-07-06']]
   });
 })();
