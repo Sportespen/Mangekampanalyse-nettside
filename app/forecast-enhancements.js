@@ -14,11 +14,11 @@
     const globalRows=window.MANGEKAMP_HISTORY?.[athlete.name]?.[eventName]||[];
     const rich=athlete.recentDetails?.[eventIndex]||athlete.recent_details?.[eventIndex]||athlete.history?.[eventIndex]||[];
     const simple=athlete.recent?.[eventIndex]||[];
-    // Verified global history is authoritative, but merge every source so a live WA row can supplement it.
     const source=[...(Array.isArray(globalRows)?globalRows:[]),...(Array.isArray(rich)?rich:[]),...(Array.isArray(simple)?simple:[])];
     const seen=new Set(),out=[];
     for(const raw of source){
       const r=normalizeRecentEntry(raw);if(!r)continue;
+      if(r.year && r.year!=='2026' && r.year!=='2025')continue;
       const key=[r.mark,r.venue,r.year].join('|');if(seen.has(key))continue;
       seen.add(key);out.push(r);if(out.length===4)break;
     }
@@ -28,20 +28,20 @@
   function showBasis(athlete,eventIndex){
     const {eventName,entries,usedEntries,prediction,lower}=basisFor(athlete,eventIndex);
     const weakest=entries.length>=4?(lower?Math.max(...entries.map(r=>r.mark)):Math.min(...entries.map(r=>r.mark))):null;let weakestUsed=false;
-    const rows=entries.length?entries.map((r,i)=>{let discarded=false;if(entries.length>=4&&!weakestUsed&&r.mark===weakest){discarded=true;weakestUsed=true;}return `<tr><td>${i+1}</td><td>${displayMark(eventName,r.mark)}</td><td>${esc(r.venue||'—')}</td><td>${esc(r.year||'—')}</td><td>${discarded?'Utelatt':'Med i grunnlaget'}</td></tr>`;}).join(''):'<tr><td colspan="5">Ingen registrerte nylige resultater.</td></tr>';
+    const rows=entries.length?entries.map((r,i)=>{let discarded=false;if(entries.length>=4&&!weakestUsed&&r.mark===weakest){discarded=true;weakestUsed=true;}return `<tr><td>${i+1}</td><td>${displayMark(eventName,r.mark)}</td><td>${esc(r.venue||'—')}</td><td>${esc(r.year||'—')}</td><td>${discarded?'Utelatt':'Med i grunnlaget'}</td></tr>`;}).join(''):'<tr><td colspan="5">Ingen registrerte resultater fra 2025–2026.</td></tr>';
     const usedText=usedEntries.length?usedEntries.map(r=>displayMark(eventName,r.mark)).join(' + '):'—';
-    const low=usedEntries.length>0&&usedEntries.length<3;
-    const warning=low?`<p style="color:#ff5b5b;font-weight:800">Begrenset grunnlag: prognosen bygger på ${usedEntries.length} resultat${usedEntries.length===1?'':'er'}.</p>`:'';
-    document.querySelector('#modalContent').innerHTML=`<h2>${esc(athlete.name)} – ${esc(eventName)}</h2><p>Grunnlag for forventet resultat. De fire siste unike resultatene brukes. Ved fire resultater utelates det svakeste og snittet av de tre beste brukes. Ved tre, to eller ett resultat brukes de tilgjengelige resultatene.</p>${warning}<div class="table-wrap"><table class="ranking-table"><thead><tr><th>#</th><th>Resultat</th><th>Sted</th><th>År</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div><div class="detail-grid"><div><small>Resultater brukt</small><b>${usedText}</b></div><div><small>Forventet resultat</small><b style="${low?'color:#ff5b5b':''}">${prediction==null?'—':displayMark(eventName,prediction)}</b></div><div><small>Forventede poeng</small><b style="${low?'color:#ff5b5b':''}">${prediction==null?'—':scoreEvent(eventIndex,prediction)}</b></div></div>`;
+    const low=entries.length>0&&entries.length<4;
+    const warning=low?`<p style="color:#ff5b5b;font-weight:800">Begrenset grunnlag: bare ${entries.length} gyldig${entries.length===1?'':'e'} seniorresultat${entries.length===1?'':'er'} fra 2025–2026.</p>`:'';
+    document.querySelector('#modalContent').innerHTML=`<h2>${esc(athlete.name)} – ${esc(eventName)}</h2><p>Grunnlag for forventet resultat: de fire siste gyldige seniorresultatene fra 2025–2026. Ved fire resultater utelates det svakeste og snittet av de tre beste brukes. Finnes færre enn fire, brukes bare de tilgjengelige og prognosen markeres rødt.</p>${warning}<div class="table-wrap"><table class="ranking-table"><thead><tr><th>#</th><th>Resultat</th><th>Sted</th><th>År</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div><div class="detail-grid"><div><small>Resultater brukt</small><b>${usedText}</b></div><div><small>Forventet resultat</small><b style="${low?'color:#ff5b5b':''}">${prediction==null?'—':displayMark(eventName,prediction)}</b></div><div><small>Forventede poeng</small><b style="${low?'color:#ff5b5b':''}">${prediction==null?'—':scoreEvent(eventIndex,prediction)}</b></div></div>`;
     document.querySelector('#modal').classList.add('open');
   }
-  window.forecastBasisCount=function(athlete,eventIndex){return basisFor(athlete,eventIndex).usedEntries.length;};
+  window.forecastBasisCount=function(athlete,eventIndex){return basisFor(athlete,eventIndex).entries.length;};
   window.bindLiveForecastBasis=function(){
     document.querySelectorAll('#liveForecastBody tr').forEach(row=>{
       const name=row.querySelector('td.name')?.textContent?.trim();if(!name)return;
       const athlete=(D.athletes||[]).find(a=>a.name===name);if(!athlete)return;
       const cells=[...row.querySelectorAll('td')];
-      D.events.forEach((eventName,i)=>{const cell=cells[3+i];if(!cell||!cell.classList.contains('pred'))return;const count=window.forecastBasisCount(athlete,i);cell.title='Dobbeltklikk for å se beregningsgrunnlaget';cell.style.cursor='pointer';cell.style.color='';cell.style.fontWeight='';if(count>0&&count<3){cell.style.color='#ff5b5b';cell.style.fontWeight='800';}cell.ondblclick=()=>showBasis(athlete,i);});
+      D.events.forEach((eventName,i)=>{const cell=cells[3+i];if(!cell||!cell.classList.contains('pred'))return;const count=window.forecastBasisCount(athlete,i);cell.title='Dobbeltklikk for å se beregningsgrunnlaget';cell.style.cursor='pointer';cell.style.color='';cell.style.fontWeight='';if(count>0&&count<4){cell.style.color='#ff5b5b';cell.style.fontWeight='800';}cell.ondblclick=()=>showBasis(athlete,i);});
     });
   };
 })();
