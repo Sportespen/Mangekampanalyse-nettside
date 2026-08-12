@@ -1,16 +1,26 @@
 (function(){
+  function normalizeEntry(raw){
+    if(raw==null)return null;
+    if(Array.isArray(raw)){const mark=Number(raw[0]);if(!Number.isFinite(mark))return null;return{mark,venue:String(raw[2]||''),year:String(raw[3]||'')};}
+    if(typeof raw==='number')return Number.isFinite(raw)?{mark:raw,venue:'',year:''}:null;
+    const mark=Number(raw.mark??raw.value??raw.result??raw.result_mark);if(!Number.isFinite(mark))return null;
+    return{mark,venue:String(raw.venue??raw.place??raw.location??''),year:String(raw.year??'')};
+  }
   function recentForecastValues(athlete,eventIndex){
+    const eventName=D.events[eventIndex];
+    // The generated WA history is the authoritative source for forecast calculations.
+    const globalRows=window.MANGEKAMP_HISTORY?.[athlete?.name]?.[eventName]||[];
     const details=athlete?.recentDetails?.[eventIndex]||[];
-    if(Array.isArray(details)&&details.length){
-      const seen=new Set(),vals=[];
-      for(const d of details){
-        const mark=Number(d?.mark);if(!Number.isFinite(mark))continue;
-        const key=[mark,String(d?.venue||''),String(d?.year||'')].join('|');
-        if(seen.has(key))continue;seen.add(key);vals.push(mark);if(vals.length===4)break;
-      }
-      if(vals.length)return vals;
+    const simple=athlete?.recent?.[eventIndex]||[];
+    const source=[...(Array.isArray(globalRows)?globalRows:[]),...(Array.isArray(details)?details:[]),...(Array.isArray(simple)?simple:[])];
+    const seen=new Set(),vals=[];
+    for(const raw of source){
+      const r=normalizeEntry(raw);if(!r)continue;
+      const key=[r.mark,r.venue,r.year].join('|');
+      if(seen.has(key))continue;
+      seen.add(key);vals.push(r.mark);if(vals.length===4)break;
     }
-    return (athlete?.recent?.[eventIndex]||[]).map(Number).filter(Number.isFinite).slice(0,4);
+    return vals;
   }
   predictionInputs=function(athlete,eventIndex){
     const vals=recentForecastValues(athlete,eventIndex);if(!vals.length)return[];
