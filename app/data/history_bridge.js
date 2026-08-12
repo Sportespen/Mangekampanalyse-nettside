@@ -18,6 +18,9 @@
   add('Alberto Nonino','Stadio M.S. Cozzoli, Molfetta (ITA)',2026,[10.90,7.18,12.90,1.93,48.26,14.68,42.26,5.10,49.56,257.80]);
   add('Nino Portmann','Landhaus, Teufen (SUI)',2026,[10.58,7.47,14.19,1.93,48.20,14.00,43.63,4.30,56.21,289.21]);
   add('Emil Uhlin','Hayward Field, Eugene, OR (USA)',2026,[11.04,6.66,13.86,2.04,48.96,14.70,46.56,null,52.13,260.20]);
+  add('Antoine Ferranti','Antonio Domínguez Stadium, Arona (ESP)',2026,[11.13,7.46,13.66,2.12,48.25,14.61,41.06,4.90,54.14,254.44]);
+  add('Jeff Tesselaar','Mösle-Stadium, Götzis (AUT)',2026,[10.66,7.61,14.57,1.94,47.35,14.60,44.62,4.50,53.79,258.40]);
+  add('Jip de Greef','Demirjian Park, Champaign, IL (USA)',2026,[10.75,7.47,14.54,1.97,48.61,14.41,39.22,5.17,52.17,289.20]);
   // Verified World Athletics 2026 senior heptathlon series.
   addW('Vanessa Grimm','Mösle-Stadium, Götzis (AUT)',2026,[13.39,1.77,15.41,24.30,6.17,41.61,132.08]);
   addW('Jéssica Barreira','Estadio Universitario, Lisboa (POR)',2026,[13.15,1.62,15.30,24.13,6.48,45.83,140.20]);
