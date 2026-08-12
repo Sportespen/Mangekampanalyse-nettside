@@ -2,39 +2,24 @@
   const H=window.MANGEKAMP_HISTORY=window.MANGEKAMP_HISTORY||{};
   const add=(name,rows)=>{const cur=H[name]||{};H[name]=Object.assign({},cur,rows);};
   add('Sven Roosen',{
-    '100m':[[10.52,'10.52','Mösle-Stadium, Götzis','2026','2026-05-30']],
-    'Lengde':[[7.12,'7.12','Mösle-Stadium, Götzis','2026','2026-05-30']],
-    'Kule':[[14.69,'14.69','Mösle-Stadium, Götzis','2026','2026-05-30']],
-    'Høyde':[[1.88,'1.88','Mösle-Stadium, Götzis','2026','2026-05-30']],
-    '400m':[[47.52,'47.52','Mösle-Stadium, Götzis','2026','2026-05-30']],
-    '110mh':[[14.08,'14.08','Mösle-Stadium, Götzis','2026','2026-05-31']],
-    'Diskos':[[48.07,'48.07','Mösle-Stadium, Götzis','2026','2026-05-31']],
-    'Stav':[[4.70,'4.70','Mösle-Stadium, Götzis','2026','2026-05-31']],
-    'Spyd':[[65.07,'65.07','Mösle-Stadium, Götzis','2026','2026-05-31']],
-    '1500m':[[263.31,'4:23.31','Mösle-Stadium, Götzis','2026','2026-05-31']]
+    '100m':[[10.52,'10.52','Mösle-Stadium, Götzis','2026','2026-05-30']], 'Lengde':[[7.12,'7.12','Mösle-Stadium, Götzis','2026','2026-05-30']], 'Kule':[[14.69,'14.69','Mösle-Stadium, Götzis','2026','2026-05-30']], 'Høyde':[[1.88,'1.88','Mösle-Stadium, Götzis','2026','2026-05-30']], '400m':[[47.52,'47.52','Mösle-Stadium, Götzis','2026','2026-05-30']], '110mh':[[14.08,'14.08','Mösle-Stadium, Götzis','2026','2026-05-31']], 'Diskos':[[48.07,'48.07','Mösle-Stadium, Götzis','2026','2026-05-31']], 'Stav':[[4.70,'4.70','Mösle-Stadium, Götzis','2026','2026-05-31']], 'Spyd':[[65.07,'65.07','Mösle-Stadium, Götzis','2026','2026-05-31']], '1500m':[[263.31,'4:23.31','Mösle-Stadium, Götzis','2026','2026-05-31']]
   });
   add('Karel Tilga',{
-    '100m':[[10.95,'10.95','Mösle-Stadium, Götzis','2026','2026-05-30']],
-    'Lengde':[[7.39,'7.39','Mösle-Stadium, Götzis','2026','2026-05-30']],
-    'Kule':[[15.58,'15.58','Mösle-Stadium, Götzis','2026','2026-05-30']],
-    'Høyde':[[1.97,'1.97','Mösle-Stadium, Götzis','2026','2026-05-30']],
-    '400m':[[49.47,'49.47','Mösle-Stadium, Götzis','2026','2026-05-30']],
-    '110mh':[[14.59,'14.59','Mösle-Stadium, Götzis','2026','2026-05-31']],
-    'Diskos':[[50.44,'50.44','Mösle-Stadium, Götzis','2026','2026-05-31']],
-    'Stav':[[4.70,'4.70','Mösle-Stadium, Götzis','2026','2026-05-31']],
-    'Spyd':[[65.69,'65.69','Mösle-Stadium, Götzis','2026','2026-05-31']],
-    '1500m':[[266.17,'4:26.17','Mösle-Stadium, Götzis','2026','2026-05-31']]
+    '100m':[[10.95,'10.95','Mösle-Stadium, Götzis','2026','2026-05-30']], 'Lengde':[[7.39,'7.39','Mösle-Stadium, Götzis','2026','2026-05-30']], 'Kule':[[15.58,'15.58','Mösle-Stadium, Götzis','2026','2026-05-30']], 'Høyde':[[1.97,'1.97','Mösle-Stadium, Götzis','2026','2026-05-30']], '400m':[[49.47,'49.47','Mösle-Stadium, Götzis','2026','2026-05-30']], '110mh':[[14.59,'14.59','Mösle-Stadium, Götzis','2026','2026-05-31']], 'Diskos':[[50.44,'50.44','Mösle-Stadium, Götzis','2026','2026-05-31']], 'Stav':[[4.70,'4.70','Mösle-Stadium, Götzis','2026','2026-05-31']], 'Spyd':[[65.69,'65.69','Mösle-Stadium, Götzis','2026','2026-05-31']], '1500m':[[266.17,'4:26.17','Mösle-Stadium, Götzis','2026','2026-05-31']]
   });
   add('Tomas Järvinen',{
-    '100m':[[10.61,'10.61','Mösle-Stadium, Götzis','2026','2026-05-30']],
-    'Lengde':[[7.48,'7.48','Mösle-Stadium, Götzis','2026','2026-05-30']],
-    'Kule':[[12.88,'12.88','Mösle-Stadium, Götzis','2026','2026-05-30']],
-    'Høyde':[[2.09,'2.09','Mösle-Stadium, Götzis','2026','2026-05-30']],
-    '400m':[[47.69,'47.69','Mösle-Stadium, Götzis','2026','2026-05-30']],
-    '110mh':[[14.18,'14.18','Mösle-Stadium, Götzis','2026','2026-05-31']],
-    'Diskos':[[43.76,'43.76','Mösle-Stadium, Götzis','2026','2026-05-31']],
-    'Stav':[[4.90,'4.90','Mösle-Stadium, Götzis','2026','2026-05-31']],
-    'Spyd':[[62.20,'62.20','Mösle-Stadium, Götzis','2026','2026-05-31']],
-    '1500m':[[275.82,'4:35.82','Mösle-Stadium, Götzis','2026','2026-05-31']]
+    '100m':[[10.61,'10.61','Mösle-Stadium, Götzis','2026','2026-05-30']], 'Lengde':[[7.48,'7.48','Mösle-Stadium, Götzis','2026','2026-05-30']], 'Kule':[[12.88,'12.88','Mösle-Stadium, Götzis','2026','2026-05-30']], 'Høyde':[[2.09,'2.09','Mösle-Stadium, Götzis','2026','2026-05-30']], '400m':[[47.69,'47.69','Mösle-Stadium, Götzis','2026','2026-05-30']], '110mh':[[14.18,'14.18','Mösle-Stadium, Götzis','2026','2026-05-31']], 'Diskos':[[43.76,'43.76','Mösle-Stadium, Götzis','2026','2026-05-31']], 'Stav':[[4.90,'4.90','Mösle-Stadium, Götzis','2026','2026-05-31']], 'Spyd':[[62.20,'62.20','Mösle-Stadium, Götzis','2026','2026-05-31']], '1500m':[[275.82,'4:35.82','Mösle-Stadium, Götzis','2026','2026-05-31']]
+  });
+  add('Amadeus Gräber',{
+    '100m':[[10.62,'10.62','Mösle-Stadium, Götzis','2026','2026-05-30']], 'Lengde':[[7.28,'7.28','Mösle-Stadium, Götzis','2026','2026-05-30']], 'Kule':[[13.61,'13.61','Mösle-Stadium, Götzis','2026','2026-05-30']], 'Høyde':[[2.00,'2.00','Mösle-Stadium, Götzis','2026','2026-05-30']], '400m':[[48.58,'48.58','Mösle-Stadium, Götzis','2026','2026-05-30']], '110mh':[[14.70,'14.70','Mösle-Stadium, Götzis','2026','2026-05-31']], 'Diskos':[[44.03,'44.03','Mösle-Stadium, Götzis','2026','2026-05-31']], 'Stav':[[5.20,'5.20','Mösle-Stadium, Götzis','2026','2026-05-31']], 'Spyd':[[65.55,'65.55','Mösle-Stadium, Götzis','2026','2026-05-31']], '1500m':[[276.61,'4:36.61','Mösle-Stadium, Götzis','2026','2026-05-31']]
+  });
+  add('Rasmus Roosleht',{
+    '100m':[[10.87,'10.87','Stadionring, Ratingen','2026','2026-06-27']], 'Lengde':[[7.11,'7.11','Stadionring, Ratingen','2026','2026-06-27']], 'Kule':[[15.64,'15.64','Stadionring, Ratingen','2026','2026-06-27']], 'Høyde':[[2.03,'2.03','Stadionring, Ratingen','2026','2026-06-27']], '400m':[[48.90,'48.90','Stadionring, Ratingen','2026','2026-06-27']], '110mh':[[14.67,'14.67','Stadionring, Ratingen','2026','2026-06-28']], 'Diskos':[[46.73,'46.73','Stadionring, Ratingen','2026','2026-06-28']], 'Stav':[[4.70,'4.70','Stadionring, Ratingen','2026','2026-06-28']], 'Spyd':[[67.07,'67.07','Stadionring, Ratingen','2026','2026-06-28']], '1500m':[[273.24,'4:33.24','Stadionring, Ratingen','2026','2026-06-28']]
+  });
+  add('Dario Dester',{
+    '100m':[[10.70,'10.70','Stadionring, Ratingen','2026','2026-06-27']], 'Lengde':[[7.31,'7.31','Stadionring, Ratingen','2026','2026-06-27']], 'Kule':[[14.53,'14.53','Stadionring, Ratingen','2026','2026-06-27']], 'Høyde':[[1.97,'1.97','Stadionring, Ratingen','2026','2026-06-27']], '400m':[[47.54,'47.54','Stadionring, Ratingen','2026','2026-06-27']], '110mh':[[14.16,'14.16','Stadionring, Ratingen','2026','2026-06-28']], 'Diskos':[[43.83,'43.83','Stadionring, Ratingen','2026','2026-06-28']], 'Stav':[[4.90,'4.90','Stadionring, Ratingen','2026','2026-06-28']], 'Spyd':[[58.80,'58.80','Stadionring, Ratingen','2026','2026-06-28']], '1500m':[[271.51,'4:31.51','Stadionring, Ratingen','2026','2026-06-28']]
+  });
+  add('Vilém Stráský',{
+    '100m':[[10.87,'10.87','Stadion Miejski, Nakło nad Notecią','2026','2026-07-11']], 'Lengde':[[7.32,'7.32','Stadion Miejski, Nakło nad Notecią','2026','2026-07-11']], 'Kule':[[14.26,'14.26','Stadion Miejski, Nakło nad Notecią','2026','2026-07-11']], 'Høyde':[[1.88,'1.88','Stadion Miejski, Nakło nad Notecią','2026','2026-07-11']], '400m':[[49.00,'49.00','Stadion Miejski, Nakło nad Notecią','2026','2026-07-11']], '110mh':[[14.31,'14.31','Stadion Miejski, Nakło nad Notecią','2026','2026-07-12']], 'Diskos':[[45.77,'45.77','Stadion Miejski, Nakło nad Notecią','2026','2026-07-12']], 'Stav':[[4.60,'4.60','Stadion Miejski, Nakło nad Notecią','2026','2026-07-12']], 'Spyd':[[56.38,'56.38','Stadion Miejski, Nakło nad Notecią','2026','2026-07-12']], '1500m':[[264.31,'4:24.31','Stadion Miejski, Nakło nad Notecią','2026','2026-07-12']]
   });
 })();
