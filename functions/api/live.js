@@ -30,7 +30,11 @@ function enc(payload) {
 async function query(proc, payload, allow404=false) {
   const url = `${TRPC}/${proc}?input=${enc(payload)}`;
   const r = await fetch(url, {
-    headers: {'X-Client-Platform':'Desktop','Accept':'application/json'},
+    headers: {
+      'X-Client-Platform':'Desktop',
+      'Accept':'application/json',
+      'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/151 Safari/537.36'
+    },
     cf: {cacheTtl: 0, cacheEverything: false}
   });
   if (allow404 && r.status === 404) return null;
@@ -79,31 +83,63 @@ async function statusesMap() {
   return out;
 }
 
+function rowsFromPayload(payload) {
+  if (!payload) return [];
+  if (Array.isArray(payload.athletes)) return payload.athletes;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload)) return payload;
+  return [];
+}
+
 async function eventRows(phaseId) {
-  const payload = await query('liveResults.getCombinedEventResultsFeed',{
-    event:phaseId, competitionCode:COMPETITION_CODE, isSummary:true
-  }, true);
-  return payload && Array.isArray(payload.athletes) ? payload.athletes : [];
+  // EA can expose different subsets in summary/detail while an event is live.
+  // Always ask both and merge by athlete/result so a partial response cannot
+  // make an already published result disappear.
+  const [summary, detail] = await Promise.all([
+    query('liveResults.getCombinedEventResultsFeed',{
+      event:phaseId, competitionCode:COMPETITION_CODE, isSummary:true
+    }, true).catch(()=>null),
+    query('liveResults.getCombinedEventResultsFeed',{
+      event:phaseId, competitionCode:COMPETITION_CODE, isSummary:false
+    }, true).catch(()=>null)
+  ]);
+  const merged = [];
+  const seen = new Set();
+  for (const row of [...rowsFromPayload(summary), ...rowsFromPayload(detail)]) {
+    const key = [
+      row?.athleteId || row?.federationId || '',
+      row?.result ?? row?.performance ?? '',
+      row?.rank ?? row?.place ?? ''
+    ].join('|');
+    if (seen.has(key)) continue;
+    seen.add(key);
+    merged.push(row);
+  }
+  return merged;
 }
 
 async function collectSection(defs, athletes, statuses) {
   const results = {};
-  let completedEvents = 0;
   const eventStatus = {};
+  const eventHasMarks = {};
 
-  for (const [eventName, phaseId] of defs) {
-    const status = statuses[phaseId] || '';
+  // Do NOT trust status alone. EA can report StartList/Scheduled for one feed
+  // while results are already present in the combined-event result feed.
+  const all = await Promise.all(defs.map(async ([eventName, phaseId]) => ({
+    eventName,
+    phaseId,
+    status: statuses[phaseId] || '',
+    rows: await eventRows(phaseId)
+  })));
+
+  for (const {eventName,status,rows} of all) {
     eventStatus[eventName] = status;
-    const cf = status.toLowerCase();
-    if (['scheduled','entries','startlist',''].includes(cf)) continue;
-
-    const rows = await eventRows(phaseId);
     let added = 0;
     for (const row of rows) {
-      const id = String(row.athleteId || '');
+      const id = String(row.athleteId || row.federationId || '');
       const meta = athletes[id] || {};
-      const name = meta.name || cleanName(row.fullName || row.name || '');
-      const raw = row.result;
+      const name = meta.name || cleanName(row.fullName || row.name || row.athleteName || '');
+      const raw = row.result ?? row.performance ?? row.mark ?? row.resultValue;
       const mark = parseMark(eventName, raw);
       if (!name || mark == null) continue;
       const entry = results[name] ||= {};
@@ -113,15 +149,25 @@ async function collectSection(defs, athletes, statuses) {
       entry[eventName] = {
         mark,
         display:String(raw),
-        points:cr.points ?? null,
+        points:cr.points ?? row.points ?? null,
         status,
-        wind:row.raceWind || row.bestResultWind || ''
+        wind:row.raceWind || row.bestResultWind || row.wind || ''
       };
       added++;
     }
-    if (added && ['finished','official'].includes(cf)) completedEvents++;
+    eventHasMarks[eventName] = added;
   }
-  return {completedEvents,results,eventStatus};
+
+  // A completed-events count must never move backwards merely because EA's
+  // status feed lags. Count the consecutive events that have actual marks;
+  // explicit Finished/Official also counts when marks exist.
+  let completedEvents = 0;
+  for (const [eventName] of defs) {
+    if ((eventHasMarks[eventName] || 0) > 0) completedEvents++;
+    else break;
+  }
+
+  return {completedEvents,results,eventStatus,eventHasMarks};
 }
 
 export async function onRequestGet() {
