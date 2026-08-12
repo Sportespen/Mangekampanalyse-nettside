@@ -2,7 +2,7 @@
   const men=window.MANGEKAMP_DATA?.men;
   if(!men||!Array.isArray(men.birmingham)) return;
   const data={
-    qp:'',wr:'',name:'Jip de Greef',nation:'NED',birth:'2004',pb:8039,theoretical:8286,utilization:97.0,potential:247,diff_top:0,
+    qp:24,wr:44,name:'Jip de Greef',nation:'NED',birth:'2004',pb:8039,theoretical:8286,utilization:97.0,potential:247,diff_top:0,
     bests:{
       '100m':{display:'10.78',points:910,mark:10.78,venue:'Eugene, OR (USA)',year:'2026'},
       'Lengde':{display:'7.52',points:940,mark:7.52,venue:'Illinois-Armory, Champaign, IL (USA) (i)',year:'2026'},
