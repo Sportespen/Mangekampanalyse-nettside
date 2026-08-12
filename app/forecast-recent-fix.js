@@ -8,7 +8,6 @@
   }
   function recentForecastValues(athlete,eventIndex){
     const eventName=D.events[eventIndex];
-    // The generated WA history is the authoritative source for forecast calculations.
     const globalRows=window.MANGEKAMP_HISTORY?.[athlete?.name]?.[eventName]||[];
     const details=athlete?.recentDetails?.[eventIndex]||[];
     const simple=athlete?.recent?.[eventIndex]||[];
@@ -16,6 +15,7 @@
     const seen=new Set(),vals=[];
     for(const raw of source){
       const r=normalizeEntry(raw);if(!r)continue;
+      if(r.year && r.year!=='2026' && r.year!=='2025')continue;
       const key=[r.mark,r.venue,r.year].join('|');
       if(seen.has(key))continue;
       seen.add(key);vals.push(r.mark);if(vals.length===4)break;
