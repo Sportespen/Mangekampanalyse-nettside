@@ -1,5 +1,6 @@
 name: Update Birmingham live data
 
+# Live refresh trigger 2026-08-12 13:05 CEST
 on:
   workflow_dispatch:
   schedule:
