@@ -4,9 +4,42 @@ const WOMEN=['Annik Kälin',"Kate O'Connor",'Emma Oosterwegel','Sofie Dokter','K
 const EVENT_MAP=[[/^100 metres$/i,'100m'],[/^100m$/i,'100m'],[/long jump/i,'Lengde'],[/shot put/i,'Kule'],[/high jump/i,'Høyde'],[/^400 metres$/i,'400m'],[/^400m$/i,'400m'],[/110 metres hurdles/i,'110mh'],[/110m hurdles/i,'110mh'],[/discus throw/i,'Diskos'],[/pole vault/i,'Stav'],[/javelin throw/i,'Spyd'],[/^1500 metres$/i,'1500m'],[/^1500m$/i,'1500m'],[/100 metres hurdles/i,'100mh'],[/100m hurdles/i,'100mh'],[/^200 metres$/i,'200m'],[/^200m$/i,'200m'],[/^800 metres$/i,'800m'],[/^800m$/i,'800m']];
 function appEvent(label){for(const[rx,name]of EVENT_MAP)if(rx.test(String(label||'').trim()))return name;return null;}
 function parseMark(mark,event){const s=String(mark??'').trim().replace(',','.');if(!s||/^(DNS|DNF|DQ|NM|NH)$/i.test(s))return null;if((event==='1500m'||event==='800m')&&s.includes(':')){const p=s.split(':').map(Number);if(p.length===2&&p.every(Number.isFinite))return p[0]*60+p[1];}const n=Number(s.replace(/[^0-9.+-]/g,''));return Number.isFinite(n)?n:null;}
-function yearOf(date){const m=String(date||'').match(/(?:19|20)\d{2}/);return m?m[0]:'';}function dateValue(date){const t=Date.parse(String(date||''));return Number.isFinite(t)?t:0;}
-function seniorOnly(r,event,type){const text=[r?.discipline,r?.category,r?.competition,r?.race].filter(Boolean).join(' ').toLowerCase();if(/\b(u18|u20|junior|youth)\b/.test(text))return false;if(type==='men'){if(event==='Kule'&&/(6\s*kg|5\s*kg)/i.test(text))return false;if(event==='Diskos'&&/(1\.75\s*kg|1\.5\s*kg)/i.test(text))return false;if(event==='110mh'&&/(0\.991|99\.1|0\.914|91\.4)/i.test(text))return false;}return true;}
+function yearOf(date){const m=String(date||'').match(/(?:19|20)\d{2}/);return m?m[0]:'';}
+function dateValue(date){const t=Date.parse(String(date||''));return Number.isFinite(t)?t:0;}
+function seniorOnly(r,event,type){const text=[r?.discipline,r?.category,r?.competition,r?.race,r?.implement,r?.ageCategory].filter(Boolean).join(' ').toLowerCase();if(/\b(u18|u20|junior|youth)\b/.test(text))return false;if(type==='men'){if(event==='Kule'&&/(6\s*kg|5\s*kg)/i.test(text))return false;if(event==='Diskos'&&/(1\.75\s*kg|1\.5\s*kg)/i.test(text))return false;if(event==='110mh'&&/(0\.991|99\.1|0\.914|91\.4)/i.test(text))return false;}return true;}
 function windLegal(r,event){if(!['100m','Lengde','110mh','100mh','200m'].includes(event))return true;if(r?.legal===false)return false;const raw=String(r?.wind??'').trim().replace(',','.');if(!raw)return true;const w=Number(raw.replace(/[^0-9.+-]/g,''));return !Number.isFinite(w)||w<=2.0;}
-async function json(url){const r=await fetch(url,{headers:{Accept:'application/json','User-Agent':'Mangekampanalyse/1.0'},cf:{cacheTtl:300,cacheEverything:true}});if(!r.ok)throw new Error(`HTTP ${r.status} ${url}`);return r.json();}
-async function athleteHistory(name,type){const found=await json(`${SOURCE}/athletes/search?name=${encodeURIComponent(name)}`);const athlete=Array.isArray(found)?found[0]:null;if(!athlete?.id)return{name,error:'Athlete not found'};const years=[2026,2025,2024,2023];const batches=await Promise.all(years.map(y=>json(`${SOURCE}/athletes/${athlete.id}/results?year=${y}`).catch(()=>[])));const grouped={};for(const r of batches.flat()){const e=appEvent(r?.discipline);if(!e||!seniorOnly(r,e,type)||!windLegal(r,e))continue;const mark=parseMark(r?.mark,e);if(mark==null)continue;const row={mark,display:String(r.mark||''),venue:String(r.location||''),year:yearOf(r.date),date:String(r.date||''),competition:String(r.competition||''),wind:String(r.wind??''),legal:true};(grouped[e]||=[]).push(row);}const out={};for(const[e,rows]of Object.entries(grouped)){const seen=new Set();out[e]=rows.sort((a,b)=>dateValue(b.date)-dateValue(a.date)).filter(r=>{const k=[r.mark,r.date,r.venue,r.competition].join('|');if(seen.has(k))return false;seen.add(k);return true;}).slice(0,4);}return{name,id:athlete.id,events:out};}
-export async function onRequestGet({request}){const u=new URL(request.url);const type=u.searchParams.get('type')==='women'?'women':'men';const names=type==='women'?WOMEN:MEN;try{const data=await Promise.all(names.map(n=>athleteHistory(n,type)));return new Response(JSON.stringify({source:'World Athletics results',updatedAt:new Date().toISOString(),type,athletes:data}),{headers:{'content-type':'application/json; charset=utf-8','cache-control':'public, max-age=60'}});}catch(e){return new Response(JSON.stringify({error:String(e?.message||e)}),{status:502,headers:{'content-type':'application/json'}});}}
+async function json(url){const r=await fetch(url,{headers:{Accept:'application/json','User-Agent':'Mangekampanalyse/1.0'},cf:{cacheTtl:60,cacheEverything:true}});if(!r.ok)throw new Error(`HTTP ${r.status} ${url}`);return r.json();}
+function chooseAthlete(found,name){if(!Array.isArray(found)||!found.length)return null;const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/gi,' ').trim().toLowerCase();const target=norm(name);return found.find(a=>norm(a.name||a.fullName)===target)||found[0];}
+async function athleteHistory(name,type){
+  try{
+    const found=await json(`${SOURCE}/athletes/search?name=${encodeURIComponent(name)}`);
+    const athlete=chooseAthlete(found,name);
+    if(!athlete?.id)return{name,error:'Athlete not found',events:{}};
+    // Go back far enough to find four senior marks even for athletes with sparse recent seasons.
+    const years=[2026,2025,2024,2023,2022,2021,2020,2019];
+    const batches=await Promise.all(years.map(y=>json(`${SOURCE}/athletes/${athlete.id}/results?year=${y}`).catch(()=>[])));
+    const grouped={};
+    for(const r of batches.flat()){
+      const e=appEvent(r?.discipline);if(!e||!seniorOnly(r,e,type)||!windLegal(r,e))continue;
+      const mark=parseMark(r?.mark,e);if(mark==null)continue;
+      const row={mark,display:String(r.mark||''),venue:String(r.location||r.venue||''),year:yearOf(r.date),date:String(r.date||''),competition:String(r.competition||r.meeting||''),wind:String(r.wind??''),legal:true};
+      (grouped[e]||=[]).push(row);
+    }
+    const out={};
+    for(const[e,rows]of Object.entries(grouped)){
+      const seen=new Set();
+      out[e]=rows.sort((a,b)=>dateValue(b.date)-dateValue(a.date)).filter(r=>{
+        // A performance is unique by date/meet/mark. Same mark at another meet remains a valid separate result.
+        const k=[r.mark,r.date,r.venue,r.competition].join('|');if(seen.has(k))return false;seen.add(k);return true;
+      }).slice(0,4);
+    }
+    return{name,id:athlete.id,events:out};
+  }catch(e){return{name,error:String(e?.message||e),events:{}};}
+}
+async function mapLimited(items,limit,fn){const out=new Array(items.length);let next=0;async function worker(){while(true){const i=next++;if(i>=items.length)return;out[i]=await fn(items[i],i);}}await Promise.all(Array.from({length:Math.min(limit,items.length)},worker));return out;}
+export async function onRequestGet({request}){const u=new URL(request.url);const type=u.searchParams.get('type')==='women'?'women':'men';const names=type==='women'?WOMEN:MEN;try{
+  // Limit concurrency so one large full-field refresh does not overwhelm the upstream WA mirror.
+  const data=await mapLimited(names,4,n=>athleteHistory(n,type));
+  const coverage=data.map(a=>({name:a.name,events:Object.fromEntries(Object.entries(a.events||{}).map(([e,r])=>[e,r.length])),error:a.error||null}));
+  return new Response(JSON.stringify({source:'World Athletics results',updatedAt:new Date().toISOString(),type,athletes:data,coverage}),{headers:{'content-type':'application/json; charset=utf-8','cache-control':'public, max-age=60'}});
+}catch(e){return new Response(JSON.stringify({error:String(e?.message||e)}),{status:502,headers:{'content-type':'application/json'}});}}
