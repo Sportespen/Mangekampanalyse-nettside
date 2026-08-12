@@ -3,7 +3,6 @@
   const add=(name,venue,year,v)=>{H[name]=H[name]||{};const ev=['100m','Lengde','Kule','Høyde','400m','110mh','Diskos','Stav','Spyd','1500m'];ev.forEach((e,i)=>{if(v[i]==null)return;const mark=v[i];const display=e==='1500m'?`${Math.floor(mark/60)}:${(mark%60).toFixed(2).padStart(5,'0')}`:Number(mark).toFixed(2);H[name][e]=H[name][e]||[];if(!H[name][e].some(r=>Number(r[0])===Number(mark)&&String(r[2])===venue))H[name][e].unshift([mark,display,venue,String(year)]);});};
   const addW=(name,venue,year,v)=>{H[name]=H[name]||{};const ev=['100mh','Høyde','Kule','200m','Lengde','Spyd','800m'];ev.forEach((e,i)=>{if(v[i]==null)return;const mark=v[i];const display=e==='800m'?`${Math.floor(mark/60)}:${(mark%60).toFixed(2).padStart(5,'0')}`:Number(mark).toFixed(2);H[name][e]=H[name][e]||[];if(!H[name][e].some(r=>Number(r[0])===Number(mark)&&String(r[2])===venue))H[name][e].unshift([mark,display,venue,String(year)]);});};
   const addOne=(name,event,mark,venue,year)=>{H[name]=H[name]||{};H[name][event]=H[name][event]||[];const display=(event==='800m'||event==='1500m')?`${Math.floor(mark/60)}:${(mark%60).toFixed(2).padStart(5,'0')}`:Number(mark).toFixed(2);if(!H[name][event].some(r=>Number(r[0])===Number(mark)&&String(r[2])===venue))H[name][event].unshift([mark,display,venue,String(year)]);};
-  // Verified World Athletics 2026 senior decathlon series used to backfill missing Birmingham forecast history.
   add('Amadeus Gräber','Mösle-Stadium, Götzis (AUT)',2026,[10.62,7.28,13.61,2.00,48.58,14.70,44.03,5.20,65.55,276.61]);
   add('Rasmus Roosleht','Stadionring, Ratingen (GER)',2026,[10.87,7.11,15.64,2.03,48.90,14.67,46.73,4.70,67.07,273.24]);
   add('Dario Dester','Stadionring, Ratingen (GER)',2026,[10.70,7.31,14.53,1.97,47.54,14.16,43.83,4.90,58.80,271.51]);
@@ -23,7 +22,6 @@
   add('Antoine Ferranti','Antonio Domínguez Stadium, Arona (ESP)',2026,[11.13,7.46,13.66,2.12,48.25,14.61,41.06,4.90,54.14,254.44]);
   add('Jeff Tesselaar','Mösle-Stadium, Götzis (AUT)',2026,[10.66,7.61,14.57,1.94,47.35,14.60,44.62,4.50,53.79,258.40]);
   add('Jip de Greef','Demirjian Park, Champaign, IL (USA)',2026,[10.75,7.47,14.54,1.97,48.61,14.41,39.22,5.17,52.17,289.20]);
-  // Verified World Athletics senior heptathlon series.
   addW('Vanessa Grimm','Mösle-Stadium, Götzis (AUT)',2026,[13.39,1.77,15.41,24.30,6.17,41.61,132.08]);
   addW('Jéssica Barreira','Estadio Universitario, Lisboa (POR)',2026,[13.15,1.62,15.30,24.13,6.48,45.83,140.20]);
   addW('Noor Vidts','Mösle-Stadium, Götzis (AUT)',2026,[13.24,1.74,13.79,24.45,6.21,42.55,129.67]);
@@ -42,21 +40,35 @@
   addW('María Vicente','Tarragona (ESP)',2025,[13.77,1.80,13.24,23.77,5.92,48.23,133.83]);
   addW('Jana Koščak','Tampere (FIN)',2025,[13.69,1.92,14.00,25.17,5.94,43.94,134.56]);
   addW('Verena Mayr','Stadion Miejski, Nakło nad Notecią (POL)',2025,[13.76,1.71,14.56,24.72,5.88,44.13,null]);
-  // Mayr's latest complete WA toplist series has 800m N/A; retain a valid recent 800m from her registered best data so every event has a forecast basis.
   addOne('Verena Mayr','800m',127.74,'World Athletics registered performance',2025);
+
+  // Normalize the stored history before it reaches the forecast engine.
+  // Keep at most four DISTINCT performances. This prevents duplicate WA rows
+  // from occupying the four forecast slots while preserving different meets.
+  for(const hist of Object.values(H)){
+    if(!hist) continue;
+    for(const [event,rows] of Object.entries(hist)){
+      if(!Array.isArray(rows)) continue;
+      const seen=new Set();
+      hist[event]=rows.filter(r=>{
+        if(!Array.isArray(r)||!Number.isFinite(Number(r[0]))) return false;
+        const key=[Number(r[0]),String(r[2]||''),String(r[3]||'')].join('|');
+        if(seen.has(key)) return false;
+        seen.add(key);return true;
+      }).slice(0,4);
+    }
+  }
 
   const R=window.MANGEKAMP_DATA||{};
   for(const type of ['men','women']){
-    const section=R[type];
-    if(!section) continue;
+    const section=R[type];if(!section) continue;
     const events=section.events||[];
     for(const listName of ['birmingham','gotzis']){
       const list=Array.isArray(section[listName])?section[listName]:[];
       for(const athlete of list){
-        const hist=H[athlete.name];
-        if(!hist) continue;
-        athlete.recent=events.map(e=>(hist[e]||[]).map(r=>Number(r[0])).filter(Number.isFinite));
-        athlete.recentDetails=events.map(e=>(hist[e]||[]).map(r=>({mark:Number(r[0]),display:r[1]||'',venue:r[2]||'',year:r[3]||''})).filter(r=>Number.isFinite(r.mark)));
+        const hist=H[athlete.name];if(!hist) continue;
+        athlete.recent=events.map(e=>(hist[e]||[]).slice(0,4).map(r=>Number(r[0])).filter(Number.isFinite));
+        athlete.recentDetails=events.map(e=>(hist[e]||[]).slice(0,4).map(r=>({mark:Number(r[0]),display:r[1]||'',venue:r[2]||'',year:r[3]||''})).filter(r=>Number.isFinite(r.mark)));
       }
     }
   }
