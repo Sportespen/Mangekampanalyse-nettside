@@ -13,14 +13,17 @@
       athlete.recentDetails=athlete.recentDetails||events.map(()=>[]);
       events.forEach((eventName,i)=>{
         const rows=Array.isArray(item.events[eventName])?item.events[eventName]:[];
+        const seenMarks=new Set();
         const clean=rows
           .filter(r=>Number.isFinite(Number(r.mark)))
           .filter(r=>['2025','2026'].includes(String(r.year||'')))
+          .sort((a,b)=>Date.parse(String(b.date||''))-Date.parse(String(a.date||''))||String(b.venue||'').length-String(a.venue||'').length)
+          .filter(r=>{const k=Number(r.mark).toFixed(3);if(seenMarks.has(k))return false;seenMarks.add(k);return true;})
           .slice(0,4)
           .map(r=>({mark:Number(r.mark),display:r.display||'',venue:r.venue||'',year:r.year||'',date:r.date||'',competition:r.competition||''}));
 
-        // The cleaned WA API is the source of truth. Do not merge old local rows back in,
-        // because they may contain older seasons, junior implements or unverified wind.
+        // The cleaned WA API is the source of truth. Do not merge old local rows back in.
+        // Deduplicate by mark here too, so cached/legacy duplicate WA rows can never reach the forecast UI.
         athlete.recent[i]=clean.map(r=>r.mark);
         athlete.recentDetails[i]=clean;
       });
