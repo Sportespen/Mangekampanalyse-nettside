@@ -1,31 +1,31 @@
 {
-  "generatedAt": "2026-08-13T00:28:02.570Z",
-  "source": "mirror",
+  "generatedAt": "2026-08-13T00:31:26.090Z",
+  "source": "World Athletics verified 2025-2026 venue data",
   "coverage": {
     "men": {
       "Johannes Erm": {
-        "100m": 4,
+        "100m": 3,
         "Lengde": 4,
         "Kule": 4,
         "Høyde": 4,
-        "400m": 4,
-        "110mh": 4,
-        "Diskos": 4,
+        "400m": 3,
+        "110mh": 3,
+        "Diskos": 3,
         "Stav": 4,
-        "Spyd": 4,
-        "1500m": 4
+        "Spyd": 3,
+        "1500m": 2
       },
       "Sander Skotheim": {
         "100m": 4,
         "Lengde": 4,
         "Kule": 4,
         "Høyde": 4,
-        "400m": 4,
-        "110mh": 4,
-        "Diskos": 4,
+        "400m": 3,
+        "110mh": 1,
+        "Diskos": 2,
         "Stav": 4,
-        "Spyd": 4,
-        "1500m": 4
+        "Spyd": 3,
+        "1500m": 1
       },
       "Leo Neugebauer": {
         "100m": 4,
@@ -49,7 +49,7 @@
         "Diskos": 4,
         "Stav": 4,
         "Spyd": 4,
-        "1500m": 4
+        "1500m": 3
       },
       "Makenson Gletty": {
         "100m": 4,
@@ -61,19 +61,19 @@
         "Diskos": 4,
         "Stav": 4,
         "Spyd": 4,
-        "1500m": 4
+        "1500m": 3
       },
       "Sven Roosen": {
         "100m": 4,
         "Lengde": 4,
         "Kule": 4,
-        "Høyde": 4,
-        "400m": 4,
-        "110mh": 4,
+        "Høyde": 2,
+        "400m": 1,
+        "110mh": 3,
         "Diskos": 4,
-        "Stav": 4,
-        "Spyd": 4,
-        "1500m": 4
+        "Stav": 3,
+        "Spyd": 3,
+        "1500m": 1
       },
       "Karel Tilga": {
         "100m": 4,
@@ -81,22 +81,22 @@
         "Kule": 4,
         "Høyde": 4,
         "400m": 4,
-        "110mh": 4,
+        "110mh": 3,
         "Diskos": 4,
-        "Stav": 4,
-        "Spyd": 4,
-        "1500m": 4
+        "Stav": 2,
+        "Spyd": 3,
+        "1500m": 2
       },
       "Tomas Järvinen": {
         "100m": 4,
         "Lengde": 4,
         "Kule": 3,
-        "Høyde": 4,
-        "400m": 3,
-        "110mh": 4,
-        "Diskos": 4,
-        "Stav": 4,
-        "Spyd": 4,
+        "Høyde": 3,
+        "400m": 2,
+        "110mh": 2,
+        "Diskos": 1,
+        "Stav": 2,
+        "Spyd": 1,
         "1500m": 1
       },
       "Amadeus Gräber": {
@@ -104,12 +104,12 @@
         "Lengde": 4,
         "Kule": 4,
         "Høyde": 4,
-        "400m": 3,
+        "400m": 2,
         "110mh": 4,
-        "Diskos": 4,
+        "Diskos": 2,
         "Stav": 4,
-        "Spyd": 4,
-        "1500m": 2
+        "Spyd": 2,
+        "1500m": 1
       },
       "Rasmus Roosleht": {
         "100m": 4,
@@ -124,16 +124,16 @@
         "1500m": 4
       },
       "Dario Dester": {
-        "100m": 4,
+        "100m": 3,
         "Lengde": 4,
         "Kule": 4,
         "Høyde": 4,
-        "400m": 4,
-        "110mh": 4,
-        "Diskos": 4,
-        "Stav": 4,
-        "Spyd": 4,
-        "1500m": 4
+        "400m": 3,
+        "110mh": 2,
+        "Diskos": 1,
+        "Stav": 2,
+        "Spyd": 1,
+        "1500m": 1
       },
       "Vilém Stráský": {
         "100m": 4,
@@ -204,8 +204,8 @@
         "110mh": 4,
         "Diskos": 4,
         "Stav": 4,
-        "Spyd": 4,
-        "1500m": 4
+        "Spyd": 3,
+        "1500m": 3
       },
       "Luuk Pelkmans": {
         "100m": 4,
@@ -217,7 +217,7 @@
         "Diskos": 4,
         "Stav": 4,
         "Spyd": 4,
-        "1500m": 4
+        "1500m": 3
       },
       "Edgaras Benkunskas": {
         "100m": 4,
@@ -285,11 +285,11 @@
         "Kule": 4,
         "Høyde": 4,
         "400m": 4,
-        "110mh": 4,
+        "110mh": 3,
         "Diskos": 4,
         "Stav": 4,
-        "Spyd": 4,
-        "1500m": 4
+        "Spyd": 3,
+        "1500m": 3
       },
       "Emil Uhlin": {
         "100m": 4,
@@ -309,7 +309,7 @@
         "Kule": 4,
         "Høyde": 4,
         "400m": 2,
-        "110mh": 4,
+        "110mh": 3,
         "Diskos": 4,
         "Stav": 4,
         "Spyd": 1,
@@ -320,56 +320,56 @@
       "Annik Kälin": {
         "100mh": 4,
         "Høyde": 4,
-        "Kule": 4,
-        "200m": 4,
+        "Kule": 3,
+        "200m": 3,
         "Lengde": 4,
-        "Spyd": 4,
-        "800m": 4
+        "Spyd": 3,
+        "800m": 3
       },
       "Kate O'Connor": {
-        "100mh": 4,
+        "100mh": 3,
         "Høyde": 4,
         "Kule": 4,
-        "200m": 4,
+        "200m": 3,
         "Lengde": 4,
-        "Spyd": 4,
+        "Spyd": 3,
         "800m": 4
       },
       "Emma Oosterwegel": {
         "100mh": 4,
         "Høyde": 4,
         "Kule": 4,
-        "200m": 4,
+        "200m": 2,
         "Lengde": 4,
         "Spyd": 4,
-        "800m": 4
+        "800m": 3
       },
       "Sofie Dokter": {
         "100mh": 4,
         "Høyde": 4,
         "Kule": 4,
-        "200m": 4,
+        "200m": 3,
         "Lengde": 4,
-        "Spyd": 4,
+        "Spyd": 3,
         "800m": 4
       },
       "Katarina Johnson-Thompson": {
         "100mh": 4,
-        "Høyde": 4,
+        "Høyde": 1,
         "Kule": 4,
-        "200m": 4,
-        "Lengde": 4,
-        "Spyd": 4,
-        "800m": 4
+        "200m": 1,
+        "Lengde": 2,
+        "Spyd": 3,
+        "800m": 1
       },
       "Sophie Weißenberg": {
-        "100mh": 4,
-        "Høyde": 4,
+        "100mh": 3,
+        "Høyde": 3,
         "Kule": 4,
-        "200m": 4,
-        "Lengde": 4,
-        "Spyd": 4,
-        "800m": 4
+        "200m": 1,
+        "Lengde": 3,
+        "Spyd": 2,
+        "800m": 1
       },
       "Sandrina Sprengel": {
         "100mh": 4,
@@ -390,19 +390,19 @@
         "800m": 4
       },
       "Sveva Gerevini": {
-        "100mh": 4,
+        "100mh": 2,
         "Høyde": 4,
         "Kule": 4,
-        "200m": 4,
+        "200m": 2,
         "Lengde": 4,
-        "Spyd": 4,
+        "Spyd": 2,
         "800m": 4
       },
       "Jade O'Dowda": {
         "100mh": 4,
         "Høyde": 4,
         "Kule": 4,
-        "200m": 4,
+        "200m": 3,
         "Lengde": 4,
         "Spyd": 4,
         "800m": 4
@@ -420,7 +420,7 @@
         "100mh": 4,
         "Høyde": 4,
         "Kule": 4,
-        "200m": 4,
+        "200m": 3,
         "Lengde": 4,
         "Spyd": 4,
         "800m": 4
@@ -435,19 +435,19 @@
         "800m": 4
       },
       "Noor Vidts": {
-        "100mh": 4,
-        "Høyde": 4,
+        "100mh": 3,
+        "Høyde": 3,
         "Kule": 4,
         "200m": 4,
-        "Lengde": 4,
-        "Spyd": 4,
-        "800m": 4
+        "Lengde": 2,
+        "Spyd": 1,
+        "800m": 1
       },
       "María Vicente": {
         "100mh": 4,
         "Høyde": 4,
         "Kule": 4,
-        "200m": 4,
+        "200m": 3,
         "Lengde": 4,
         "Spyd": 4,
         "800m": 4
@@ -465,7 +465,7 @@
         "100mh": 4,
         "Høyde": 4,
         "Kule": 4,
-        "200m": 4,
+        "200m": 3,
         "Lengde": 4,
         "Spyd": 4,
         "800m": 4
@@ -480,12 +480,12 @@
         "800m": 4
       },
       "Jana Koščak": {
-        "100mh": 4,
+        "100mh": 1,
         "Høyde": 4,
         "Kule": 4,
-        "200m": 4,
+        "200m": 1,
         "Lengde": 4,
-        "Spyd": 4,
+        "Spyd": 2,
         "800m": 4
       },
       "Erika Wärff": {
@@ -498,13 +498,13 @@
         "800m": 4
       },
       "Verena Mayr": {
-        "100mh": 4,
+        "100mh": 3,
         "Høyde": 4,
         "Kule": 4,
         "200m": 4,
         "Lengde": 4,
         "Spyd": 4,
-        "800m": 4
+        "800m": 3
       },
       "Sofia Cosculluela": {
         "100mh": 4,
