@@ -13,29 +13,16 @@
       athlete.recentDetails=athlete.recentDetails||events.map(()=>[]);
       events.forEach((eventName,i)=>{
         const rows=Array.isArray(item.events[eventName])?item.events[eventName]:[];
-        const live=rows.filter(r=>Number.isFinite(Number(r.mark))).slice(0,4);
-        if(!live.length)return;
+        const clean=rows
+          .filter(r=>Number.isFinite(Number(r.mark)))
+          .filter(r=>['2025','2026'].includes(String(r.year||'')))
+          .slice(0,4)
+          .map(r=>({mark:Number(r.mark),display:r.display||'',venue:r.venue||'',year:r.year||'',date:r.date||'',competition:r.competition||''}));
 
-        // Never replace a richer verified local history with an incomplete live response.
-        // Merge live WA rows with the existing basis, deduplicate, and keep up to four.
-        const existingDetails=Array.isArray(athlete.recentDetails[i])?athlete.recentDetails[i]:[];
-        const existingMarks=Array.isArray(athlete.recent[i])?athlete.recent[i]:[];
-        const existing=existingDetails.length
-          ? existingDetails.filter(r=>Number.isFinite(Number(r.mark)))
-          : existingMarks.filter(v=>Number.isFinite(Number(v))).map(v=>({mark:Number(v),display:'',venue:'',year:'',date:'',competition:''}));
-        const merged=[];
-        const seen=new Set();
-        for(const r of [...live,...existing]){
-          const mark=Number(r.mark);
-          if(!Number.isFinite(mark))continue;
-          const key=[mark,String(r.venue||''),String(r.year||''),String(r.date||''),String(r.competition||'')].join('|');
-          if(seen.has(key))continue;
-          seen.add(key);
-          merged.push({mark,display:r.display||'',venue:r.venue||'',year:r.year||'',date:r.date||'',competition:r.competition||''});
-          if(merged.length===4)break;
-        }
-        athlete.recent[i]=merged.map(r=>r.mark);
-        athlete.recentDetails[i]=merged;
+        // The cleaned WA API is the source of truth. Do not merge old local rows back in,
+        // because they may contain older seasons, junior implements or unverified wind.
+        athlete.recent[i]=clean.map(r=>r.mark);
+        athlete.recentDetails[i]=clean;
       });
     }
   }
