@@ -12,7 +12,7 @@ Rules used by `scripts/build_wa_history.mjs`:
 
 ## Fresh rebuild status
 
-The fresh women rebuild completed successfully and produced 39 event gaps with fewer than four valid results. These gaps are reviewed before any manual addition is accepted.
+The fresh women rebuild completed successfully and produced 39 event gaps with fewer than four valid results. Gaps are retained unless World Athletics evidence proves a valid senior 2025–2026 performance is missing.
 
 ## Priority review – one-result gaps
 
@@ -20,26 +20,41 @@ The fresh women rebuild completed successfully and produced 39 event gaps with f
 - High jump: 1
 - 200 m: 1
 - 800 m: 1
-- World Athletics confirms her Tokyo 2025 heptathlon included 1.86 high jump and 23.51 (+0.4) 200 m. Her 2026 pre-Birmingham competition activity includes standalone events such as shot put, but no additional verified senior 200 m/high jump/800 m result has been identified yet. Current one-result counts are therefore retained pending contrary WA evidence.
+- World Athletics confirms her Tokyo 2025 heptathlon included 1.86 high jump and 23.51 (+0.4) 200 m. Current one-result counts are retained unless contrary WA evidence is found.
 
 ### Sophie Weißenberg
 - 200 m: 1
 - 800 m: 1
-- World Athletics confirms her Götzis 2026 heptathlon (6449) and 23.25 200 m. No second verified senior 2025–2026 200 m or 800 m result has yet been identified. Current counts retained.
+- World Athletics confirms her Götzis 2026 heptathlon and 23.25 200 m. Current counts retained unless contrary WA evidence is found.
 
 ### Noor Vidts
 - Javelin: 1
 - 800 m: 1
-- World Athletics confirms her Götzis 2026 heptathlon. No additional verified senior outdoor 2025–2026 javelin/800 m result has yet been identified. Current counts retained.
+- World Athletics confirms her 2026 combined-events activity. Current counts retained unless additional qualifying senior outdoor results are verified.
 
 ### Jana Koščak
 - 100 m hurdles: 1
 - 200 m: 1
-- Her European U20 Championships 2025 results are intentionally excluded by the senior-only rule. Current counts therefore must not be increased using U20 performances.
+- European U20 Championships 2025 results remain excluded by the senior-only rule.
 
-## Next QA order
+## Two-result gap review in progress
 
-1. Review all remaining two-result gaps against World Athletics.
-2. Review all remaining three-result gaps.
-3. Add only performances that satisfy the same senior/wind/date/deduplication rules.
+### Sveva Gerevini
+- 100 m hurdles: 2
+- 200 m: 2
+- Javelin: 2
+- WA confirms Tokyo 2025: 13.52 in 100 m hurdles and 44.16 in javelin.
+- WA confirms 2026 season activity and her 6413 heptathlon national record on 31 May 2026.
+- Older Rome 2024 performances are outside the 2025–2026 source window and must not be used to inflate coverage.
+- Current two-result counts are retained unless another qualifying 2025–2026 outdoor result is verified.
+
+## QA rule reinforced
+
+A field with only 1–3 results is not automatically an error. It is acceptable when WA contains fewer than four qualifying senior performances in the source window. Do not backfill with U20 results, 2024 results, indoor substitutes for outdoor disciplines, illegal-wind marks, invalid marks, or duplicates.
+
+## Remaining QA order
+
+1. Finish all remaining two-result gaps against World Athletics.
+2. Finish all remaining three-result gaps.
+3. Modify `history_web.js` only where a missing qualifying performance is positively verified.
 4. Do not use old women history patch files or legacy bulk files as a source.
