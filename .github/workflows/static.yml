@@ -1,4 +1,4 @@
-# Build fresh World Athletics history and deploy static content to GitHub Pages
+# Deploy static content to GitHub Pages without regenerating verified history
 name: Deploy static content to Pages
 
 on:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
@@ -24,25 +24,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - name: Build fresh World Athletics history
-        run: node scripts/build_wa_history.mjs
-      - name: Show history coverage
-        run: cat app/data/history_coverage.json
-      - name: Commit generated production history
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add app/data/history_web.js app/data/history_coverage.json app/index.html
-          if git diff --cached --quiet; then
-            echo "Generated history already committed"
-          else
-            git commit -m "Update generated WA history [skip ci]"
-            git push origin HEAD:main
-          fi
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
