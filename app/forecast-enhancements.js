@@ -10,12 +10,14 @@
   function recentEntriesFor(athlete,eventIndex){
     const eventName=D.events[eventIndex];
     const source=window.MANGEKAMP_HISTORY?.[athlete.name]?.[eventName]||[];
-    const seen=new Set(),out=[];
+    const seenMarks=new Set(),out=[];
     for(const raw of (Array.isArray(source)?source:[])){
       const r=normalizeRecentEntry(raw);if(!r)continue;
       if(r.year!=='2026'&&r.year!=='2025')continue;
-      const key=[r.mark,r.venue,r.year].join('|');if(seen.has(key))continue;
-      seen.add(key);out.push(r);if(out.length===4)break;
+      // A performance may arrive twice from WA/local bridge with slightly different venue text.
+      // It is still the same performance for forecast purposes, so identical marks count once.
+      const key=Number(r.mark).toFixed(3);if(seenMarks.has(key))continue;
+      seenMarks.add(key);out.push(r);if(out.length===4)break;
     }
     return out;
   }
