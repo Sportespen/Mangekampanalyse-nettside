@@ -1,0 +1,1 @@
+(function(){window.MANGEKAMP_LIVE_ATTEMPTS_READY=true;})();
