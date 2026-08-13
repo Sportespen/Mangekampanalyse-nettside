@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/probe-ea-live.yml'
       - 'tools/probe_ea_live.py'
+      - 'tools/probe_ea_attempts.py'
   workflow_dispatch:
 
 permissions:
@@ -20,12 +21,10 @@ jobs:
           python-version: '3.12'
       - name: Install probe dependencies
         run: pip install requests beautifulsoup4
-      - name: Probe Birmingham test platform
-        run: python tools/probe_ea_live.py
+      - name: Probe Birmingham field attempts
+        run: python tools/probe_ea_attempts.py
       - name: Upload probe report
         uses: actions/upload-artifact@v4
         with:
-          name: ea-live-probe
-          path: |
-            ea-live-probe.json
-            ea-live-page.html
+          name: ea-attempt-probe
+          path: ea-attempt-probe.json
