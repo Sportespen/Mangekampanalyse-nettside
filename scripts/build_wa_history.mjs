@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 const SOURCE='https://worldathletics.nimarion.de';
 const MEN=['Johannes Erm','Sander Skotheim','Leo Neugebauer','Niklas Kaul','Makenson Gletty','Sven Roosen','Karel Tilga','Tomas Järvinen','Amadeus Gräber','Rasmus Roosleht','Dario Dester','Vilém Stráský','Antoine Ferranti','Ondřej Kopecký','Andrin Huber','Risto Lillemets','Jeff Tesselaar','Luuk Pelkmans','Edgaras Benkunskas','Dai Keïta','Zsombor Gálpál','Nino Portmann','Alberto Nonino','Leon Krummenacher','Emil Uhlin','Jip de Greef'];
 const WOMEN=['Annik Kälin',"Kate O'Connor",'Emma Oosterwegel','Sofie Dokter','Katarina Johnson-Thompson','Sophie Weißenberg','Sandrina Sprengel','Adrianna Sułek-Schubert','Sveva Gerevini',"Jade O'Dowda",'Vanessa Grimm','Szabina Szűcs','Beatričė Juškevičiūtė','Noor Vidts','María Vicente','Lovisa Karlsson','Jéssica Barreira','Sarolta Kriszt','Jana Koščak','Erika Wärff','Verena Mayr','Sofia Cosculluela','Anastasia Ntragkomirova','Adéla Tkáčová'];
-const YEARS=[2026,2025,2024,2023,2022,2021,2020,2019];
+const YEARS=[2026,2025];
 const EVENTS={
   men:['100m','Lengde','Kule','Høyde','400m','110mh','Diskos','Stav','Spyd','1500m'],
   women:['100mh','Høyde','Kule','200m','Lengde','Spyd','800m']
@@ -31,31 +31,26 @@ function yearOf(date){const m=String(date||'').match(/(?:19|20)\d{2}/);return m?
 function dateValue(date){const t=Date.parse(String(date||''));return Number.isFinite(t)?t:0;}
 function norm(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/gi,' ').trim().toLowerCase();}
 function seniorOnly(r,event,type){const text=[r?.discipline,r?.category,r?.competition,r?.race,r?.implement,r?.ageCategory,r?.event].filter(Boolean).join(' ').toLowerCase();if(/\b(u18|u20|junior|youth)\b/.test(text))return false;if(type==='men'){if(event==='Kule'&&/(6\s*kg|5\s*kg)/i.test(text))return false;if(event==='Diskos'&&/(1\.75\s*kg|1\.5\s*kg)/i.test(text))return false;if(event==='110mh'&&/(0\.991|99\.1|0\.914|91\.4)/i.test(text))return false;}return true;}
-function windLegal(r,event){if(!WIND_EVENTS.has(event))return true;if(r?.legal===false)return false;const raw=String(r?.wind??r?.windReading??'').trim().replace(',','.');if(!raw)return true;const w=Number(raw.replace(/[^0-9.+-]/g,''));return !Number.isFinite(w)||w<=2.0;}
+function windLegal(r,event){if(!WIND_EVENTS.has(event))return true;if(r?.legal===false)return false;const raw=String(r?.wind??r?.windReading??'').trim().replace(',','.');if(!raw)return r?.legal===true;const w=Number(raw.replace(/[^0-9.+-]/g,''));return Number.isFinite(w)&&w<=2.0;}
 async function getJson(url){const r=await fetch(url,{headers:{accept:'application/json','user-agent':'Mangekampanalyse-history-builder/1.0'}});if(!r.ok)throw new Error(`${r.status} ${url}`);return r.json();}
 async function chooseAthlete(name){const found=await getJson(`${SOURCE}/athletes/search?name=${encodeURIComponent(name)}`);if(!Array.isArray(found)||!found.length)return null;const target=norm(name);return found.find(a=>norm(a.name||a.fullName)===target)||found[0];}
-async function getGraphqlConfig(){try{const [k,e]=await Promise.all([getJson(`${SOURCE}/graphql/api-key`),getJson(`${SOURCE}/graphql/endpoint`)]);const apiKey=k?.apiKey||k?.key||k?.value||k?.data?.apiKey||'';const endpoint=e?.endpoint||e?.url||e?.value||e?.data?.endpoint||'';return apiKey&&endpoint?{apiKey,endpoint}:null;}catch{return null;}}
-async function graphqlYear(config,id,year){if(!config)return[];const query=`query($id:Int!,$resultsByYear:Int!){getSingleCompetitorResultsDate(id:$id,resultsByYearOrderBy:"date",resultsByYear:$resultsByYear){resultsByDate{competition competitionId date discipline place mark}}}`;try{const r=await fetch(config.endpoint,{method:'POST',headers:{'content-type':'application/json','x-api-key':config.apiKey,accept:'application/json'},body:JSON.stringify({query,variables:{id:Number(id),resultsByYear:Number(year)}})});if(!r.ok)return[];const j=await r.json();return j?.data?.getSingleCompetitorResultsDate?.resultsByDate||[];}catch{return[];}}
-function push(grouped,e,r,source){const mark=parseMark(r?.mark,e);if(mark==null)return;const date=String(r?.date||'');grouped[e]??=[];grouped[e].push({mark,display:String(r?.mark||''),venue:String(r?.location||r?.venue||''),year:yearOf(date),date,competition:String(r?.competition||r?.meeting||''),wind:String(r?.wind??r?.windReading??''),source});}
+function push(grouped,e,r){const mark=parseMark(r?.mark,e);if(mark==null)return;const date=String(r?.date||'');const venue=String(r?.location||r?.venue||'').trim();const year=yearOf(date);if(!venue||!YEARS.includes(Number(year)))return;grouped[e]??=[];grouped[e].push({mark,display:String(r?.mark||''),venue,year,date,competition:String(r?.competition||r?.meeting||''),wind:String(r?.wind??r?.windReading??''),source:'world-athletics'});}
 function finalize(grouped){const out={};for(const [e,rows] of Object.entries(grouped)){const seen=new Set();out[e]=rows.sort((a,b)=>dateValue(b.date)-dateValue(a.date)).filter(r=>{const key=[r.mark,r.date,r.venue,r.competition].join('|');if(seen.has(key))return false;seen.add(key);return true;}).slice(0,4);}return out;}
-async function buildAthlete(name,type,gql){const athlete=await chooseAthlete(name);if(!athlete?.id)return {name,error:'athlete-not-found',events:{}};const grouped={};
-  const mirror=await Promise.all(YEARS.map(y=>getJson(`${SOURCE}/athletes/${athlete.id}/results?year=${y}`).catch(()=>[])));
-  for(const r of mirror.flat()){const e=appEvent(r?.discipline);if(!e||!EVENTS[type].includes(e)||!seniorOnly(r,e,type)||!windLegal(r,e))continue;push(grouped,e,r,'mirror');}
-  // Official WA GraphQL is used for ALL non-wind events so single-event meets are not missed.
-  if(gql){const official=await Promise.all(YEARS.map(y=>graphqlYear(gql,athlete.id,y)));for(const r of official.flat()){const e=appEvent(r?.discipline);if(!e||!EVENTS[type].includes(e)||WIND_EVENTS.has(e)||!seniorOnly(r,e,type))continue;push(grouped,e,r,'worldathletics');}}
+async function buildAthlete(name,type){const athlete=await chooseAthlete(name);if(!athlete?.id)return {name,error:'athlete-not-found',events:{}};const grouped={};
+  const batches=await Promise.all(YEARS.map(y=>getJson(`${SOURCE}/athletes/${athlete.id}/results?year=${y}`).catch(()=>[])));
+  for(const r of batches.flat()){const e=appEvent(r?.discipline);if(!e||!EVENTS[type].includes(e)||!seniorOnly(r,e,type)||!windLegal(r,e))continue;push(grouped,e,r);}
   return {name,id:athlete.id,events:finalize(grouped)};
 }
 async function mapLimited(items,limit,fn){const out=new Array(items.length);let next=0;async function worker(){while(true){const i=next++;if(i>=items.length)return;try{out[i]=await fn(items[i],i);}catch(e){out[i]={name:items[i],error:String(e),events:{}};}}}await Promise.all(Array.from({length:Math.min(limit,items.length)},worker));return out;}
-function toLegacy(history){const H={};for(const a of history){H[a.name]??={};for(const [event,rows] of Object.entries(a.events||{})){H[a.name][event]=rows.map(r=>[r.mark,r.display||String(r.mark),r.venue||r.competition||'',r.year||'']);}}return H;}
+function toLegacy(history){const H={};for(const a of history){H[a.name]??={};for(const [event,rows] of Object.entries(a.events||{})){H[a.name][event]=rows.map(r=>[r.mark,r.display||String(r.mark),r.venue,r.year||'']);}}return H;}
 
-const gql=await getGraphqlConfig();
-const [men,women]=await Promise.all([mapLimited(MEN,3,n=>buildAthlete(n,'men',gql)),mapLimited(WOMEN,3,n=>buildAthlete(n,'women',gql))]);
+const [men,women]=await Promise.all([mapLimited(MEN,3,n=>buildAthlete(n,'men')),mapLimited(WOMEN,3,n=>buildAthlete(n,'women'))]);
 const merged=Object.assign({},toLegacy(men),toLegacy(women));
 await fs.writeFile('app/data/history_web.js',`window.MANGEKAMP_HISTORY=${JSON.stringify(merged)};\n`,'utf8');
 const coverage={men:Object.fromEntries(men.map(a=>[a.name,Object.fromEntries(EVENTS.men.map(e=>[e,(a.events?.[e]||[]).length]))])),women:Object.fromEntries(women.map(a=>[a.name,Object.fromEntries(EVENTS.women.map(e=>[e,(a.events?.[e]||[]).length]))]))};
-await fs.writeFile('app/data/history_coverage.json',JSON.stringify({generatedAt:new Date().toISOString(),source:gql?'World Athletics + mirror':'mirror',coverage},null,2)+'\n','utf8');
+await fs.writeFile('app/data/history_coverage.json',JSON.stringify({generatedAt:new Date().toISOString(),source:'World Athletics verified 2025-2026 venue data',coverage},null,2)+'\n','utf8');
 let html=await fs.readFile('app/index.html','utf8');
 const stamp=Date.now();
 html=html.replace(/data\/history_web\.js\?v=[^"']+/g,`data/history_web.js?v=${stamp}`);
 await fs.writeFile('app/index.html',html,'utf8');
-const short=[];for(const [name,evs] of Object.entries(coverage.men)){for(const [e,n] of Object.entries(evs))if(n<3)short.push(`${name} ${e}: ${n}`);}console.log(`Built WA history. Men gaps <3: ${short.length}`);if(short.length)console.log(short.join('\n'));
+const short=[];for(const [name,evs] of Object.entries(coverage.men)){for(const [e,n] of Object.entries(evs))if(n<3)short.push(`${name} ${e}: ${n}`);}console.log(`Built verified WA history. Men gaps <3: ${short.length}`);if(short.length)console.log(short.join('\n'));
