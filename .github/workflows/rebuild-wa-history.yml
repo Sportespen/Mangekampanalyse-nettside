@@ -1,3 +1,4 @@
+# Fresh women's analysis uses only the reusable WA history builder.
 name: Rebuild WA history
 
 on:
