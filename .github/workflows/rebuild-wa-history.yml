@@ -1,0 +1,74 @@
+name: Rebuild WA history
+
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: 'men, women or all'
+        required: true
+        default: 'women'
+      cutoff:
+        description: 'ISO cutoff before competition starts'
+        required: true
+        default: '2026-08-12T00:00:00Z'
+  push:
+    branches: ['main']
+    paths:
+      - '.github/workflows/rebuild-wa-history.yml'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'wa-history-rebuild'
+  cancel-in-progress: false
+
+jobs:
+  rebuild-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Rebuild verified WA history
+        env:
+          SCOPE: ${{ github.event_name == 'workflow_dispatch' && inputs.scope || 'women' }}
+          CUTOFF: ${{ github.event_name == 'workflow_dispatch' && inputs.cutoff || '2026-08-12T00:00:00Z' }}
+          YEARS: '2026,2025'
+        run: node scripts/build_wa_history.mjs
+
+      - name: Commit generated history
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/data/history_web.js app/data/history_coverage.json app/index.html
+          if git diff --cached --quiet; then
+            echo 'No generated changes to commit.'
+          else
+            git commit -m 'Rebuild verified WA history'
+            git push
+          fi
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload generated site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy generated site
+        id: deployment
+        uses: actions/deploy-pages@v5
