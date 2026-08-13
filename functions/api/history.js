@@ -8,23 +8,24 @@ function parseMark(mark,event){const s=String(mark??'').trim().replace(',','.');
 function yearOf(date){const m=String(date||'').match(/(?:19|20)\d{2}/);return m?m[0]:'';}
 function dateValue(date){const t=Date.parse(String(date||''));return Number.isFinite(t)?t:0;}
 function seniorOnly(r,event,type){const text=[r?.discipline,r?.category,r?.competition,r?.race,r?.implement,r?.ageCategory].filter(Boolean).join(' ').toLowerCase();if(/\b(u18|u20|junior|youth)\b/.test(text))return false;if(type==='men'){if(event==='Kule'&&/(6\s*kg|5\s*kg)/i.test(text))return false;if(event==='Diskos'&&/(1\.75\s*kg|1\.5\s*kg)/i.test(text))return false;if(event==='110mh'&&/(0\.991|99\.1|0\.914|91\.4)/i.test(text))return false;}return true;}
-function windLegal(r,event){if(!WIND_EVENTS.has(event))return true;if(r?.legal===false)return false;const raw=String(r?.wind??'').trim().replace(',','.');if(!raw)return true;const w=Number(raw.replace(/[^0-9.+-]/g,''));return !Number.isFinite(w)||w<=2.0;}
+function windLegal(r,event){if(!WIND_EVENTS.has(event))return true;if(r?.legal===false)return false;const raw=String(r?.wind??'').trim().replace(',','.');if(!raw)return r?.legal===true;const w=Number(raw.replace(/[^0-9.+-]/g,''));return Number.isFinite(w)&&w<=2.0;}
 async function json(url){const r=await fetch(url,{headers:{Accept:'application/json','User-Agent':'Mangekampanalyse/1.0'},cf:{cacheTtl:60,cacheEverything:true}});if(!r.ok)throw new Error(`HTTP ${r.status} ${url}`);return r.json();}
 function chooseAthlete(found,name){if(!Array.isArray(found)||!found.length)return null;const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/gi,' ').trim().toLowerCase();const target=norm(name);return found.find(a=>norm(a.name||a.fullName)===target)||found[0];}
 function pushRow(grouped,e,row){(grouped[e]||=[]).push(row);}
-function finalize(grouped){const out={};for(const[e,rows]of Object.entries(grouped)){const seen=new Set();out[e]=rows.sort((a,b)=>dateValue(b.date)-dateValue(a.date)).filter(r=>{const k=[r.mark,r.date,r.venue,r.competition].join('|');if(seen.has(k))return false;seen.add(k);return true;}).slice(0,4);}return out;}
+function finalize(grouped){const out={};for(const[e,rows]of Object.entries(grouped)){const seen=new Set();out[e]=rows.sort((a,b)=>dateValue(b.date)-dateValue(a.date)).filter(r=>{if(!['2025','2026'].includes(String(r.year||'')))return false;const k=[r.mark,r.date,r.venue,r.competition].join('|');if(seen.has(k))return false;seen.add(k);return true;}).slice(0,4);}return out;}
 async function getGraphqlConfig(){try{const [k,e]=await Promise.all([json(`${SOURCE}/graphql/api-key`),json(`${SOURCE}/graphql/endpoint`)]);const apiKey=k?.apiKey||k?.key||k?.value||k?.data?.apiKey||'';const endpoint=e?.endpoint||e?.url||e?.value||e?.data?.endpoint||'';return apiKey&&endpoint?{apiKey,endpoint}:null;}catch{return null;}}
 async function graphqlYear(config,id,year){if(!config)return[];const query=`query($id:Int!,$resultsByYear:Int!){getSingleCompetitorResultsDate(id:$id,resultsByYearOrderBy:"date",resultsByYear:$resultsByYear){resultsByDate{competition competitionId date discipline place mark}}}`;try{const r=await fetch(config.endpoint,{method:'POST',headers:{'content-type':'application/json','x-api-key':config.apiKey,accept:'application/json'},body:JSON.stringify({query,variables:{id:Number(id),resultsByYear:Number(year)}})});if(!r.ok)return[];const j=await r.json();return j?.data?.getSingleCompetitorResultsDate?.resultsByDate||[];}catch{return[];}}
 async function athleteHistory(name,type,graphqlConfig){try{
   const found=await json(`${SOURCE}/athletes/search?name=${encodeURIComponent(name)}`);
   const athlete=chooseAthlete(found,name);
   if(!athlete?.id)return{name,error:'Athlete not found',events:{}};
-  const years=[2026,2025,2024,2023,2022,2021,2020,2019];
+  const years=[2026,2025];
   const batches=await Promise.all(years.map(y=>json(`${SOURCE}/athletes/${athlete.id}/results?year=${y}`).catch(()=>[])));
   const grouped={};
   for(const r of batches.flat()){
     const e=appEvent(r?.discipline);if(!e||!seniorOnly(r,e,type)||!windLegal(r,e))continue;const mark=parseMark(r?.mark,e);if(mark==null)continue;
-    pushRow(grouped,e,{mark,display:String(r.mark||''),venue:String(r.location||r.venue||''),year:yearOf(r.date),date:String(r.date||''),competition:String(r.competition||r.meeting||''),wind:String(r.wind??''),legal:true,source:'mirror'});
+    const venue=String(r.location||r.venue||'').trim();
+    pushRow(grouped,e,{mark,display:String(r.mark||''),venue,year:yearOf(r.date),date:String(r.date||''),competition:String(r.competition||r.meeting||''),wind:String(r.wind??''),legal:true,source:'mirror'});
   }
   let current=finalize(grouped);
   const targetEvents=type==='women'?['Høyde','Kule','800m','Spyd']:['Høyde','400m','Diskos','Stav','Spyd','1500m'];
