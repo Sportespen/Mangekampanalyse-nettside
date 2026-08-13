@@ -15,26 +15,11 @@ def query(proc,payload):
 
 def main():
     calls=[]
-    tests=[
-        ('liveResults.getThrowLongResultsFeed','ATHMDECATH------------DT----------'),
-        ('liveResults.getHeightResultsFeed','ATHMDECATH------------PV----------'),
-    ]
-    for proc,event in tests:
-        variants=[
-            {'competitionCode':COMPETITION,'event':event},
-            {'competitionCode':COMPETITION,'event':event.lower()},
-            {'competitionCode':COMPETITION,'event':event,'isSummary':True},
-            {'competitionCode':COMPETITION,'event':event.lower(),'isSummary':True},
-        ]
-        for payload in variants:
-            calls.append(query(proc,payload))
+    for event in ['ATHMDECATH------------DT----------','ATHMDECATH------------PV----------']:
+        calls.append(query('liveResults.getEventResultsHeaderFeed',{'competitionCode':COMPETITION,'event':event.lower()}))
+        calls.append(query('liveResults.getEventResultsHeaderFeed',{'competitionCode':COMPETITION,'event':event}))
     with open('ea-attempt-probe.json','w',encoding='utf-8') as f:
         json.dump({'calls':calls},f,ensure_ascii=False,indent=2)
-    summary=[]
-    for c in calls:
-        raw=c.get('data')
-        text=json.dumps(raw,ensure_ascii=False)
-        summary.append({'procedure':c['procedure'],'input':c['input'],'status':c['status'],'sample':text[:5000]})
-    print(json.dumps(summary,ensure_ascii=False,indent=2)[:120000])
+    print(json.dumps(calls,ensure_ascii=False,indent=2)[:120000])
 
 if __name__=='__main__':main()
