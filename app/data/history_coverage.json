@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2026-08-13T05:14:31.281Z",
-  "source": "World Athletics verified 2025-2026 venue data",
+  "generatedAt": "2026-08-13T05:19:04.703Z",
+  "source": "World Athletics verified 2025-2026 results before Birmingham 2026",
   "coverage": {
     "men": {
       "Johannes Erm": {
-        "100m": 3,
+        "100m": 2,
         "Lengde": 4,
         "Kule": 4,
         "Høyde": 4,
-        "400m": 3,
+        "400m": 2,
         "110mh": 3,
         "Diskos": 3,
         "Stav": 4,
@@ -16,11 +16,11 @@
         "1500m": 2
       },
       "Sander Skotheim": {
-        "100m": 4,
+        "100m": 3,
         "Lengde": 4,
         "Kule": 4,
         "Høyde": 4,
-        "400m": 3,
+        "400m": 2,
         "110mh": 1,
         "Diskos": 2,
         "Stav": 4,
@@ -80,7 +80,7 @@
         "Lengde": 4,
         "Kule": 4,
         "Høyde": 4,
-        "400m": 4,
+        "400m": 3,
         "110mh": 3,
         "Diskos": 4,
         "Stav": 2,
@@ -88,7 +88,7 @@
         "1500m": 2
       },
       "Tomas Järvinen": {
-        "100m": 4,
+        "100m": 3,
         "Lengde": 4,
         "Kule": 3,
         "Høyde": 3,
@@ -104,7 +104,7 @@
         "Lengde": 4,
         "Kule": 4,
         "Høyde": 4,
-        "400m": 2,
+        "400m": 1,
         "110mh": 4,
         "Diskos": 2,
         "Stav": 4,
@@ -124,11 +124,11 @@
         "1500m": 4
       },
       "Dario Dester": {
-        "100m": 3,
+        "100m": 2,
         "Lengde": 4,
         "Kule": 4,
         "Høyde": 4,
-        "400m": 3,
+        "400m": 2,
         "110mh": 2,
         "Diskos": 1,
         "Stav": 2,
@@ -160,7 +160,7 @@
         "1500m": 4
       },
       "Ondřej Kopecký": {
-        "100m": 4,
+        "100m": 3,
         "Lengde": 4,
         "Kule": 4,
         "Høyde": 4,
@@ -200,7 +200,7 @@
         "Lengde": 4,
         "Kule": 4,
         "Høyde": 4,
-        "400m": 4,
+        "400m": 3,
         "110mh": 4,
         "Diskos": 4,
         "Stav": 4,
@@ -212,7 +212,7 @@
         "Lengde": 4,
         "Kule": 4,
         "Høyde": 4,
-        "400m": 4,
+        "400m": 3,
         "110mh": 4,
         "Diskos": 4,
         "Stav": 4,
@@ -280,11 +280,11 @@
         "1500m": 4
       },
       "Leon Krummenacher": {
-        "100m": 4,
-        "Lengde": 4,
+        "100m": 3,
+        "Lengde": 3,
         "Kule": 4,
-        "Høyde": 4,
-        "400m": 4,
+        "Høyde": 3,
+        "400m": 3,
         "110mh": 3,
         "Diskos": 4,
         "Stav": 4,
@@ -304,11 +304,11 @@
         "1500m": 4
       },
       "Jip de Greef": {
-        "100m": 2,
+        "100m": 1,
         "Lengde": 4,
         "Kule": 4,
         "Høyde": 4,
-        "400m": 2,
+        "400m": 1,
         "110mh": 3,
         "Diskos": 4,
         "Stav": 4,
