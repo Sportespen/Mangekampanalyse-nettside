@@ -4,13 +4,16 @@
   function samePerformance(a,b){if(Number(a.mark).toFixed(3)!==Number(b.mark).toFixed(3))return false;if(a.date&&b.date)return String(a.date)===String(b.date);return String(a.year||'')===String(b.year||'')&&normVenue(a.venue)===normVenue(b.venue);}
   function applyAthleteHistory(payload,type){
     const list=payload?.athletes||[],section=ROOT?.[type],athletes=section?.athletes||[],events=section?.events||[];
+    window.MANGEKAMP_HISTORY=window.MANGEKAMP_HISTORY||{};
     for(const item of list){
       if(!item?.events)continue;const athlete=athletes.find(a=>normalizeName(a.name)===normalizeName(item.name));if(!athlete)continue;
-      athlete.recent=athlete.recent||events.map(()=>[]);athlete.recentDetails=athlete.recentDetails||events.map(()=>[]);
+      athlete.recent=athlete.recent||events.map(()=>[]);athlete.recentDetails=athlete.recentDetails||events.map(()=>[]);window.MANGEKAMP_HISTORY[athlete.name]=window.MANGEKAMP_HISTORY[athlete.name]||{};
       events.forEach((eventName,i)=>{
         const rows=(Array.isArray(item.events[eventName])?item.events[eventName]:[]).filter(r=>Number.isFinite(Number(r.mark))).filter(r=>['2025','2026'].includes(String(r.year||''))).sort((a,b)=>Date.parse(String(b.date||''))-Date.parse(String(a.date||''))||String(b.venue||'').length-String(a.venue||'').length);
         const clean=[];for(const r of rows){if(clean.some(x=>samePerformance(x,r)))continue;clean.push({mark:Number(r.mark),display:r.display||'',venue:r.venue||'',year:r.year||'',date:r.date||'',competition:r.competition||''});if(clean.length===4)break;}
         athlete.recent[i]=clean.map(r=>r.mark);athlete.recentDetails[i]=clean;
+        // Replace legacy/local rows with the verified live WA rows so the popup and forecast use the same dataset.
+        window.MANGEKAMP_HISTORY[athlete.name][eventName]=clean.map(r=>[r.mark,r.display,r.venue,String(r.year||''),r.date,r.competition]);
       });
     }
   }
