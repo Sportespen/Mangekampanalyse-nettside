@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-13T01:15:46.802Z",
+  "generatedAt": "2026-08-13T05:04:12.206Z",
   "source": "World Athletics verified 2025-2026 venue data",
   "coverage": {
     "men": {
@@ -35,7 +35,7 @@
         "400m": 4,
         "110mh": 4,
         "Diskos": 4,
-        "Stav": 3,
+        "Stav": 4,
         "Spyd": 4,
         "1500m": 4
       },
@@ -66,12 +66,12 @@
       "Sven Roosen": {
         "100m": 4,
         "Lengde": 4,
-        "Kule": 3,
+        "Kule": 4,
         "Høyde": 2,
         "400m": 1,
         "110mh": 3,
         "Diskos": 4,
-        "Stav": 2,
+        "Stav": 3,
         "Spyd": 3,
         "1500m": 1
       },
@@ -91,11 +91,11 @@
         "100m": 4,
         "Lengde": 4,
         "Kule": 3,
-        "Høyde": 2,
+        "Høyde": 3,
         "400m": 2,
         "110mh": 2,
         "Diskos": 1,
-        "Stav": 1,
+        "Stav": 2,
         "Spyd": 1,
         "1500m": 1
       },
@@ -105,7 +105,7 @@
         "Kule": 4,
         "Høyde": 4,
         "400m": 2,
-        "110mh": 3,
+        "110mh": 4,
         "Diskos": 2,
         "Stav": 4,
         "Spyd": 2,
@@ -364,7 +364,7 @@
       },
       "Sophie Weißenberg": {
         "100mh": 3,
-        "Høyde": 2,
+        "Høyde": 3,
         "Kule": 4,
         "200m": 1,
         "Lengde": 3,
@@ -375,7 +375,7 @@
         "100mh": 4,
         "Høyde": 4,
         "Kule": 4,
-        "200m": 3,
+        "200m": 4,
         "Lengde": 4,
         "Spyd": 4,
         "800m": 4
@@ -390,7 +390,7 @@
         "800m": 4
       },
       "Sveva Gerevini": {
-        "100mh": 1,
+        "100mh": 2,
         "Høyde": 4,
         "Kule": 4,
         "200m": 2,
@@ -445,7 +445,7 @@
       },
       "María Vicente": {
         "100mh": 4,
-        "Høyde": 3,
+        "Høyde": 4,
         "Kule": 4,
         "200m": 3,
         "Lengde": 4,
@@ -474,7 +474,7 @@
         "100mh": 4,
         "Høyde": 4,
         "Kule": 4,
-        "200m": 3,
+        "200m": 4,
         "Lengde": 4,
         "Spyd": 4,
         "800m": 4
