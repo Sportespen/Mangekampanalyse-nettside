@@ -35,17 +35,16 @@ function verticalAttempts(row){
   const out=[];
   for(let i=0;i<src.length;i++){
     const a=src[i];
-    if(a&&typeof a==='object'){
-      const height=a.height??a.barHeight??a.attemptHeight??a.value??a.mark;
-      const result=a.results??a.result??a.status??a.attemptResult??a.trial;
-      if(height!=null&&result!=null&&String(result).trim()!=='')out.push({attemptId:i+1,height:String(height).trim(),result:String(result).trim()});
-    }
+    if(!a||typeof a!=='object')continue;
+    const height=a.height??a.barHeight??a.attemptHeight??a.value??a.mark;
+    // European Athletics uses the field name `attempts` for the O/X/- marker
+    // on each height row (for example {height:'4.70', attempts:'o'}).
+    const result=a.attempts??a.results??a.result??a.status??a.attemptResult??a.trial;
+    if(height==null)continue;
+    const marker=result==null||String(result).trim()===''?'-':String(result).trim();
+    out.push({attemptId:Number(a.roundId??a.attemptId??a.round??i+1),height:String(height).trim(),result:marker});
   }
-  if(out.length)return out;
-  const heights=src.map(v=>typeof v==='object'?(v.height??v.barHeight??v.value??v.mark):v);
-  const resultArrays=[row?.results,row?.trials,row?.series,row?.attemptResults,row?.progression].find(v=>Array.isArray(v)&&v.length===heights.length);
-  if(resultArrays){return heights.map((height,i)=>({attemptId:i+1,height:String(height??'').trim(),result:String(typeof resultArrays[i]==='object'?(resultArrays[i].result??resultArrays[i].results??resultArrays[i].status??resultArrays[i].value??''):resultArrays[i]??'').trim()})).filter(x=>x.height&&x.result);}
-  return [];
+  return out;
 }
 async function athleteMap(){const data=await query('liveResults.getAthletesFeed',{competitionCode:COMPETITION_CODE})||{};const out={};for(const a of(data.athletes||[])){const id=String(a.athleteId||a.federationId||'');if(!id)continue;out[id]={name:cleanName(a.fullName||`${a.firstName||''} ${a.lastName||''}`),nation:String(a.countryCode||a.nation||a.country||''),birth:String(a.birthDate||a.dateOfBirth||a.yearOfBirth||'')};}return out;}
 async function statusesMap(){const data=await query('liveResults.getEventStatusesFeed',{competitionCode:COMPETITION_CODE})||{};const out={};for(const i of(data.eventStatuses||[]))out[String(i.eventId)]=String(i.status||'');return out;}
