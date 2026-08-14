@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Mangekampanalyse">
-<script>window.MANGEKAMP_APP_BUILD='20260813-single-history';</script>
+<script>window.MANGEKAMP_APP_BUILD='20260814-live-attempts';</script>
 <link rel="icon" type="image/png" href="../assets/mangekampanalyse_icon.png">
 <link rel="apple-touch-icon" href="../assets/mangekampanalyse_icon.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -28,15 +28,21 @@
 const nativeSetInterval=window.setInterval;
 window.setInterval=function(fn,ms,...args){if(ms===60000&&String(fn).includes('reloadLiveData'))return 0;return nativeSetInterval(fn,ms,...args);};
 const liveEngine=document.createElement('script');
-liveEngine.src='live-engine.js?v=20260812-wa-direct2-'+Date.now();
+liveEngine.src='live-engine.js?v=20260814-live-attempts-'+Date.now();
 liveEngine.onload=function(){
   window.setInterval=nativeSetInterval;
   const forecastBasis=document.createElement('script');
   forecastBasis.src='forecast-enhancements.js?v=20260813-single-history-'+Date.now();
-  forecastBasis.onload=function(){if(typeof window.bindLiveForecastBasis==='function')window.bindLiveForecastBasis();};
+  forecastBasis.onload=function(){
+    if(typeof window.bindLiveForecastBasis==='function')window.bindLiveForecastBasis();
+    const attemptDetails=document.createElement('script');
+    attemptDetails.src='live-attempt-details.js?v=20260814-live-attempts-'+Date.now();
+    attemptDetails.onload=function(){if(typeof window.bindLiveAttemptDetails==='function')window.bindLiveAttemptDetails();};
+    document.body.appendChild(attemptDetails);
+  };
   document.body.appendChild(forecastBasis);
   const direct=document.createElement('script');
-  direct.src='live-refresh-api.js?v=20260812-wa-direct2-'+Date.now();
+  direct.src='live-refresh-api.js?v=20260814-live-attempts-'+Date.now();
   document.body.appendChild(direct);
 };
 document.body.appendChild(liveEngine);
