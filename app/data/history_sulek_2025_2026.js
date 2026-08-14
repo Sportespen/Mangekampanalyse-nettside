@@ -1,5 +1,9 @@
 window.MANGEKAMP_HISTORY=window.MANGEKAMP_HISTORY||{};
 window.MANGEKAMP_HISTORY['Adrianna Sułek-Schubert']={
+  'Kule':[
+    [14.89,'14.89','Kujawsko-Pomorska Arena, Toruń','2026','2026-03-22T00:00:00.000Z','World Athletics Indoor Championships'],
+    [14.53,'14.53','National Stadium, Tokyo','2025','2025-09-19T00:00:00.000Z','World Athletics Championships']
+  ],
   '200m':[
     [23.84,'23.84','Stadion Miejski, Nakło nad Notecią','2026','2026-07-12T00:00:00.000Z','Heptathlon'],
     [24.38,'24.38','National Stadium, Tokyo','2025','2025-09-19T00:00:00.000Z','World Athletics Championships'],
