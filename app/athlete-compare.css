@@ -1,0 +1,4 @@
+/* Isolert testfil for ekstern utøver / Hva hvis. Ingen eksisterende selektorer overskrives. */
+#athleteCompareBox button:focus-visible,#athleteCompareBox input:focus-visible{outline:2px solid #9e8cff;outline-offset:2px}
+#athleteCompareResults button:hover{background:#123454!important}
+@media(max-width:700px){#athleteCompareBox{padding:14px!important}#athleteCompareBox .table-wrap{overflow-x:auto}}
