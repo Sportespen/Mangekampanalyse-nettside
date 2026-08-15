@@ -7,19 +7,12 @@ export async function onRequestGet({request}){
     const results=live?.women?.results||{};
     let kateName=null,kate=null;
     for(const [name,row] of Object.entries(results)){
-      if(String(name).toLowerCase().includes("kate o'connor")||String(name).toLowerCase().includes('kate o’connor')||String(name).toLowerCase().includes('kate oconnor')){
-        kateName=name;kate=row;break;
-      }
+      const n=String(name).toLowerCase();
+      if(n.includes("kate o'connor")||n.includes('kate o’connor')||n.includes('kate oconnor')){kateName=name;kate=row;break;}
     }
-    const spyd=kate?.Spyd||null;
-    return new Response(JSON.stringify({
-      diagnosticVersion:'KATE_SPYD_ATTEMPTS_V1',
-      liveHttp:r.status,
-      liveUpdatedAt:live?.updatedAt||null,
-      kateName,
-      spyd,
-      attempts:spyd?.attempts||null,
-      attemptsCount:Array.isArray(spyd?.attempts)?spyd.attempts.length:null
-    },null,2),{headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store, no-cache, must-revalidate, max-age=0'}});
-  }catch(e){return new Response(JSON.stringify({diagnosticVersion:'KATE_SPYD_ATTEMPTS_V1',error:String(e?.message||e)},null,2),{status:500,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}});}
+    const keys=kate&&typeof kate==='object'?Object.keys(kate):[];
+    const eventDump={};
+    for(const k of keys){if(kate[k]&&typeof kate[k]==='object')eventDump[k]={mark:kate[k].mark??null,display:kate[k].display??null,attempts:kate[k].attempts??null,attemptsCount:Array.isArray(kate[k].attempts)?kate[k].attempts.length:null};}
+    return new Response(JSON.stringify({diagnosticVersion:'KATE_EVENT_KEYS_V2',liveHttp:r.status,liveUpdatedAt:live?.updatedAt||null,kateName,keys,eventDump},null,2),{headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store, no-cache, must-revalidate, max-age=0'}});
+  }catch(e){return new Response(JSON.stringify({diagnosticVersion:'KATE_EVENT_KEYS_V2',error:String(e?.message||e)},null,2),{status:500,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}});}
 }
