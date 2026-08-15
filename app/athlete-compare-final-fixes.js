@@ -1,7 +1,6 @@
 (function(){
   const athleteCache=new Map();
   const wrCache=new Map();
-  let lastBasisIndex=null;
 
   function activeType(){return document.querySelector('.event-switch-btn.active')?.dataset?.type||'men';}
   function norm(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/æ/gi,'ae').replace(/ø/gi,'o').replace(/å/gi,'a').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();}
@@ -61,46 +60,63 @@
     cell.textContent=wr??'—';cell.style.fontWeight='900';
   }
 
+  function modalIdentity(){
+    const content=document.querySelector('#modalContent'),h2=content?.querySelector('h2');
+    if(!h2||/Hva hvis/i.test(h2.textContent))return null;
+    const title=h2.textContent.trim();
+    const events=window.D?.events||[];
+    const ev=events.find(x=>title.endsWith(`– ${x}`)||title.endsWith(`- ${x}`));
+    if(!ev)return null;
+    const name=title.replace(new RegExp(`\\s*[–-]\\s*${ev.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\s*$`),'').trim();
+    return name?{name,ev}:null;
+  }
+
   async function decorateBasisModal(){
-    if(lastBasisIndex==null)return;
     const modal=document.querySelector('#modal'),content=document.querySelector('#modalContent');
     if(!modal?.classList.contains('open')||!content)return;
-    const h2=content.querySelector('h2');if(!h2||/Hva hvis/i.test(h2.textContent))return;
-    const parts=h2.textContent.split(' – '),name=parts.slice(0,-1).join(' – ').trim();
-    const ev=(window.D?.events||[])[lastBasisIndex];if(!name||!ev)return;
+    const ident=modalIdentity();if(!ident)return;
+    const {name,ev}=ident;
     const summary=[...content.querySelectorAll('div')].find(d=>d.querySelector(':scope > small')?.textContent.trim()==='Forventet resultat');
-    if(!summary||summary.dataset.pbAdded==='1')return;
-    const expected=summary.querySelector(':scope > b')?.textContent.trim()||'—';
-    summary.dataset.pbAdded='1';
-    summary.style.cssText='margin-top:12px;padding:9px 11px;background:#102a45;border-radius:8px;display:flex;align-items:flex-end;justify-content:space-between;gap:18px';
-    summary.innerHTML=`<div><small style="display:block;color:#9fb2c6">Forventet resultat</small><b style="display:block;font-size:21px">${expected}</b></div><div style="text-align:right"><small style="display:block;color:#9fb2c6">PB</small><b class="compare-modal-pb" style="display:block;font-size:21px">…</b></div>`;
-    const card=modal.querySelector('.modal-card');if(card){card.style.width='min(760px,calc(100vw - 28px))';card.style.maxWidth='760px';card.style.padding='18px';}
-    content.querySelectorAll('table th,table td').forEach(c=>{c.style.padding='8px 10px';});
-    const data=await analyseAthlete(name);const pb=data?.pbs?.[ev]?.mark;
+    if(!summary)return;
+
+    const card=modal.querySelector('.modal-card');
+    if(card){
+      card.style.width='min(700px,calc(100vw - 24px))';
+      card.style.maxWidth='700px';
+      card.style.padding='14px 16px 15px';
+      card.style.maxHeight='calc(100vh - 24px)';
+      card.style.overflowY='auto';
+    }
+    const h2=content.querySelector('h2');if(h2)h2.style.cssText+=';margin:0 36px 8px 0;font-size:22px;line-height:1.15';
+    const p=h2?.nextElementSibling;if(p)p.style.cssText+=';margin:0 0 10px;font-size:13px;line-height:1.25';
+    const wrap=content.querySelector('.table-wrap');if(wrap)wrap.style.marginTop='8px';
+    const table=content.querySelector('table');if(table){table.style.fontSize='12px';table.style.width='100%';table.style.tableLayout='fixed';}
+    content.querySelectorAll('table th,table td').forEach(c=>{c.style.padding='6px 7px';c.style.lineHeight='1.15';});
+    const ths=table?[...table.querySelectorAll('thead th')]:[];
+    if(ths.length>=5){ths[0].style.width='6%';ths[1].style.width='16%';ths[2].style.width='15%';ths[3].style.width='10%';ths[4].style.width='53%';}
+    if(table){[...table.querySelectorAll('tbody td:nth-child(5)')].forEach(c=>{c.style.whiteSpace='normal';c.style.overflowWrap='anywhere';});}
+
+    const expected=summary.dataset.expectedValue||summary.querySelector(':scope > b')?.textContent.trim()||summary.querySelector('b')?.textContent.trim()||'—';
+    summary.dataset.expectedValue=expected;
+    summary.style.cssText='margin-top:10px;padding:8px 10px;background:#102a45;border-radius:8px;display:grid;grid-template-columns:1fr 1fr;align-items:end;gap:14px';
+    summary.innerHTML=`<div><small style="display:block;color:#9fb2c6;font-size:11px;line-height:1.1">Forventet resultat</small><b style="display:block;font-size:21px;line-height:1.1;margin-top:2px">${expected}</b></div><div style="text-align:right"><small style="display:block;color:#9fb2c6;font-size:11px;line-height:1.1">PB</small><b class="compare-modal-pb" style="display:block;font-size:21px;line-height:1.1;margin-top:2px">…</b></div>`;
+
+    const data=await analyseAthlete(name),pb=data?.pbs?.[ev]?.mark;
     const target=summary.querySelector('.compare-modal-pb');if(target?.isConnected)target.textContent=fmtPB(ev,pb);
   }
 
-  function noteBasisClick(target){
-    const btn=target.closest?.('#athleteCompareOutput table[data-compact-compare-row="1"] tbody button');if(!btn)return;
-    if(!/^Vis\s+\d+\s+resultat/i.test(btn.title||''))return;
-    const td=btn.closest('td'),row=td?.parentElement;if(!td||!row)return;
-    const i=[...row.children].indexOf(td)-2;if(i<0)return;
-    lastBasisIndex=i;
-    setTimeout(decorateBasisModal,0);setTimeout(decorateBasisModal,80);setTimeout(decorateBasisModal,300);
-  }
-
   document.addEventListener('click',ev=>{
-    noteBasisClick(ev.target);
     cleanMainRowPB();
-    if(ev.target.closest?.('.tab,#athleteCompareResults button,#athleteCompareBtn')){setTimeout(decorateWR,50);setTimeout(decorateWR,500);}
+    if(ev.target.closest?.('#athleteCompareOutput,.tab,#athleteCompareResults button,#athleteCompareBtn')){
+      setTimeout(decorateBasisModal,0);setTimeout(decorateBasisModal,80);setTimeout(decorateBasisModal,250);
+      setTimeout(decorateWR,50);setTimeout(decorateWR,500);
+    }
   },true);
 
   const observer=new MutationObserver(()=>{
-    cleanMainRowPB();
-    decorateWR();
+    cleanMainRowPB();decorateWR();
     if(document.querySelector('#modal')?.classList.contains('open'))decorateBasisModal();
   });
   observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
-  cleanMainRowPB();
-  setTimeout(decorateWR,300);
+  cleanMainRowPB();setTimeout(decorateWR,300);
 })();
