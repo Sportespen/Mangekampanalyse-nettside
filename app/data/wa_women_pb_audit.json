@@ -1,0 +1,1961 @@
+{
+  "generatedAt": "2026-08-15T19:22:50.102Z",
+  "source": "World Athletics profile data via structured proxy",
+  "summary": {
+    "athletes": 24,
+    "expected": 168,
+    "found": 168,
+    "matches": 156,
+    "mismatches": 12,
+    "missing": 0
+  },
+  "athletes": {
+    "Annik Kälin": {
+      "waId": 14680605,
+      "events": {
+        "100mh": {
+          "status": "MATCH",
+          "project": "12.60",
+          "wa": "12.60",
+          "discipline": "100 Metres Hurdles",
+          "date": "2026-06-27",
+          "venue": "Stadionring, Ratingen (GER)",
+          "legal": true,
+          "wind": 0.4
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.81",
+          "wa": "1.81",
+          "discipline": "High Jump",
+          "date": "2020-08-08",
+          "venue": "Stadion Hard, Langenthal (SUI)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MATCH",
+          "project": "14.67",
+          "wa": "14.67",
+          "discipline": "Shot Put",
+          "date": "2023-02-18",
+          "venue": "Athletik Zentrum, St. Gallen (SUI) (i)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MATCH",
+          "project": "23.00",
+          "wa": "23.00",
+          "discipline": "200 Metres",
+          "date": "2026-06-27",
+          "venue": "Stadionring, Ratingen (GER)",
+          "legal": true,
+          "wind": 0.2
+        },
+        "Lengde": {
+          "status": "MATCH",
+          "project": "6.90",
+          "wa": "6.90",
+          "discipline": "Long Jump",
+          "date": "2025-03-08",
+          "venue": "Omnisport, Apeldoorn (NED) (i)",
+          "legal": true,
+          "wind": null
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "49.11",
+          "wa": "49.11",
+          "discipline": "Javelin Throw",
+          "date": "2022-05-01",
+          "venue": "Stadio Zecchini, Grosseto (ITA)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:11.33",
+          "wa": "2:11.33",
+          "discipline": "800 Metres",
+          "date": "2024-08-09",
+          "venue": "Stade de France, Paris (FRA)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "Kate O'Connor": {
+      "waId": 14759587,
+      "events": {
+        "100mh": {
+          "status": "MISMATCH",
+          "project": "13.44",
+          "wa": "13.30",
+          "discipline": "100 Metres Hurdles",
+          "date": "2026-08-14",
+          "venue": "Alexander Stadium, Birmingham (GBR)",
+          "legal": true,
+          "wind": 1.3
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.86",
+          "wa": "1.86",
+          "discipline": "High Jump",
+          "date": "2025-09-19",
+          "venue": "National Stadium, Tokyo (JPN)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MATCH",
+          "project": "14.70",
+          "wa": "14.70",
+          "discipline": "Shot Put",
+          "date": "2026-03-22",
+          "venue": "Kujawsko-Pomorska Arena, Toruń (POL) (i)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MATCH",
+          "project": "24.07",
+          "wa": "24.07",
+          "discipline": "200 Metres",
+          "date": "2025-09-19",
+          "venue": "National Stadium, Tokyo (JPN)",
+          "legal": true,
+          "wind": 0.2
+        },
+        "Lengde": {
+          "status": "MISMATCH",
+          "project": "6.50",
+          "wa": "6.55",
+          "discipline": "Long Jump",
+          "date": "2026-08-15",
+          "venue": "Alexander Stadium, Birmingham (GBR)",
+          "legal": true,
+          "wind": 2
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "53.06",
+          "wa": "53.06",
+          "discipline": "Javelin Throw",
+          "date": "2025-09-20",
+          "venue": "National Stadium, Tokyo (JPN)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:09.56",
+          "wa": "2:09.56",
+          "discipline": "800 Metres",
+          "date": "2025-09-20",
+          "venue": "National Stadium, Tokyo (JPN)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "Emma Oosterwegel": {
+      "waId": 14536023,
+      "events": {
+        "100mh": {
+          "status": "MATCH",
+          "project": "13.21",
+          "wa": "13.21",
+          "discipline": "100 Metres Hurdles",
+          "date": "2026-05-30",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": 0.6
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.80",
+          "wa": "1.80",
+          "discipline": "High Jump",
+          "date": "2020-02-09",
+          "venue": "Omnisport, Apeldoorn (NED) (i)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MATCH",
+          "project": "14.54",
+          "wa": "14.54",
+          "discipline": "Shot Put",
+          "date": "2024-08-08",
+          "venue": "Stade de France, Paris (FRA)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MATCH",
+          "project": "23.65",
+          "wa": "23.65",
+          "discipline": "200 Metres",
+          "date": "2026-05-30",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": -0.4
+        },
+        "Lengde": {
+          "status": "MISMATCH",
+          "project": "6.40",
+          "wa": "6.50",
+          "discipline": "Long Jump",
+          "date": "2026-08-15",
+          "venue": "Alexander Stadium, Birmingham (GBR)",
+          "legal": true,
+          "wind": 1.8
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "56.66",
+          "wa": "56.66",
+          "discipline": "Javelin Throw",
+          "date": "2023-09-24",
+          "venue": "Stade Pierre Paul Bernard, Talence (FRA)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:08.67",
+          "wa": "2:08.67",
+          "discipline": "800 Metres",
+          "date": "2024-08-09",
+          "venue": "Stade de France, Paris (FRA)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "Sofie Dokter": {
+      "waId": 14825097,
+      "events": {
+        "100mh": {
+          "status": "MATCH",
+          "project": "13.27",
+          "wa": "13.27",
+          "discipline": "100 Metres Hurdles",
+          "date": "2026-05-30",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": 1
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.89",
+          "wa": "1.89",
+          "discipline": "High Jump",
+          "date": "2023-07-13",
+          "venue": "Leppävaaran Stadion, Espoo (FIN)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MISMATCH",
+          "project": "14.70",
+          "wa": "14.75",
+          "discipline": "Shot Put",
+          "date": "2026-08-14",
+          "venue": "Alexander Stadium, Birmingham (GBR)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MATCH",
+          "project": "23.13",
+          "wa": "23.13",
+          "discipline": "200 Metres",
+          "date": "2026-05-30",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": 0
+        },
+        "Lengde": {
+          "status": "MATCH",
+          "project": "6.61",
+          "wa": "6.61",
+          "discipline": "Long Jump",
+          "date": "2025-03-09",
+          "venue": "Omnisport, Apeldoorn (NED) (i)",
+          "legal": true,
+          "wind": null
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "47.17",
+          "wa": "47.17",
+          "discipline": "Javelin Throw",
+          "date": "2024-06-08",
+          "venue": "Stadio Olimpico, Roma (ITA)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:10.88",
+          "wa": "2:10.88",
+          "discipline": "800 Metres",
+          "date": "2025-06-01",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "Katarina Johnson-Thompson": {
+      "waId": 14276543,
+      "events": {
+        "100mh": {
+          "status": "MATCH",
+          "project": "13.09",
+          "wa": "13.09",
+          "discipline": "100 Metres Hurdles",
+          "date": "2019-10-02",
+          "venue": "Khalifa International Stadium, Doha (QAT)",
+          "legal": true,
+          "wind": 0.6
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.98",
+          "wa": "1.98",
+          "discipline": "High Jump",
+          "date": "2016-08-12",
+          "venue": "Estádio Olímpico, Rio de Janeiro (BRA)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MATCH",
+          "project": "14.44",
+          "wa": "14.44",
+          "discipline": "Shot Put",
+          "date": "2024-08-08",
+          "venue": "Stade de France, Paris (FRA)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MATCH",
+          "project": "22.79",
+          "wa": "22.79",
+          "discipline": "200 Metres",
+          "date": "2016-05-28",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": 1.3
+        },
+        "Lengde": {
+          "status": "MATCH",
+          "project": "6.93",
+          "wa": "6.93",
+          "discipline": "Long Jump",
+          "date": "2015-02-21",
+          "venue": "Barclaycard Arena, Birmingham (GBR) (i)",
+          "legal": true,
+          "wind": null
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "46.14",
+          "wa": "46.14",
+          "discipline": "Javelin Throw",
+          "date": "2023-08-20",
+          "venue": "Nemzeti Atlétikai Központ, Budapest (HUN)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:04.90",
+          "wa": "2:04.90",
+          "discipline": "800 Metres",
+          "date": "2024-08-09",
+          "venue": "Stade de France, Paris (FRA)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "Sophie Weißenberg": {
+      "waId": 14534748,
+      "events": {
+        "100mh": {
+          "status": "MISMATCH",
+          "project": "13.40",
+          "wa": "13.19",
+          "discipline": "100 Metres Hurdles",
+          "date": "2026-08-14",
+          "venue": "Alexander Stadium, Birmingham (GBR)",
+          "legal": true,
+          "wind": 1.3
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.86",
+          "wa": "1.86",
+          "discipline": "High Jump",
+          "date": "2023-08-19",
+          "venue": "Nemzeti Atlétikai Központ, Budapest (HUN)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MATCH",
+          "project": "14.18",
+          "wa": "14.18",
+          "discipline": "Shot Put",
+          "date": "2019-07-11",
+          "venue": "Gunder Hägg Stadion, Gävle (SWE)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MATCH",
+          "project": "23.25",
+          "wa": "23.25",
+          "discipline": "200 Metres",
+          "date": "2026-05-30",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": 0
+        },
+        "Lengde": {
+          "status": "MATCH",
+          "project": "6.49",
+          "wa": "6.49",
+          "discipline": "Long Jump",
+          "date": "2016-06-26",
+          "venue": "Mannheim (GER)",
+          "legal": true,
+          "wind": 0
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "48.83",
+          "wa": "48.83",
+          "discipline": "Javelin Throw",
+          "date": "2019-05-12",
+          "venue": "Halle (GER)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:15.37",
+          "wa": "2:15.37",
+          "discipline": "800 Metres",
+          "date": "2026-05-31",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "Sandrina Sprengel": {
+      "waId": 14853060,
+      "events": {
+        "100mh": {
+          "status": "MATCH",
+          "project": "13.47",
+          "wa": "13.47",
+          "discipline": "100 Metres Hurdles",
+          "date": "2026-06-27",
+          "venue": "Stadionring, Ratingen (GER)",
+          "legal": true,
+          "wind": 0.4
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.83",
+          "wa": "1.83",
+          "discipline": "High Jump",
+          "date": "2023-08-07",
+          "venue": "Givat Ram Stadium, Jerusalem (ISR)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MATCH",
+          "project": "14.52",
+          "wa": "14.52",
+          "discipline": "Shot Put",
+          "date": "2026-06-27",
+          "venue": "Stadionring, Ratingen (GER)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MATCH",
+          "project": "23.98",
+          "wa": "23.98",
+          "discipline": "200 Metres",
+          "date": "2024-05-18",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": 0.4
+        },
+        "Lengde": {
+          "status": "MATCH",
+          "project": "6.47",
+          "wa": "6.47",
+          "discipline": "Long Jump",
+          "date": "2025-02-23",
+          "venue": "Helmut-Körnig-Halle, Dortmund (GER) (i)",
+          "legal": true,
+          "wind": null
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "51.66",
+          "wa": "51.66",
+          "discipline": "Javelin Throw",
+          "date": "2025-09-20",
+          "venue": "National Stadium, Tokyo (JPN)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:14.32",
+          "wa": "2:14.32",
+          "discipline": "800 Metres",
+          "date": "2026-03-22",
+          "venue": "Kujawsko-Pomorska Arena, Toruń (POL) (i)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "Adrianna Sułek-Schubert": {
+      "waId": 14604425,
+      "events": {
+        "100mh": {
+          "status": "MATCH",
+          "project": "13.08",
+          "wa": "13.08",
+          "discipline": "100 Metres Hurdles",
+          "date": "2022-06-18",
+          "venue": "Stadion Zygmunta Szelesta, Warszawa (POL)",
+          "legal": true,
+          "wind": 1.9
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.92",
+          "wa": "1.92",
+          "discipline": "High Jump",
+          "date": "2022-05-28",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MATCH",
+          "project": "14.89",
+          "wa": "14.89",
+          "discipline": "Shot Put",
+          "date": "2026-03-22",
+          "venue": "Kujawsko-Pomorska Arena, Toruń (POL) (i)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MISMATCH",
+          "project": "23.69",
+          "wa": "23.77",
+          "discipline": "200 Metres",
+          "date": "2022-07-17",
+          "venue": "Hayward Field, Eugene (USA)",
+          "legal": true,
+          "wind": 1.4
+        },
+        "Lengde": {
+          "status": "MATCH",
+          "project": "6.62",
+          "wa": "6.62",
+          "discipline": "Long Jump",
+          "date": "2023-03-03",
+          "venue": "Ataköy Arena, Istanbul (TUR) (i)",
+          "legal": true,
+          "wind": null
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "43.49",
+          "wa": "43.49",
+          "discipline": "Javelin Throw",
+          "date": "2026-07-12",
+          "venue": "Stadion Miejski, Nakło nad Notecią (POL)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:07.17",
+          "wa": "2:07.17",
+          "discipline": "800 Metres",
+          "date": "2023-03-03",
+          "venue": "Ataköy Arena, Istanbul (TUR) (i)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "Sveva Gerevini": {
+      "waId": 14697662,
+      "events": {
+        "100mh": {
+          "status": "MISMATCH",
+          "project": "13.35",
+          "wa": "13.16",
+          "discipline": "100 Metres Hurdles",
+          "date": "2026-08-14",
+          "venue": "Alexander Stadium, Birmingham (GBR)",
+          "legal": true,
+          "wind": 1.3
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.80",
+          "wa": "1.80",
+          "discipline": "High Jump",
+          "date": "2024-06-07",
+          "venue": "Stadio Olimpico, Roma (ITA)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MATCH",
+          "project": "13.48",
+          "wa": "13.48",
+          "discipline": "Shot Put",
+          "date": "2026-05-30",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MATCH",
+          "project": "23.58",
+          "wa": "23.58",
+          "discipline": "200 Metres",
+          "date": "2024-08-08",
+          "venue": "Stade de France, Paris (FRA)",
+          "legal": true,
+          "wind": 0.4
+        },
+        "Lengde": {
+          "status": "MATCH",
+          "project": "6.34",
+          "wa": "6.34",
+          "discipline": "Long Jump",
+          "date": "2022-02-26",
+          "venue": "Palaindoor Ancona, Ancona (ITA) (i)",
+          "legal": true,
+          "wind": null
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "48.52",
+          "wa": "48.52",
+          "discipline": "Javelin Throw",
+          "date": "2026-05-31",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:08.33",
+          "wa": "2:08.33",
+          "discipline": "800 Metres",
+          "date": "2025-01-26",
+          "venue": "Stadium Jean-Pellez, Aubière (FRA) (i)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "Jade O'Dowda": {
+      "waId": 14637207,
+      "events": {
+        "100mh": {
+          "status": "MATCH",
+          "project": "13.25",
+          "wa": "13.25",
+          "discipline": "100 Metres Hurdles",
+          "date": "2026-05-30",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": 0.6
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.87",
+          "wa": "1.87",
+          "discipline": "High Jump",
+          "date": "2025-03-09",
+          "venue": "Omnisport, Apeldoorn (NED) (i)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MATCH",
+          "project": "13.82",
+          "wa": "13.82",
+          "discipline": "Shot Put",
+          "date": "2026-02-15",
+          "venue": "Arena Birmingham, Birmingham (GBR) (i)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MATCH",
+          "project": "24.34",
+          "wa": "24.34",
+          "discipline": "200 Metres",
+          "date": "2026-05-30",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": -1.1
+        },
+        "Lengde": {
+          "status": "MATCH",
+          "project": "6.55",
+          "wa": "6.55",
+          "discipline": "Long Jump",
+          "date": "2024-06-30",
+          "venue": "Manchester Regional Arena, Manchester (GBR)",
+          "legal": true,
+          "wind": 0.1
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "46.20",
+          "wa": "46.20",
+          "discipline": "Javelin Throw",
+          "date": "2025-09-20",
+          "venue": "National Stadium, Tokyo (JPN)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:11.30",
+          "wa": "2:11.30",
+          "discipline": "800 Metres",
+          "date": "2024-06-08",
+          "venue": "Stadio Olimpico, Roma (ITA)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "Vanessa Grimm": {
+      "waId": 14497556,
+      "events": {
+        "100mh": {
+          "status": "MATCH",
+          "project": "13.39",
+          "wa": "13.39",
+          "discipline": "100 Metres Hurdles",
+          "date": "2026-05-30",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": 1
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.80",
+          "wa": "1.80",
+          "discipline": "High Jump",
+          "date": "2022-05-28",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MATCH",
+          "project": "15.63",
+          "wa": "15.63",
+          "discipline": "Shot Put",
+          "date": "2026-05-09",
+          "venue": "Otto-Schott-Stadion, Mainz (GER)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MATCH",
+          "project": "24.13",
+          "wa": "24.13",
+          "discipline": "200 Metres",
+          "date": "2020-07-04",
+          "venue": "HLV-Leistungszentrum, Frankfurt (GER)",
+          "legal": true,
+          "wind": 1.3
+        },
+        "Lengde": {
+          "status": "MATCH",
+          "project": "6.31",
+          "wa": "6.31",
+          "discipline": "Long Jump",
+          "date": "2022-05-29",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": -0.1
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "46.03",
+          "wa": "46.03",
+          "discipline": "Javelin Throw",
+          "date": "2022-06-25",
+          "venue": "Städtische Sportanlage, Gelnhausen (GER)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:12.08",
+          "wa": "2:12.08",
+          "discipline": "800 Metres",
+          "date": "2026-05-31",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "Szabina Szűcs": {
+      "waId": 14630820,
+      "events": {
+        "100mh": {
+          "status": "MATCH",
+          "project": "13.52",
+          "wa": "13.52",
+          "discipline": "100 Metres Hurdles",
+          "date": "2025-06-21",
+          "venue": "Lantos Mihály Sportközpont, Budapest (HUN)",
+          "legal": true,
+          "wind": 1.7
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.79",
+          "wa": "1.79",
+          "discipline": "High Jump",
+          "date": "2020-02-23",
+          "venue": "BOK Csarnok, Budapest (HUN) (i)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MATCH",
+          "project": "13.51",
+          "wa": "13.51",
+          "discipline": "Shot Put",
+          "date": "2026-02-22",
+          "venue": "Arena Toruń, Toruń (POL) (i)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MATCH",
+          "project": "24.18",
+          "wa": "24.18",
+          "discipline": "200 Metres",
+          "date": "2026-06-13",
+          "venue": "UTE Atlétikai Stadion, Budapest (HUN)",
+          "legal": true,
+          "wind": 0.9
+        },
+        "Lengde": {
+          "status": "MATCH",
+          "project": "6.42",
+          "wa": "6.42",
+          "discipline": "Long Jump",
+          "date": "2023-05-27",
+          "venue": "Ikarus BSE Sporttelep, Budapest (HUN)",
+          "legal": true,
+          "wind": 1.6
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "45.03",
+          "wa": "45.03",
+          "discipline": "Javelin Throw",
+          "date": "2026-06-14",
+          "venue": "UTE Atlétikai Stadion, Budapest (HUN)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:11.25",
+          "wa": "2:11.25",
+          "discipline": "800 Metres",
+          "date": "2026-02-22",
+          "venue": "Arena Toruń, Toruń (POL) (i)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "Beatričė Juškevičiūtė": {
+      "waId": 14632718,
+      "events": {
+        "100mh": {
+          "status": "MATCH",
+          "project": "12.87",
+          "wa": "12.87",
+          "discipline": "100 Metres Hurdles",
+          "date": "2024-05-18",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": 1.3
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.71",
+          "wa": "1.71",
+          "discipline": "High Jump",
+          "date": "2024-06-29",
+          "venue": "Palangos Stadionas, Palanga (LTU)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MATCH",
+          "project": "14.99",
+          "wa": "14.99",
+          "discipline": "Shot Put",
+          "date": "2026-04-15",
+          "venue": "Hilmer Lodge Stadium, Walnut (USA)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MISMATCH",
+          "project": "23.56",
+          "wa": "23.58",
+          "discipline": "200 Metres",
+          "date": "2024-05-18",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": 0.7
+        },
+        "Lengde": {
+          "status": "MISMATCH",
+          "project": "6.24",
+          "wa": "6.33",
+          "discipline": "Long Jump",
+          "date": "2026-08-15",
+          "venue": "Alexander Stadium, Birmingham (GBR)",
+          "legal": true,
+          "wind": 1
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "48.12",
+          "wa": "48.12",
+          "discipline": "Javelin Throw",
+          "date": "2022-03-24",
+          "venue": "Mike A. Myers Stadium, Austin (USA)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:12.44",
+          "wa": "2:12.44",
+          "discipline": "800 Metres",
+          "date": "2025-04-17",
+          "venue": "Hilmer Lodge Stadium, Walnut (USA)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "Noor Vidts": {
+      "waId": 14450530,
+      "events": {
+        "100mh": {
+          "status": "MATCH",
+          "project": "13.10",
+          "wa": "13.10",
+          "discipline": "100 Metres Hurdles",
+          "date": "2024-08-08",
+          "venue": "Stade de France, Paris (FRA)",
+          "legal": true,
+          "wind": -0.1
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.84",
+          "wa": "1.84",
+          "discipline": "High Jump",
+          "date": "2019-02-16",
+          "venue": "Antequera (ESP) (i)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MATCH",
+          "project": "14.79",
+          "wa": "14.79",
+          "discipline": "Shot Put",
+          "date": "2024-06-07",
+          "venue": "Stadio Olimpico, Roma (ITA)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MATCH",
+          "project": "23.70",
+          "wa": "23.70",
+          "discipline": "200 Metres",
+          "date": "2021-08-04",
+          "venue": "National Stadium, Tokyo (JPN)",
+          "legal": true,
+          "wind": 1.5
+        },
+        "Lengde": {
+          "status": "MATCH",
+          "project": "6.60",
+          "wa": "6.60",
+          "discipline": "Long Jump",
+          "date": "2022-03-18",
+          "venue": "Štark Arena, Beograd (SRB) (i)",
+          "legal": true,
+          "wind": null
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "45.00",
+          "wa": "45.00",
+          "discipline": "Javelin Throw",
+          "date": "2024-08-09",
+          "venue": "Stade de France, Paris (FRA)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:06.38",
+          "wa": "2:06.38",
+          "discipline": "800 Metres",
+          "date": "2024-08-09",
+          "venue": "Stade de France, Paris (FRA)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "María Vicente": {
+      "waId": 14648429,
+      "events": {
+        "100mh": {
+          "status": "MATCH",
+          "project": "13.33",
+          "wa": "13.33",
+          "discipline": "100 Metres Hurdles",
+          "date": "2025-05-10",
+          "venue": "Pista atletismo Can Mises, Ibiza (ESP)",
+          "legal": true,
+          "wind": 1.2
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.80",
+          "wa": "1.80",
+          "discipline": "High Jump",
+          "date": "2024-01-13",
+          "venue": "Palacio Municipal de Deportes Antonio Elorza, San Sebastián (ESP) (i)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MATCH",
+          "project": "13.97",
+          "wa": "13.97",
+          "discipline": "Shot Put",
+          "date": "2026-07-24",
+          "venue": "Estadio Ciudad de Málaga, Málaga (ESP)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MATCH",
+          "project": "23.03",
+          "wa": "23.03",
+          "discipline": "200 Metres",
+          "date": "2021-06-27",
+          "venue": "Polideportivo Juan de la Cierva, Getafe (ESP)",
+          "legal": true,
+          "wind": 0.5
+        },
+        "Lengde": {
+          "status": "MATCH",
+          "project": "6.80",
+          "wa": "6.80",
+          "discipline": "Long Jump",
+          "date": "2022-07-16",
+          "venue": "San Sebastián (ESP)",
+          "legal": true,
+          "wind": 1.6
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "48.23",
+          "wa": "48.23",
+          "discipline": "Javelin Throw",
+          "date": "2025-08-02",
+          "venue": "Estadi Natalia Rodríguez, Tarragona (ESP)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:13.83",
+          "wa": "2:13.83",
+          "discipline": "800 Metres",
+          "date": "2025-08-02",
+          "venue": "Estadi Natalia Rodríguez, Tarragona (ESP)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "Lovisa Karlsson": {
+      "waId": 14593982,
+      "events": {
+        "100mh": {
+          "status": "MATCH",
+          "project": "13.03",
+          "wa": "13.03",
+          "discipline": "100 Metres Hurdles",
+          "date": "2026-07-11",
+          "venue": "Stadion Miejski, Nakło nad Notecią (POL)",
+          "legal": true,
+          "wind": 1.4
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.81",
+          "wa": "1.81",
+          "discipline": "High Jump",
+          "date": "2019-01-26",
+          "venue": "Norrköping (SWE) (i)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MATCH",
+          "project": "13.36",
+          "wa": "13.36",
+          "discipline": "Shot Put",
+          "date": "2026-07-11",
+          "venue": "Stadion Miejski, Nakło nad Notecią (POL)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MATCH",
+          "project": "23.99",
+          "wa": "23.99",
+          "discipline": "200 Metres",
+          "date": "2024-06-07",
+          "venue": "Stadio Olimpico, Roma (ITA)",
+          "legal": true,
+          "wind": 0.3
+        },
+        "Lengde": {
+          "status": "MATCH",
+          "project": "6.55",
+          "wa": "6.55",
+          "discipline": "Long Jump",
+          "date": "2024-02-18",
+          "venue": "Eva Lisa Holtz Arena, Karlstad (SWE) (i)",
+          "legal": true,
+          "wind": null
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "41.88",
+          "wa": "41.88",
+          "discipline": "Javelin Throw",
+          "date": "2026-07-12",
+          "venue": "Stadion Miejski, Nakło nad Notecią (POL)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:15.94",
+          "wa": "2:15.94",
+          "discipline": "800 Metres",
+          "date": "2024-06-08",
+          "venue": "Stadio Olimpico, Roma (ITA)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "Jéssica Barreira": {
+      "waId": 14505839,
+      "events": {
+        "100mh": {
+          "status": "MATCH",
+          "project": "13.09",
+          "wa": "13.09",
+          "discipline": "100 Metres Hurdles",
+          "date": "2026-06-13",
+          "venue": "Stade Paul Rebeilleau, Poitiers (FRA)",
+          "legal": true,
+          "wind": -0.5
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.68",
+          "wa": "1.68",
+          "discipline": "High Jump",
+          "date": "2026-04-25",
+          "venue": "Centro Gabre Gabric, Brescia (ITA)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MATCH",
+          "project": "15.78",
+          "wa": "15.78",
+          "discipline": "Shot Put",
+          "date": "2026-01-25",
+          "venue": "Expocentro, Pombal (POR) (i)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MISMATCH",
+          "project": "24.13",
+          "wa": "24.25",
+          "discipline": "200 Metres",
+          "date": "2026-05-29",
+          "venue": "Estadio Atlético de la VIDENA, Lima (PER)",
+          "legal": true,
+          "wind": 1.4
+        },
+        "Lengde": {
+          "status": "MATCH",
+          "project": "6.56",
+          "wa": "6.56",
+          "discipline": "Long Jump",
+          "date": "2023-04-29",
+          "venue": "Univ. of Arizona Roy P. Drachman Stadium, Tucson (USA)",
+          "legal": true,
+          "wind": 0
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "51.81",
+          "wa": "51.81",
+          "discipline": "Javelin Throw",
+          "date": "2026-02-22",
+          "venue": "Centro Desportivo Nacional do Jamor, Lisboa (POR)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:20.20",
+          "wa": "2:20.20",
+          "discipline": "800 Metres",
+          "date": "2026-06-23",
+          "venue": "Estadio Universitario, Lisboa (POR)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "Sarolta Kriszt": {
+      "waId": 14715396,
+      "events": {
+        "100mh": {
+          "status": "MATCH",
+          "project": "13.35",
+          "wa": "13.35",
+          "discipline": "100 Metres Hurdles",
+          "date": "2025-05-31",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": -0.5
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.76",
+          "wa": "1.76",
+          "discipline": "High Jump",
+          "date": "2025-01-26",
+          "venue": "Stadium Jean-Pellez, Aubière (FRA) (i)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MISMATCH",
+          "project": "12.71",
+          "wa": "13.26",
+          "discipline": "Shot Put",
+          "date": "2026-08-14",
+          "venue": "Alexander Stadium, Birmingham (GBR)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MATCH",
+          "project": "23.43",
+          "wa": "23.43",
+          "discipline": "200 Metres",
+          "date": "2025-05-31",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": 0.7
+        },
+        "Lengde": {
+          "status": "MATCH",
+          "project": "6.35",
+          "wa": "6.35",
+          "discipline": "Long Jump",
+          "date": "2026-07-14",
+          "venue": "Nemzeti Atlétikai Központ, Budapest (HUN)",
+          "legal": true,
+          "wind": -0.2
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "48.61",
+          "wa": "48.61",
+          "discipline": "Javelin Throw",
+          "date": "2026-07-26",
+          "venue": "Nemzeti Atlétikai Központ, Budapest (HUN)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:08.38",
+          "wa": "2:08.38",
+          "discipline": "800 Metres",
+          "date": "2025-06-01",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "Jana Koščak": {
+      "waId": 14881318,
+      "events": {
+        "100mh": {
+          "status": "MATCH",
+          "project": "13.26",
+          "wa": "13.26",
+          "discipline": "100 Metres Hurdles",
+          "date": "2023-05-27",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": 1.2
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.92",
+          "wa": "1.92",
+          "discipline": "High Jump",
+          "date": "2023-05-27",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MATCH",
+          "project": "14.00",
+          "wa": "14.00",
+          "discipline": "Shot Put",
+          "date": "2025-08-09",
+          "venue": "Ratinan Stadion, Tampere (FIN)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MATCH",
+          "project": "24.13",
+          "wa": "24.13",
+          "discipline": "200 Metres",
+          "date": "2023-05-27",
+          "venue": "Mösle-Stadium, Götzis (AUT)",
+          "legal": true,
+          "wind": 0.9
+        },
+        "Lengde": {
+          "status": "MATCH",
+          "project": "6.34",
+          "wa": "6.34",
+          "discipline": "Long Jump",
+          "date": "2023-02-05",
+          "venue": "Lasnamäe Kergejõustikuhall, Tallinn (EST) (i)",
+          "legal": true,
+          "wind": null
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "44.38",
+          "wa": "44.38",
+          "discipline": "Javelin Throw",
+          "date": "2021-05-30",
+          "venue": "Sports Park Mladost, Zagreb (CRO)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:14.56",
+          "wa": "2:14.56",
+          "discipline": "800 Metres",
+          "date": "2025-08-10",
+          "venue": "Ratinan Stadion, Tampere (FIN)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "Erika Wärff": {
+      "waId": 14601690,
+      "events": {
+        "100mh": {
+          "status": "MATCH",
+          "project": "13.59",
+          "wa": "13.59",
+          "discipline": "100 Metres Hurdles",
+          "date": "2026-07-25",
+          "venue": "Uppsala Friidrottsarena, Uppsala (SWE)",
+          "legal": true,
+          "wind": 0.6
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.83",
+          "wa": "1.83",
+          "discipline": "High Jump",
+          "date": "2017-06-10",
+          "venue": "Kuortane (FIN)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MATCH",
+          "project": "14.33",
+          "wa": "14.33",
+          "discipline": "Shot Put",
+          "date": "2024-08-10",
+          "venue": "Sollentunavallen, Sollentuna (SWE)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MATCH",
+          "project": "24.55",
+          "wa": "24.55",
+          "discipline": "200 Metres",
+          "date": "2026-07-11",
+          "venue": "Stadion Miejski, Nakło nad Notecią (POL)",
+          "legal": true,
+          "wind": 1.4
+        },
+        "Lengde": {
+          "status": "MATCH",
+          "project": "6.04",
+          "wa": "6.04",
+          "discipline": "Long Jump",
+          "date": "2026-07-12",
+          "venue": "Stadion Miejski, Nakło nad Notecią (POL)",
+          "legal": true,
+          "wind": 1.9
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "51.07",
+          "wa": "51.07",
+          "discipline": "Javelin Throw",
+          "date": "2025-06-15",
+          "venue": "Slottsskogsvallen, Göteborg (SWE)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:19.86",
+          "wa": "2:19.86",
+          "discipline": "800 Metres",
+          "date": "2026-07-12",
+          "venue": "Stadion Miejski, Nakło nad Notecią (POL)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "Verena Mayr": {
+      "waId": 14425537,
+      "events": {
+        "100mh": {
+          "status": "MATCH",
+          "project": "13.25",
+          "wa": "13.25",
+          "discipline": "100 Metres Hurdles",
+          "date": "2019-10-02",
+          "venue": "Khalifa International Stadium, Doha (QAT)",
+          "legal": true,
+          "wind": 0.6
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.80",
+          "wa": "1.80",
+          "discipline": "High Jump",
+          "date": "2019-06-29",
+          "venue": "Stadionring, Ratingen (GER)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MATCH",
+          "project": "15.07",
+          "wa": "15.07",
+          "discipline": "Shot Put",
+          "date": "2020-08-15",
+          "venue": "Bundessport- und Freizeitzentrum, Maria Enzersdorf (AUT)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MATCH",
+          "project": "23.66",
+          "wa": "23.66",
+          "discipline": "200 Metres",
+          "date": "2016-05-26",
+          "venue": "St. Pölten (AUT)",
+          "legal": true,
+          "wind": 0.2
+        },
+        "Lengde": {
+          "status": "MATCH",
+          "project": "6.36",
+          "wa": "6.36",
+          "discipline": "Long Jump",
+          "date": "2019-10-03",
+          "venue": "Khalifa International Stadium, Doha (QAT)",
+          "legal": true,
+          "wind": 0.4
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "49.58",
+          "wa": "49.58",
+          "discipline": "Javelin Throw",
+          "date": "2019-06-30",
+          "venue": "Stadionring, Ratingen (GER)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:07.74",
+          "wa": "2:07.74",
+          "discipline": "800 Metres",
+          "date": "2019-06-30",
+          "venue": "Stadionring, Ratingen (GER)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "Sofia Cosculluela": {
+      "waId": 14862639,
+      "events": {
+        "100mh": {
+          "status": "MATCH",
+          "project": "13.31",
+          "wa": "13.31",
+          "discipline": "100 Metres Hurdles",
+          "date": "2026-05-02",
+          "venue": "Univ. of Arizona Roy P. Drachman Stadium, Tucson (USA)",
+          "legal": true,
+          "wind": 0.7
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.69",
+          "wa": "1.69",
+          "discipline": "High Jump",
+          "date": "2026-06-12",
+          "venue": "Hayward Field, Eugene (USA)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MATCH",
+          "project": "13.99",
+          "wa": "13.99",
+          "discipline": "Shot Put",
+          "date": "2026-04-15",
+          "venue": "Hilmer Lodge Stadium, Walnut (USA)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MATCH",
+          "project": "23.84",
+          "wa": "23.84",
+          "discipline": "200 Metres",
+          "date": "2026-04-15",
+          "venue": "Hilmer Lodge Stadium, Walnut (USA)",
+          "legal": true,
+          "wind": 0.3
+        },
+        "Lengde": {
+          "status": "MATCH",
+          "project": "6.52",
+          "wa": "6.52",
+          "discipline": "Long Jump",
+          "date": "2026-06-13",
+          "venue": "Hayward Field, Eugene (USA)",
+          "legal": true,
+          "wind": -0.9
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "48.97",
+          "wa": "48.97",
+          "discipline": "Javelin Throw",
+          "date": "2025-06-14",
+          "venue": "Hayward Field, Eugene (USA)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:16.15",
+          "wa": "2:16.15",
+          "discipline": "800 Metres",
+          "date": "2026-04-16",
+          "venue": "Hilmer Lodge Stadium, Walnut (USA)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "Anastasia Ntragkomirova": {
+      "waId": 14786285,
+      "events": {
+        "100mh": {
+          "status": "MATCH",
+          "project": "14.14",
+          "wa": "14.14",
+          "discipline": "100 Metres Hurdles",
+          "date": "2025-06-21",
+          "venue": "Pampeloponnisiako Stadium, Patra (GRE)",
+          "legal": true,
+          "wind": 0.1
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.80",
+          "wa": "1.80",
+          "discipline": "High Jump",
+          "date": "2025-08-02",
+          "venue": "Panthessaliko Stadium, Volos (GRE)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MATCH",
+          "project": "16.09",
+          "wa": "16.09",
+          "discipline": "Shot Put",
+          "date": "2025-07-17",
+          "venue": "Fana Stadion, Bergen (NOR)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MISMATCH",
+          "project": "25.13",
+          "wa": "25.36",
+          "discipline": "200 Metres",
+          "date": "2025-07-26",
+          "venue": "Panthessaliko Stadium, Volos (GRE)",
+          "legal": true,
+          "wind": -0.2
+        },
+        "Lengde": {
+          "status": "MATCH",
+          "project": "6.44",
+          "wa": "6.44",
+          "discipline": "Long Jump",
+          "date": "2019-04-24",
+          "venue": "Thessaloniki (GRE)",
+          "legal": true,
+          "wind": -0.7
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "50.79",
+          "wa": "50.79",
+          "discipline": "Javelin Throw",
+          "date": "2026-07-25",
+          "venue": "Panthessaliko Stadium, Volos (GRE)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:28.79",
+          "wa": "2:28.79",
+          "discipline": "800 Metres",
+          "date": "2025-07-27",
+          "venue": "Panthessaliko Stadium, Volos (GRE)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    },
+    "Adéla Tkáčová": {
+      "waId": 14876352,
+      "events": {
+        "100mh": {
+          "status": "MATCH",
+          "project": "13.59",
+          "wa": "13.59",
+          "discipline": "100 Metres Hurdles",
+          "date": "2026-06-13",
+          "venue": "Sports Stadium CESA VUT, Brno (CZE)",
+          "legal": true,
+          "wind": 0.6
+        },
+        "Høyde": {
+          "status": "MATCH",
+          "project": "1.73",
+          "wa": "1.73",
+          "discipline": "High Jump",
+          "date": "2026-06-13",
+          "venue": "Sports Stadium CESA VUT, Brno (CZE)",
+          "legal": true,
+          "wind": null
+        },
+        "Kule": {
+          "status": "MATCH",
+          "project": "12.77",
+          "wa": "12.77",
+          "discipline": "Shot Put",
+          "date": "2026-06-13",
+          "venue": "Sports Stadium CESA VUT, Brno (CZE)",
+          "legal": true,
+          "wind": null
+        },
+        "200m": {
+          "status": "MATCH",
+          "project": "23.22",
+          "wa": "23.22",
+          "discipline": "200 Metres",
+          "date": "2026-06-13",
+          "venue": "Sports Stadium CESA VUT, Brno (CZE)",
+          "legal": true,
+          "wind": 1.1
+        },
+        "Lengde": {
+          "status": "MATCH",
+          "project": "6.07",
+          "wa": "6.07",
+          "discipline": "Long Jump",
+          "date": "2026-07-12",
+          "venue": "Stadion Miejski, Nakło nad Notecią (POL)",
+          "legal": true,
+          "wind": 1.6
+        },
+        "Spyd": {
+          "status": "MATCH",
+          "project": "45.11",
+          "wa": "45.11",
+          "discipline": "Javelin Throw",
+          "date": "2023-06-04",
+          "venue": "Atletický stadion, Přerov (CZE)",
+          "legal": true,
+          "wind": null
+        },
+        "800m": {
+          "status": "MATCH",
+          "project": "2:10.36",
+          "wa": "2:10.36",
+          "discipline": "800 Metres",
+          "date": "2026-02-28",
+          "venue": "Atletická hala, Ostrava (CZE) (i)",
+          "legal": true,
+          "wind": null
+        }
+      }
+    }
+  },
+  "mismatches": [
+    {
+      "athlete": "Kate O'Connor",
+      "event": "100mh",
+      "status": "MISMATCH",
+      "project": "13.44",
+      "wa": "13.30",
+      "discipline": "100 Metres Hurdles",
+      "date": "2026-08-14",
+      "venue": "Alexander Stadium, Birmingham (GBR)",
+      "legal": true,
+      "wind": 1.3
+    },
+    {
+      "athlete": "Kate O'Connor",
+      "event": "Lengde",
+      "status": "MISMATCH",
+      "project": "6.50",
+      "wa": "6.55",
+      "discipline": "Long Jump",
+      "date": "2026-08-15",
+      "venue": "Alexander Stadium, Birmingham (GBR)",
+      "legal": true,
+      "wind": 2
+    },
+    {
+      "athlete": "Emma Oosterwegel",
+      "event": "Lengde",
+      "status": "MISMATCH",
+      "project": "6.40",
+      "wa": "6.50",
+      "discipline": "Long Jump",
+      "date": "2026-08-15",
+      "venue": "Alexander Stadium, Birmingham (GBR)",
+      "legal": true,
+      "wind": 1.8
+    },
+    {
+      "athlete": "Sofie Dokter",
+      "event": "Kule",
+      "status": "MISMATCH",
+      "project": "14.70",
+      "wa": "14.75",
+      "discipline": "Shot Put",
+      "date": "2026-08-14",
+      "venue": "Alexander Stadium, Birmingham (GBR)",
+      "legal": true,
+      "wind": null
+    },
+    {
+      "athlete": "Sophie Weißenberg",
+      "event": "100mh",
+      "status": "MISMATCH",
+      "project": "13.40",
+      "wa": "13.19",
+      "discipline": "100 Metres Hurdles",
+      "date": "2026-08-14",
+      "venue": "Alexander Stadium, Birmingham (GBR)",
+      "legal": true,
+      "wind": 1.3
+    },
+    {
+      "athlete": "Adrianna Sułek-Schubert",
+      "event": "200m",
+      "status": "MISMATCH",
+      "project": "23.69",
+      "wa": "23.77",
+      "discipline": "200 Metres",
+      "date": "2022-07-17",
+      "venue": "Hayward Field, Eugene (USA)",
+      "legal": true,
+      "wind": 1.4
+    },
+    {
+      "athlete": "Sveva Gerevini",
+      "event": "100mh",
+      "status": "MISMATCH",
+      "project": "13.35",
+      "wa": "13.16",
+      "discipline": "100 Metres Hurdles",
+      "date": "2026-08-14",
+      "venue": "Alexander Stadium, Birmingham (GBR)",
+      "legal": true,
+      "wind": 1.3
+    },
+    {
+      "athlete": "Beatričė Juškevičiūtė",
+      "event": "200m",
+      "status": "MISMATCH",
+      "project": "23.56",
+      "wa": "23.58",
+      "discipline": "200 Metres",
+      "date": "2024-05-18",
+      "venue": "Mösle-Stadium, Götzis (AUT)",
+      "legal": true,
+      "wind": 0.7
+    },
+    {
+      "athlete": "Beatričė Juškevičiūtė",
+      "event": "Lengde",
+      "status": "MISMATCH",
+      "project": "6.24",
+      "wa": "6.33",
+      "discipline": "Long Jump",
+      "date": "2026-08-15",
+      "venue": "Alexander Stadium, Birmingham (GBR)",
+      "legal": true,
+      "wind": 1
+    },
+    {
+      "athlete": "Jéssica Barreira",
+      "event": "200m",
+      "status": "MISMATCH",
+      "project": "24.13",
+      "wa": "24.25",
+      "discipline": "200 Metres",
+      "date": "2026-05-29",
+      "venue": "Estadio Atlético de la VIDENA, Lima (PER)",
+      "legal": true,
+      "wind": 1.4
+    },
+    {
+      "athlete": "Sarolta Kriszt",
+      "event": "Kule",
+      "status": "MISMATCH",
+      "project": "12.71",
+      "wa": "13.26",
+      "discipline": "Shot Put",
+      "date": "2026-08-14",
+      "venue": "Alexander Stadium, Birmingham (GBR)",
+      "legal": true,
+      "wind": null
+    },
+    {
+      "athlete": "Anastasia Ntragkomirova",
+      "event": "200m",
+      "status": "MISMATCH",
+      "project": "25.13",
+      "wa": "25.36",
+      "discipline": "200 Metres",
+      "date": "2025-07-26",
+      "venue": "Panthessaliko Stadium, Volos (GRE)",
+      "legal": true,
+      "wind": -0.2
+    }
+  ],
+  "missing": []
+}
