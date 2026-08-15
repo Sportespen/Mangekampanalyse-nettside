@@ -8,7 +8,7 @@ function appEvent(v){for(const[rx,n]of EVENT_MAP)if(rx.test(String(v||'').trim()
 function parseMark(mark,event){const s=String(mark??'').trim().replace(',','.');if(!s||/^(DNS|DNF|DQ|NM|NH|NT)$/i.test(s))return null;if((event==='1500m'||event==='800m')&&s.includes(':')){const p=s.split(':').map(Number);if(p.length===2&&p.every(Number.isFinite))return p[0]*60+p[1];}const n=Number(s.replace(/[^0-9.+-]/g,''));return Number.isFinite(n)?n:null;}
 function yearOf(d){const m=String(d||'').match(/(?:19|20)\d{2}/);return m?Number(m[0]):0;}
 function indoorOf(r){const t=[r?.competition,r?.meeting,r?.venue,r?.location,r?.category].filter(Boolean).map(x=>typeof x==='object'?JSON.stringify(x):String(x)).join(' ').toLowerCase();return /indoor|indoors|short track|\(i\)/.test(t)||r?.indoor===true||r?.isIndoor===true;}
-function seniorOnly(r,event,type){const text=[r?.discipline,r?.category,r?.competition,r?.race,r?.implement,r?.ageCategory,r?.event].filter(Boolean).join(' ').toLowerCase();if(/\b(u18|u20|u23|junior|youth)\b/.test(text))return false;if(type==='men'){if(event==='Kule'&&/(6\s*kg|5\s*kg)/i.test(text))return false;if(event==='Diskos'&&/(1\.75\s*kg|1\.5\s*kg)/i.test(text))return false;if(event==='110mh'&&/(0\.991|99\.1|0\.914|91\.4)/i.test(text))return false;}return true;}
+function seniorOnly(r,event,type){const text=[r?.discipline,r?.category,r?.competition,r?.race,r?.implement,r?.ageCategory,r?.event].filter(Boolean).join(' ').toLowerCase();if(/\b(u18|u20|junior|youth)\b/.test(text))return false;if(type==='men'){if(event==='Kule'&&/(6\s*kg|5\s*kg)/i.test(text))return false;if(event==='Diskos'&&/(1\.75\s*kg|1\.5\s*kg)/i.test(text))return false;if(event==='110mh'&&/(0\.991|99\.1|0\.914|91\.4)/i.test(text))return false;}return true;}
 function windLegal(r,event){if(!WIND_EVENTS.has(event)||indoorOf(r))return true;if(r?.legal===false)return false;const raw=String(r?.wind??r?.windReading??'').trim().replace(',','.');if(!raw)return r?.legal===true;const w=Number(raw.replace(/[^0-9.+-]/g,''));return Number.isFinite(w)&&w<=2.0;}
 function venueOf(r){const v=r?.location||r?.venue||r?.competitionVenue||'';if(typeof v==='string')return v;if(v&&typeof v==='object')return [v.venueName,v.stadium,v.name,v.city,v.town,v.place,v.countryCode].filter(Boolean).join(', ');return '';}
 async function enrich(data,type){
@@ -20,7 +20,7 @@ async function enrich(data,type){
   for(const row of rows){
     const disc=String(row?.discipline||row?.event||'');
     const combinedMatch=type==='women'?/heptathlon/i.test(disc):/decathlon/i.test(disc);
-    if(combinedMatch&&!/\b(u18|u20|u23|junior|youth)\b/i.test([disc,row?.category,row?.competition].filter(Boolean).join(' '))){const n=Number(String(row?.mark??'').replace(/[^0-9.]/g,''));if(Number.isFinite(n)&&n>combinedPB)combinedPB=n;}
+    if(combinedMatch&&!/\b(u18|u20|junior|youth)\b/i.test([disc,row?.category,row?.competition].filter(Boolean).join(' '))){const n=Number(String(row?.mark??'').replace(/[^0-9.]/g,''));if(Number.isFinite(n)&&n>combinedPB)combinedPB=n;}
     const ev=appEvent(disc);if(!ev||!seniorOnly(row,ev,type)||!windLegal(row,ev))continue;
     const mark=parseMark(row?.mark,ev);if(mark==null)continue;
     const old=pbs[ev],better=!old||(TIME_EVENTS.has(ev)?mark<old.mark:mark>old.mark);
