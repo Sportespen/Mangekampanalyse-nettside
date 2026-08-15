@@ -18,5 +18,6 @@
   document.addEventListener('click',ev=>{if(ev.target.closest?.('.tab'))setTimeout(renderMode,0);if(ev.target.closest?.('#removeCompareBtn')){selected=null;setTimeout(renderMode,0);}},true);
   document.addEventListener('change',ev=>{if(ev.target?.id==='eventSelect')setTimeout(renderMode,0);},true);
   window.addEventListener('athleteCompareRender',renderMode);
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(renderMode,0),{once:true});else setTimeout(renderMode,0);
+  function loadBusy(){if(document.querySelector('script[data-compare-loading]'))return;const s=document.createElement('script');s.dataset.compareLoading='1';s.src='athlete-compare-loading.js?v=20260815-stable17';document.body.appendChild(s);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{loadBusy();setTimeout(renderMode,0);},{once:true});else{loadBusy();setTimeout(renderMode,0);}
 })();
