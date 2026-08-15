@@ -28,6 +28,12 @@
   const key=()=>`mangekamp_compare_test_${typeof currentType==='string'?currentType:'men'}`;
   let restoring=false;
 
+  function hideSearchResults(){
+    const results=document.querySelector('#athleteCompareResults');
+    if(!results)return;
+    results.style.display='none';
+    results.innerHTML='';
+  }
   function keepCompareBoxMounted(){
     const current=document.querySelector('#athleteCompareBox');
     if(current){preservedBox=current;return;}
@@ -112,21 +118,21 @@
     const saved=read();
     const input=document.querySelector('#athleteCompareSearch');
     const btn=document.querySelector('#athleteCompareBtn');
-    if(!saved?.name||!input||!btn||restoring||selectedName()===saved.name)return;
+    if(!saved?.name||!input||!btn||restoring||selectedName()===saved.name){if(selectedName())hideSearchResults();return;}
     restoring=true;
     input.value=saved.name;
     btn.click();
     setTimeout(()=>{
       const target=[...document.querySelectorAll('#athleteCompareResults button[data-name]')].find(b=>b.dataset.name===saved.name);
       if(target)target.click();
-      setTimeout(()=>{restoring=false;capture();},650);
+      setTimeout(()=>{restoring=false;hideSearchResults();capture();},650);
     },450);
   }
-  function refresh(){keepCompareBoxMounted();updatePlaceholder();updateModalSize();addIndoorOutdoorColumn();capture();}
+  function refresh(){keepCompareBoxMounted();updatePlaceholder();updateModalSize();addIndoorOutdoorColumn();if(selectedName())hideSearchResults();capture();}
 
   document.addEventListener('click',ev=>{
     const pick=ev.target.closest?.('#athleteCompareResults button[data-name]');
-    if(pick)write(pick.dataset.name);
+    if(pick){write(pick.dataset.name);setTimeout(hideSearchResults,0);}
     if(ev.target.closest?.('#removeCompareBtn'))clear();
     if(ev.target.closest?.('.event-switch-btn')){
       switchingType=true;
