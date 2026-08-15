@@ -1,26 +1,45 @@
 (function(){
-  const wrCache=new Map();
-  let wrPending=false;
   function activeTab(){return document.querySelector('.tab.active')?.dataset?.tab||'analyse';}
-  function compareTable(){return document.querySelector('#athleteCompareOutput table');}
-  function selectedName(){const row=compareTable()?.querySelector('tbody tr');if(!row)return'';const cells=[...row.children];if(activeTab()==='analyse')return cells[3]?.textContent?.trim()||'';if(activeTab()==='ranking')return cells[1]?.textContent?.trim()||cells[2]?.textContent?.trim()||'';return document.querySelector('#athleteCompareOutput h3')?.textContent?.trim()||'';}
-  async function fillWr(){
-    if(activeTab()!=='analyse'||wrPending)return;
-    const table=compareTable();if(!table)return;
+  function compareOut(){return document.querySelector('#athleteCompareOutput');}
+  function compareTable(){return compareOut()?.querySelector('table')||null;}
+
+  function normalizeRanking(){
+    if(activeTab()!=='ranking')return false;
+    const table=compareTable();if(!table)return false;
     const heads=[...table.querySelectorAll('thead th')].map(x=>x.textContent.trim());
-    const wi=heads.indexOf('WR');if(wi<0)return;
-    const row=table.querySelector('tbody tr');if(!row)return;
-    const name=selectedName();if(!name)return;
-    const key=`${typeof currentType==='string'?currentType:'men'}|${name}`;
-    const cell=row.children[wi];if(!cell)return;
-    if(wrCache.has(key)){cell.textContent=wrCache.get(key)||'—';return;}
-    wrPending=true;cell.textContent='…';
-    try{const r=await fetch(`/api/athlete-world-rank?type=${encodeURIComponent(typeof currentType==='string'?currentType:'men')}&name=${encodeURIComponent(name)}&v=${Date.now()}`,{cache:'no-store'});const data=await r.json();const wr=Number(data?.wr)||null;wrCache.set(key,wr);cell.textContent=wr||'—';}catch(_e){cell.textContent='—';}finally{wrPending=false;}
+    const placeIndex=heads.indexOf('Plass');
+    if(placeIndex<0)return true;
+    table.querySelectorAll('tr').forEach(tr=>{if(tr.children[placeIndex])tr.children[placeIndex].remove();});
+    return true;
   }
-  function removePbPlace(){if(activeTab()!=='ranking')return;const table=compareTable();if(!table)return;const first=table.querySelector('thead th');if(!first||first.textContent.trim()!=='Plass')return;table.querySelectorAll('tr').forEach(tr=>{if(tr.children[0])tr.children[0].remove();});}
-  function apply(){removePbPlace();fillWr();}
-  document.addEventListener('click',ev=>{if(ev.target.closest?.('.tab,#athleteCompareResults button'))setTimeout(apply,120);},true);
-  document.addEventListener('change',ev=>{if(ev.target?.id==='eventSelect')setTimeout(apply,50);},true);
-  window.addEventListener('athleteComparisonRendered',apply);
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(apply,100),{once:true});else setTimeout(apply,100);
+
+  function apply(){
+    normalizeRanking();
+  }
+
+  let scheduled=false;
+  function schedule(){
+    if(scheduled)return;
+    scheduled=true;
+    requestAnimationFrame(()=>{scheduled=false;apply();});
+  }
+
+  document.addEventListener('click',ev=>{
+    if(ev.target.closest?.('.tab,#athleteCompareResults button,#athleteCompareBtn')){
+      setTimeout(schedule,0);
+      setTimeout(schedule,80);
+      setTimeout(schedule,250);
+      setTimeout(schedule,700);
+    }
+  },true);
+  document.addEventListener('change',ev=>{if(ev.target?.id==='eventSelect'){setTimeout(schedule,0);setTimeout(schedule,100);}},true);
+  window.addEventListener('athleteComparisonRendered',schedule);
+
+  const observer=new MutationObserver(mutations=>{
+    if(activeTab()!=='ranking')return;
+    if(mutations.some(m=>m.target?.id==='athleteCompareOutput'||m.target?.closest?.('#athleteCompareOutput')||[...m.addedNodes].some(n=>n.nodeType===1&&(n.id==='athleteCompareOutput'||n.querySelector?.('#athleteCompareOutput table')))))schedule();
+  });
+  observer.observe(document.documentElement,{childList:true,subtree:true});
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(schedule,100),{once:true});else setTimeout(schedule,100);
 })();
