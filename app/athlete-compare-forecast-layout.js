@@ -10,8 +10,9 @@
     if(ev==='1500m'||ev==='800m'){const m=Math.floor(n/60),s=(n-m*60).toFixed(2).padStart(5,'0');return `${m}:${s}`.replace('.',',');}
     return n.toFixed(2).replace('.',',');
   }
+  function activeType(){return document.querySelector('.event-switch-btn.active')?.dataset?.type||'men';}
   async function getPBData(name){
-    const type=window.currentType||'men',key=`${type}|${name}`;
+    const type=activeType(),key=`${type}|${name}`;
     if(pbCache.has(key))return pbCache.get(key);
     const promise=(async()=>{
       try{
