@@ -1,4 +1,17 @@
 (function(){
+  const nativeFetch=window.fetch.bind(window);
+  window.fetch=function(input,init){
+    try{
+      const raw=typeof input==='string'?input:(input&&input.url)||'';
+      const u=new URL(raw,location.href);
+      if(u.pathname==='/api/athlete-search'){
+        u.pathname='/api/athlete-search-v2';
+        input=typeof input==='string'?u.toString():new Request(u.toString(),input);
+      }
+    }catch(_e){}
+    return nativeFetch(input,init);
+  };
+
   const key=()=>`mangekamp_compare_test_${typeof currentType==='string'?currentType:'men'}`;
   let restoring=false;
 
