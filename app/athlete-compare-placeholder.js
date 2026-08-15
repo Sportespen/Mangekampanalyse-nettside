@@ -3,6 +3,9 @@
   let lastAnalysis=null;
   let preservedBox=null;
   let switchingType=false;
+  let suppressResults=false;
+  let restoreTimer=null;
+
   window.fetch=async function(input,init){
     let finalInput=input;
     try{
@@ -30,9 +33,7 @@
 
   function hideSearchResults(){
     const results=document.querySelector('#athleteCompareResults');
-    if(!results)return;
-    results.style.display='none';
-    results.innerHTML='';
+    if(results)results.style.display='none';
   }
   function keepCompareBoxMounted(){
     const current=document.querySelector('#athleteCompareBox');
@@ -52,58 +53,40 @@
     const content=document.querySelector('#modalContent');
     const table=content?.querySelector('table');
     if(!table)return;
-    table.style.width='100%';
-    table.style.minWidth='0';
-    table.style.tableLayout='fixed';
+    table.style.width='100%';table.style.minWidth='0';table.style.tableLayout='fixed';
     const widths=['7%','15%','15%','12%','15%','36%'];
-    table.querySelectorAll('tr').forEach(tr=>{
-      [...tr.children].forEach((cell,i)=>{
-        if(widths[i])cell.style.width=widths[i];
-        cell.style.paddingLeft='8px';
-        cell.style.paddingRight='8px';
-        if(i<5){cell.style.whiteSpace='nowrap';}
-        else{cell.style.whiteSpace='normal';cell.style.overflowWrap='anywhere';}
-      });
-    });
+    table.querySelectorAll('tr').forEach(tr=>[...tr.children].forEach((cell,i)=>{
+      if(widths[i])cell.style.width=widths[i];
+      cell.style.paddingLeft='8px';cell.style.paddingRight='8px';
+      if(i<5)cell.style.whiteSpace='nowrap';
+      else{cell.style.whiteSpace='normal';cell.style.overflowWrap='anywhere';}
+    }));
     const wrap=table.closest('.table-wrap');
     if(wrap){wrap.style.overflowX='hidden';wrap.style.maxWidth='100%';}
   }
   function updateModalSize(){
-    const modal=document.querySelector('#modal');
-    const card=modal?.querySelector('.modal-card');
+    const card=document.querySelector('#modal .modal-card');
     if(!card)return;
-    card.style.width='min(940px, calc(100vw - 24px))';
-    card.style.maxWidth='940px';
-    card.style.maxHeight='86vh';
-    card.style.overflowY='auto';
-    card.style.overflowX='hidden';
-    card.style.boxSizing='border-box';
+    card.style.width='min(940px, calc(100vw - 24px))';card.style.maxWidth='940px';
+    card.style.maxHeight='86vh';card.style.overflowY='auto';card.style.overflowX='hidden';card.style.boxSizing='border-box';
     compactBasisTable();
   }
   function addIndoorOutdoorColumn(){
-    const content=document.querySelector('#modalContent');
-    const table=content?.querySelector('table');
-    const title=content?.querySelector('h2')?.textContent||'';
+    const content=document.querySelector('#modalContent'),table=content?.querySelector('table'),title=content?.querySelector('h2')?.textContent||'';
     if(!table||!lastAnalysis||!/–/.test(title))return;
     const ev=(title.split('–').pop()||'').trim();
     const entries=Array.isArray(lastAnalysis?.events?.[ev])?lastAnalysis.events[ev]:[];
     if(!entries.length)return;
-    const head=table.querySelector('thead tr');
-    if(!head)return;
+    const head=table.querySelector('thead tr');if(!head)return;
     if(![...head.children].some(th=>th.textContent.trim()==='Inne / ute')){
-      const th=document.createElement('th');th.textContent='Inne / ute';
-      head.insertBefore(th,head.children[4]||null);
+      const th=document.createElement('th');th.textContent='Inne / ute';head.insertBefore(th,head.children[4]||null);
       const iso=s=>{const m=String(s||'').trim().match(/^(\d{2})\.(\d{2})\.(\d{4})$/);return m?`${m[3]}-${m[2]}-${m[1]}`:String(s||'').trim();};
       const mark=s=>String(s||'').trim().replace(',','.');
       table.querySelectorAll('tbody tr').forEach(tr=>{
-        const cells=[...tr.children];
-        if(cells.length<5)return;
+        const cells=[...tr.children];if(cells.length<5)return;
         const date=iso(cells[1].textContent),result=mark(cells[2].textContent);
         const row=entries.find(r=>String(r?.date||'').startsWith(date)&&mark(r?.display||r?.mark)===result);
-        const td=document.createElement('td');
-        td.textContent=row?.indoor===true?'Inne':row?.indoor===false?'Ute':'—';
-        td.style.fontWeight='800';
-        tr.insertBefore(td,cells[4]||null);
+        const td=document.createElement('td');td.textContent=row?.indoor===true?'Inne':row?.indoor===false?'Ute':'—';td.style.fontWeight='800';tr.insertBefore(td,cells[4]||null);
       });
     }
     compactBasisTable();
@@ -112,40 +95,44 @@
   function write(name){try{if(name)localStorage.setItem(key(),JSON.stringify({name}));}catch(_e){}}
   function clear(){try{localStorage.removeItem(key());}catch(_e){}}
   function selectedName(){return document.querySelector('#athleteCompareOutput h3')?.textContent?.trim()||'';}
-  function capture(){const name=selectedName();if(name)write(name);}
+  function capture(){const name=selectedName();if(name){write(name);suppressResults=true;hideSearchResults();}}
+
   function restore(){
     keepCompareBoxMounted();
-    const saved=read();
-    const input=document.querySelector('#athleteCompareSearch');
-    const btn=document.querySelector('#athleteCompareBtn');
-    if(!saved?.name||!input||!btn||restoring||selectedName()===saved.name){if(selectedName())hideSearchResults();return;}
-    restoring=true;
-    input.value=saved.name;
-    btn.click();
-    setTimeout(()=>{
+    const saved=read(),input=document.querySelector('#athleteCompareSearch'),btn=document.querySelector('#athleteCompareBtn');
+    if(!saved?.name||!input||!btn||restoring)return;
+    if(selectedName()===saved.name){suppressResults=true;hideSearchResults();return;}
+    restoring=true;suppressResults=false;input.value=saved.name;btn.click();
+    clearTimeout(restoreTimer);
+    restoreTimer=setTimeout(()=>{
       const target=[...document.querySelectorAll('#athleteCompareResults button[data-name]')].find(b=>b.dataset.name===saved.name);
       if(target)target.click();
-      setTimeout(()=>{restoring=false;hideSearchResults();capture();},650);
-    },450);
+      setTimeout(()=>{restoring=false;suppressResults=true;hideSearchResults();capture();},500);
+    },350);
   }
-  function refresh(){keepCompareBoxMounted();updatePlaceholder();updateModalSize();addIndoorOutdoorColumn();if(selectedName())hideSearchResults();capture();}
 
   document.addEventListener('click',ev=>{
     const pick=ev.target.closest?.('#athleteCompareResults button[data-name]');
-    if(pick){write(pick.dataset.name);setTimeout(hideSearchResults,0);}
-    if(ev.target.closest?.('#removeCompareBtn'))clear();
+    if(pick){write(pick.dataset.name);suppressResults=true;setTimeout(hideSearchResults,0);}
+    if(ev.target.closest?.('#athleteCompareBtn'))suppressResults=false;
+    if(ev.target.closest?.('#removeCompareBtn')){clear();suppressResults=false;}
     if(ev.target.closest?.('.event-switch-btn')){
-      switchingType=true;
-      preservedBox=null;
+      switchingType=true;preservedBox=null;suppressResults=false;
       setTimeout(()=>{switchingType=false;keepCompareBoxMounted();updatePlaceholder();restore();},300);
     }
     if(ev.target.closest?.('[data-basis],#whatIfBtn'))setTimeout(()=>{updateModalSize();addIndoorOutdoorColumn();},0);
   },true);
+  document.addEventListener('input',ev=>{if(ev.target?.id==='athleteCompareSearch')suppressResults=false;},true);
   document.addEventListener('visibilitychange',()=>{if(document.hidden)capture();else setTimeout(restore,150);});
   window.addEventListener('pagehide',capture);
   window.addEventListener('pageshow',()=>setTimeout(restore,180));
 
-  const mo=new MutationObserver(refresh);
-  function start(){mo.observe(document.body,{subtree:true,childList:true});refresh();setTimeout(restore,250);}
+  const mo=new MutationObserver(()=>{
+    keepCompareBoxMounted();
+    updatePlaceholder();
+    if(suppressResults||selectedName())hideSearchResults();
+    if(document.querySelector('#modal.open')){updateModalSize();addIndoorOutdoorColumn();}
+  });
+  function start(){mo.observe(document.body,{subtree:true,childList:true});keepCompareBoxMounted();updatePlaceholder();setTimeout(restore,250);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
