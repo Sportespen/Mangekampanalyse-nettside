@@ -1,7 +1,6 @@
 (function(){
   const nativeFetch=window.fetch.bind(window);
   let lastAnalysis=null;
-  let preservedBox=null;
   let switchingType=false;
   let suppressResults=false;
 
@@ -39,12 +38,18 @@
     const results=document.querySelector('#athleteCompareResults');
     if(results){results.style.display='none';results.innerHTML='';}
   }
-  function keepCompareBoxMounted(){
-    const current=document.querySelector('#athleteCompareBox');
-    if(current){preservedBox=current;return;}
-    if(switchingType||!preservedBox)return;
-    const panel=document.querySelector('#forecast');
-    if(panel&&!preservedBox.isConnected)panel.appendChild(preservedBox);
+  function ensureStableMount(){
+    if(switchingType)return;
+    const forecast=document.querySelector('#forecast');
+    const box=document.querySelector('#athleteCompareBox');
+    if(!forecast||!box)return;
+    /* IMPORTANT: keep comparison UI OUTSIDE #forecast. Live refresh replaces parts of
+       the forecast panel; as a sibling the selected athlete/scenario cannot be removed. */
+    if(box.parentElement===forecast || box.previousElementSibling!==forecast){
+      forecast.insertAdjacentElement('afterend',box);
+      box.style.marginTop='22px';
+      box.style.marginBottom='0';
+    }
   }
   function updatePlaceholder(){
     const input=document.querySelector('#athleteCompareSearch');
@@ -99,12 +104,12 @@
 
   document.addEventListener('click',ev=>{
     const pick=ev.target.closest?.('#athleteCompareResults button[data-name]');
-    if(pick){suppressResults=true;setTimeout(()=>{hideSearchResults();const input=document.querySelector('#athleteCompareSearch');if(input)input.blur();},0);}
+    if(pick){suppressResults=true;setTimeout(()=>{hideSearchResults();ensureStableMount();const input=document.querySelector('#athleteCompareSearch');if(input)input.blur();},0);}
     if(ev.target.closest?.('#athleteCompareBtn'))suppressResults=false;
     if(ev.target.closest?.('#removeCompareBtn')){suppressResults=false;hideSearchResults();}
     if(ev.target.closest?.('.event-switch-btn')){
-      switchingType=true;preservedBox=null;suppressResults=false;hideSearchResults();
-      setTimeout(()=>{switchingType=false;keepCompareBoxMounted();updatePlaceholder();},300);
+      switchingType=true;suppressResults=false;hideSearchResults();
+      setTimeout(()=>{switchingType=false;ensureStableMount();updatePlaceholder();},350);
     }
     if(ev.target.closest?.('[data-basis],#whatIfBtn'))setTimeout(()=>{hideSearchResults();updateModalSize();addIndoorOutdoorColumn();},0);
   },true);
@@ -115,16 +120,23 @@
     }
   },true);
 
+  let mountQueued=false;
   const mo=new MutationObserver(()=>{
-    keepCompareBoxMounted();
-    updatePlaceholder();
-    if(suppressResults||selectedName())hideSearchResults();
-    if(document.querySelector('#modal.open')){updateModalSize();addIndoorOutdoorColumn();}
+    if(!mountQueued){
+      mountQueued=true;
+      requestAnimationFrame(()=>{
+        mountQueued=false;
+        ensureStableMount();
+        updatePlaceholder();
+        if(suppressResults||selectedName())hideSearchResults();
+        if(document.querySelector('#modal.open')){updateModalSize();addIndoorOutdoorColumn();}
+      });
+    }
   });
   function start(){
     clearLegacyHistory();
     mo.observe(document.body,{subtree:true,childList:true});
-    keepCompareBoxMounted();updatePlaceholder();hideSearchResults();
+    ensureStableMount();updatePlaceholder();hideSearchResults();
     const input=document.querySelector('#athleteCompareSearch');if(input)input.value='';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
