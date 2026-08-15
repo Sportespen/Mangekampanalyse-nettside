@@ -6,7 +6,10 @@
     const isJonathan=String(data.id||'')==='14989292'||/jonathan\s+hertwig/i.test(String(data.name||''));
     if(!isJonathan)return data;
     const rows=data.events.Lengde.slice();
-    const outdoor=rows.filter(r=>!r?.indoor&&String(r?.date)!=='2026-01-30');
+    const isOldIndoor=r=>String(r?.date)==='2026-01-17'&&Number(r?.mark)===6.83;
+    const outdoor=rows
+      .filter(r=>!r?.indoor&&!isOldIndoor(r)&&String(r?.date)!=='2026-01-30')
+      .sort((a,b)=>Date.parse(String(b.date||''))-Date.parse(String(a.date||'')));
     const corrected=[...outdoor.slice(0,3),verified]
       .filter((r,i,a)=>a.findIndex(x=>String(x.date)===String(r.date)&&Number(x.mark)===Number(r.mark))===i)
       .sort((a,b)=>Date.parse(String(b.date||''))-Date.parse(String(a.date||'')))
