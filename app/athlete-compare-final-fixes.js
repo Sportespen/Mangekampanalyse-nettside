@@ -6,6 +6,7 @@
   function activeType(){return document.querySelector('.event-switch-btn.active')?.dataset?.type||'men';}
   function norm(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/æ/gi,'ae').replace(/ø/gi,'o').replace(/å/gi,'a').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();}
   function fmtPB(ev,v){const n=Number(v);if(!Number.isFinite(n))return '—';if(ev==='1500m'||ev==='800m'){const m=Math.floor(n/60),s=(n-m*60).toFixed(2).padStart(5,'0');return `${m}:${s}`.replace('.',',');}return n.toFixed(2).replace('.',',');}
+  function cleanMainRowPB(){document.querySelectorAll('#athleteCompareOutput .compare-pb,#athleteCompareOutput .compare-pb-total').forEach(el=>el.remove());}
 
   async function findAthlete(name){
     const type=activeType(),key=`${type}|${norm(name)}`;
@@ -71,8 +72,8 @@
     if(!summary||summary.dataset.pbAdded==='1')return;
     const expected=summary.querySelector(':scope > b')?.textContent.trim()||'—';
     summary.dataset.pbAdded='1';
-    summary.style.cssText='margin-top:12px;padding:9px 11px;background:#102a45;border-radius:8px;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center';
-    summary.innerHTML=`<div><small style="display:block;color:#9fb2c6">Forventet resultat</small><b style="display:block;font-size:21px">${expected}</b></div><div><small style="display:block;color:#9fb2c6">PB</small><b class="compare-modal-pb" style="display:block;font-size:21px">…</b></div>`;
+    summary.style.cssText='margin-top:12px;padding:9px 11px;background:#102a45;border-radius:8px;display:flex;align-items:flex-end;justify-content:space-between;gap:18px';
+    summary.innerHTML=`<div><small style="display:block;color:#9fb2c6">Forventet resultat</small><b style="display:block;font-size:21px">${expected}</b></div><div style="text-align:right"><small style="display:block;color:#9fb2c6">PB</small><b class="compare-modal-pb" style="display:block;font-size:21px">…</b></div>`;
     const card=modal.querySelector('.modal-card');if(card){card.style.width='min(760px,calc(100vw - 28px))';card.style.maxWidth='760px';card.style.padding='18px';}
     content.querySelectorAll('table th,table td').forEach(c=>{c.style.padding='8px 10px';});
     const data=await analyseAthlete(name);const pb=data?.pbs?.[ev]?.mark;
@@ -85,18 +86,21 @@
     const td=btn.closest('td'),row=td?.parentElement;if(!td||!row)return;
     const i=[...row.children].indexOf(td)-2;if(i<0)return;
     lastBasisIndex=i;
-    setTimeout(decorateBasisModal,0);setTimeout(decorateBasisModal,80);
+    setTimeout(decorateBasisModal,0);setTimeout(decorateBasisModal,80);setTimeout(decorateBasisModal,300);
   }
 
   document.addEventListener('click',ev=>{
     noteBasisClick(ev.target);
+    cleanMainRowPB();
     if(ev.target.closest?.('.tab,#athleteCompareResults button,#athleteCompareBtn')){setTimeout(decorateWR,50);setTimeout(decorateWR,500);}
   },true);
 
   const observer=new MutationObserver(()=>{
+    cleanMainRowPB();
     decorateWR();
     if(document.querySelector('#modal')?.classList.contains('open'))decorateBasisModal();
   });
   observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+  cleanMainRowPB();
   setTimeout(decorateWR,300);
 })();
