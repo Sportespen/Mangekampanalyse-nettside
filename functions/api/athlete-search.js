@@ -19,9 +19,9 @@ function venueText(v){if(v==null)return'';if(typeof v==='string'||typeof v==='nu
 function venueOf(r){return venueText(r?.location)||venueText(r?.venue)||venueText(r?.competitionVenue)||'';}
 async function json(url){const r=await fetch(url,{headers:{Accept:'application/json','User-Agent':'Mangekampanalyse/2.0'},cf:{cacheTtl:60,cacheEverything:true}});if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json();}
 async function text(url){const r=await fetch(url,{headers:{Accept:'text/html,application/xhtml+xml','User-Agent':'Mozilla/5.0 Mangekampanalyse/2.0'},cf:{cacheTtl:60,cacheEverything:true}});if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.text();}
-function athleteName(a){return String(a?.name||a?.fullName||[a?.firstName,a?.lastName].filter(Boolean).join(' ')||'').trim();}
+function athleteName(a){return String(a?.name||a?.fullName||[a?.firstname??a?.firstName,a?.lastname??a?.lastName].filter(Boolean).join(' ')||'').trim();}
 function athleteNation(a){return String(a?.countryCode||a?.country||a?.nationality||a?.federation||'').trim();}
-function athleteBirth(a){return String(a?.dateOfBirth||a?.birthDate||a?.dob||a?.birth||'').trim();}
+function athleteBirth(a){return String(a?.birthdate||a?.dateOfBirth||a?.birthDate||a?.dob||a?.birth||'').trim();}
 function combinedText(a){return [a?.discipline,a?.disciplines,a?.event,a?.events,a?.primaryDiscipline].flat().filter(Boolean).join(' ').toLowerCase();}
 function hasCombinedResult(rows,type){const rx=type==='women'?/heptathlon/i:/decathlon/i;return (Array.isArray(rows)?rows:[]).some(r=>rx.test(String(r?.discipline||r?.event||r?.competition||'')));}
 function samePerformance(a,b){return Number(a.mark).toFixed(3)===Number(b.mark).toFixed(3)&&String(a.date||'')===String(b.date||'')&&norm(a.venue)===norm(b.venue);}
