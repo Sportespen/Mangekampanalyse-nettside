@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Mangekampanalyse">
-<script>window.MANGEKAMP_APP_BUILD='20260815-athlete-compare-stable15';</script>
+<script>window.MANGEKAMP_APP_BUILD='20260815-athlete-compare-stable16';</script>
 <link rel="icon" type="image/png" href="../assets/mangekampanalyse_icon.png">
 <link rel="apple-touch-icon" href="../assets/mangekampanalyse_icon.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -34,9 +34,10 @@ liveEngine.src='live-engine.js?v=20260815-popup-stable-'+Date.now();
 liveEngine.onload=function(){window.setInterval=nativeSetInterval;const forecastBasis=document.createElement('script');forecastBasis.src='forecast-enhancements.js?v=20260815-popup-stable-'+Date.now();forecastBasis.onload=function(){if(typeof window.bindLiveForecastBasis==='function')window.bindLiveForecastBasis();const attemptDetails=document.createElement('script');attemptDetails.src='live-attempt-details.js?v=20260814-vertical-v2-'+Date.now();attemptDetails.onload=function(){if(typeof window.bindLiveAttemptDetails==='function')window.bindLiveAttemptDetails();};document.body.appendChild(attemptDetails);};document.body.appendChild(forecastBasis);const direct=document.createElement('script');direct.src='live-refresh-api.js?v=20260814-live-attempts-v2-'+Date.now();document.body.appendChild(direct);};document.body.appendChild(liveEngine);
 </script>
 <script src="athlete-compare-jonathan-fix.js?v=20260815-2"></script>
-<script src="athlete-compare.js?v=20260815-stable14"></script>
-<script src="athlete-compare-placeholder.js?v=20260815-stable12"></script>
-<script src="athlete-compare-scenario-persist.js?v=20260815-stable13"></script>
-<script src="whatif-digit-input.js?v=20260815-stable15"></script>
-<script src="whatif-result-view.js?v=20260815-stable13"></script>
+<script src="athlete-compare.js?v=20260815-stable16"></script>
+<script src="athlete-compare-placeholder.js?v=20260815-stable16"></script>
+<script src="athlete-compare-tab-modes.js?v=20260815-stable16"></script>
+<script src="athlete-compare-scenario-persist.js?v=20260815-stable16"></script>
+<script src="whatif-digit-input.js?v=20260815-stable16"></script>
+<script src="whatif-result-view.js?v=20260815-stable16"></script>
 </body></html>
