@@ -26,6 +26,16 @@
     const total=totalBox?.querySelector(':scope > b')?.textContent?.trim()||'—';
     const whatIf=out.querySelector('#whatIfBtn');
     const remove=out.querySelector('#removeCompareBtn');
+    const scenarioReset=out.querySelector('#scenarioReset');
+    const scenarioNote=scenarioReset?.parentElement||null;
+    let scenarioTotal='',scenarioDiff='';
+    if(scenarioNote){
+      const txt=scenarioNote.textContent||'';
+      const totalMatch=txt.match(/Hva hvis-scenario:\s*(\d+)\s*poeng/i);
+      const diffMatch=txt.match(/\(([+-]?\d+)\)/);
+      scenarioTotal=totalMatch?.[1]||'';
+      scenarioDiff=diffMatch?.[1]||'';
+    }
 
     const eventHeads=[];
     const eventCells=[];
@@ -64,6 +74,19 @@
     wrap.appendChild(compact);
 
     out.innerHTML='';
+    if(scenarioTotal){
+      const scenarioWrap=document.createElement('div');
+      scenarioWrap.style.cssText='display:flex;justify-content:flex-end;margin:0 0 10px';
+      const scenarioBox=document.createElement('div');
+      scenarioBox.id='scenarioSummaryBox';
+      scenarioBox.style.cssText='display:flex;align-items:center;gap:14px;padding:9px 12px;border:1px solid #6f4cff;border-radius:9px;background:#151c3b;min-width:270px;justify-content:space-between';
+      scenarioBox.innerHTML=`<div><small style="display:block;color:#b8aaff;font-weight:700">Hva hvis-scenario</small><b style="display:block;font-size:21px;line-height:1.1">${scenarioTotal} poeng</b></div><div style="text-align:center"><small style="display:block;color:#9fb2c6">Endring</small><b style="font-size:18px;color:#b8aaff">${scenarioDiff||'—'}</b></div>`;
+      const reset=document.createElement('button');
+      reset.type='button';reset.textContent='Nullstill';
+      reset.style.cssText='padding:7px 10px;border:1px solid #456783;border-radius:7px;background:#0d2743;color:#fff;font-weight:800;cursor:pointer';
+      reset.onclick=()=>scenarioReset?.click();
+      scenarioBox.appendChild(reset);scenarioWrap.appendChild(scenarioBox);out.appendChild(scenarioWrap);
+    }
     out.appendChild(wrap);
     const hint=document.createElement('p');
     hint.style.cssText='margin:8px 0 0;color:#7f98af;font-size:12px';
