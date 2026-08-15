@@ -1,61 +1,22 @@
 (function(){
   let selected=null;
   const nativeFetch=window.fetch.bind(window);
-  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
   const isTime=e=>['100m','400m','110mh','1500m','100mh','200m','800m'].includes(e);
   function birthYear(v){const m=String(v||'').match(/(?:19|20)\d{2}/);return m?m[0]:'—';}
   function activeTab(){return document.querySelector('.tab.active')?.dataset?.tab||'analyse';}
   function pbFor(ev){return selected?.pbs?.[ev]||null;}
-  function theoretical(){
-    if(!selected?.pbs||!Array.isArray(D?.events))return null;
-    let total=0;
-    for(let i=0;i<D.events.length;i++){
-      const p=pbFor(D.events[i]);if(!p||!Number.isFinite(Number(p.mark)))return null;
-      const pts=scoreEvent(i,Number(p.mark));if(!Number.isFinite(Number(pts)))return null;total+=Number(pts);
-    }
-    return total;
-  }
+  function theoretical(){if(!selected?.pbs||!Array.isArray(D?.events))return null;let total=0;for(let i=0;i<D.events.length;i++){const p=pbFor(D.events[i]);if(!p||!Number.isFinite(Number(p.mark)))return null;const pts=scoreEvent(i,Number(p.mark));if(!Number.isFinite(Number(pts)))return null;total+=Number(pts);}return total;}
   function topPB(){return Math.max(0,...(D?.athletes||[]).map(x=>Number(x.combinedPB)||0));}
   function displayMark(ev,v){if(v==null||!Number.isFinite(Number(v)))return '—';if(ev==='1500m'||ev==='800m'){const n=Number(v),m=Math.floor(n/60),s=(n-m*60).toFixed(2).padStart(5,'0');return `${m}:${s}`.replace('.',',');}return Number(v).toFixed(2).replace('.',',');}
-  function simpleHost(){
-    const box=document.querySelector('#athleteCompareBox'),out=document.querySelector('#athleteCompareOutput');if(!box||!out)return null;
-    let host=document.querySelector('#athleteCompareSimpleView');
-    if(!host){host=document.createElement('div');host.id='athleteCompareSimpleView';host.style.marginTop='14px';out.insertAdjacentElement('beforebegin',host);}return host;
-  }
-  function renderStart(host){
-    const combined=Number(selected?.combinedPB)||0,theo=theoretical(),util=combined&&theo?combined/theo*100:null,pot=combined&&theo?theo-combined:null,diff=combined?combined-topPB():null;
-    host.innerHTML=`<div class="table-wrap"><table><thead><tr><th>QP</th><th>WR</th><th>Nasjon</th><th>Utøver</th><th>Født</th><th>${currentType==='women'?'Sjukamp-PB':'Tikamp-PB'}</th><th>Teoretisk PB</th><th>Utnyttelse</th><th>Uutnyttet potensial</th><th>Diff. topp</th></tr></thead><tbody><tr style="background:#153b61"><td>—</td><td>—</td><td>${esc(selected?.nation||'—')}</td><td class="name">${esc(selected?.name||'—')}</td><td>${birthYear(selected?.birth)}</td><td>${combined||'—'}</td><td>${theo??'—'}</td><td>${util!=null?util.toFixed(1)+' %':'—'}</td><td>${pot!=null?pot:'—'}</td><td>${diff!=null?diff:'—'}</td></tr></tbody></table></div>`;
-  }
+  function simpleHost(){const box=document.querySelector('#athleteCompareBox'),out=document.querySelector('#athleteCompareOutput');if(!box||!out)return null;let host=document.querySelector('#athleteCompareSimpleView');if(!host){host=document.createElement('div');host.id='athleteCompareSimpleView';host.style.marginTop='14px';out.insertAdjacentElement('beforebegin',host);}return host;}
+  function renderStart(host){const combined=Number(selected?.combinedPB)||0,theo=theoretical(),util=combined&&theo?combined/theo*100:null,pot=combined&&theo?theo-combined:null,diff=combined?combined-topPB():null;host.innerHTML=`<div class="table-wrap"><table><thead><tr><th>QP</th><th>WR</th><th>Nasjon</th><th>Utøver</th><th>Født</th><th>${currentType==='women'?'Sjukamp-PB':'Tikamp-PB'}</th><th>Teoretisk PB</th><th>Utnyttelse</th><th>Uutnyttet potensial</th><th>Diff. topp</th></tr></thead><tbody><tr style="background:#153b61"><td>—</td><td>—</td><td>${esc(selected?.nation||'—')}</td><td class="name">${esc(selected?.name||'—')}</td><td>${birthYear(selected?.birth)}</td><td>${combined||'—'}</td><td>${theo??'—'}</td><td>${util!=null?util.toFixed(1)+' %':'—'}</td><td>${pot!=null?pot:'—'}</td><td>${diff!=null?diff:'—'}</td></tr></tbody></table></div>`;}
   function rankFor(ev,mark){if(mark==null)return '—';const i=Number(document.querySelector('#eventSelect')?.value||0),vals=(D?.athletes||[]).map(x=>Number(x.best?.[i])).filter(Number.isFinite);return 1+vals.filter(v=>isTime(ev)?v<mark:v>mark).length;}
-  function renderRanking(host){
-    const i=Number(document.querySelector('#eventSelect')?.value||0),ev=D?.events?.[i],p=pbFor(ev),mark=p?Number(p.mark):null,rank=Number.isFinite(mark)?rankFor(ev,mark):'—';
-    const venue=p?.venue||p?.competition||'—';
-    host.innerHTML=`<div class="table-wrap"><table class="ranking-table"><thead><tr><th>Plass</th><th>Nasjon</th><th>Utøver</th><th>Resultat</th><th>Poeng</th><th>År</th><th>Sted</th></tr></thead><tbody><tr style="background:#153b61"><td>${rank}</td><td>${esc(selected?.nation||'—')}</td><td>${esc(selected?.name||'—')}</td><td>${displayMark(ev,mark)}</td><td>${Number.isFinite(mark)?scoreEvent(i,mark):'—'}</td><td>${esc(p?.year||birthYear(p?.date)||'—')}</td><td>${esc(venue)}</td></tr></tbody></table></div>`;
-  }
-  function renderMode(){
-    const out=document.querySelector('#athleteCompareOutput'),host=simpleHost();if(!out||!host)return;
-    const tab=activeTab();
-    if(tab==='forecast'){host.style.display='none';out.style.display='block';return;}
-    out.style.display='none';host.style.display='block';
-    if(!selected){host.innerHTML='';return;}
-    if(tab==='analyse')renderStart(host);else if(tab==='ranking')renderRanking(host);else host.innerHTML='';
-  }
-  window.fetch=async function(input,init){
-    const r=await nativeFetch(input,init);
-    try{
-      const raw=typeof input==='string'?input:(input&&input.url)||'',u=new URL(raw,location.href);
-      if(u.pathname==='/api/athlete-search-v2'&&u.searchParams.get('action')==='analyse'){
-        const data=await r.clone().json();if(data?.events){selected=data;setTimeout(renderMode,40);}
-      }
-    }catch(_e){}
-    return r;
-  };
-  document.addEventListener('click',ev=>{
-    if(ev.target.closest?.('.tab'))setTimeout(renderMode,0);
-    if(ev.target.closest?.('#removeCompareBtn')){selected=null;setTimeout(renderMode,0);}
-  },true);
+  function renderRanking(host){const i=Number(document.querySelector('#eventSelect')?.value||0),ev=D?.events?.[i],p=pbFor(ev),mark=p?Number(p.mark):null,rank=Number.isFinite(mark)?rankFor(ev,mark):'—',venue=p?.venue||p?.competition||'—';host.innerHTML=`<div class="table-wrap"><table class="ranking-table"><thead><tr><th>Plass</th><th>Nasjon</th><th>Utøver</th><th>Resultat</th><th>Poeng</th><th>År</th><th>Sted</th></tr></thead><tbody><tr style="background:#153b61"><td>${rank}</td><td>${esc(selected?.nation||'—')}</td><td>${esc(selected?.name||'—')}</td><td>${displayMark(ev,mark)}</td><td>${Number.isFinite(mark)?scoreEvent(i,mark):'—'}</td><td>${esc(p?.year||birthYear(p?.date)||'—')}</td><td>${esc(venue)}</td></tr></tbody></table></div>`;}
+  function renderMode(){const out=document.querySelector('#athleteCompareOutput'),host=simpleHost();if(!out||!host)return;const tab=activeTab();if(tab==='forecast'){host.style.display='none';out.style.display='block';return;}out.style.display='none';host.style.display='block';if(!selected){host.innerHTML='';return;}if(tab==='analyse')renderStart(host);else if(tab==='ranking')renderRanking(host);else host.innerHTML='';}
+  window.fetch=async function(input,init){const r=await nativeFetch(input,init);try{const raw=typeof input==='string'?input:(input&&input.url)||'',u=new URL(raw,location.href);if(u.pathname==='/api/athlete-search-v2'&&u.searchParams.get('action')==='analyse'){const data=await r.clone().json();if(data?.events){selected=data;setTimeout(renderMode,0);}}}catch(_e){}return r;};
+  document.addEventListener('click',ev=>{if(ev.target.closest?.('.tab'))setTimeout(renderMode,0);if(ev.target.closest?.('#removeCompareBtn')){selected=null;setTimeout(renderMode,0);}},true);
   document.addEventListener('change',ev=>{if(ev.target?.id==='eventSelect')setTimeout(renderMode,0);},true);
-  const mo=new MutationObserver(()=>{if(document.querySelector('#athleteCompareBox'))renderMode();});
-  function start(){mo.observe(document.body,{subtree:true,childList:true});renderMode();}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+  window.addEventListener('athleteCompareRender',renderMode);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(renderMode,0),{once:true});else setTimeout(renderMode,0);
 })();
