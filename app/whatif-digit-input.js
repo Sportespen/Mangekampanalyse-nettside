@@ -10,6 +10,13 @@
     if(event==='800m')return 5;
     return 4;
   }
+  function maskFor(event){
+    if(['Lengde','Høyde','Stav'].includes(event))return '0,00';
+    if(['100m','110mh','100mh','200m','400m','Kule','Diskos','Spyd'].includes(event))return '00,00';
+    if(event==='1500m')return '0:00,00';
+    if(event==='800m')return '0:00,00';
+    return '00,00';
+  }
   function formatDigits(event,digits){
     const req=requiredDigits(event);
     const d=String(digits||'').replace(/\D/g,'').slice(0,req);
@@ -44,33 +51,48 @@
     input.title=ok?'':`Skriv nøyaktig ${req} tall`;
     return ok;
   }
+  function updateApply(){
+    const apply=document.querySelector('#whatIfApply');
+    if(!apply)return;
+    const bad=[...document.querySelectorAll('[data-whatif]')].some(x=>String(x.value||'').trim()&&x.dataset.exactDigits!=='1');
+    apply.disabled=bad;
+    apply.style.opacity=bad?'0.45':'1';
+    apply.style.cursor=bad?'not-allowed':'pointer';
+    apply.title=bad?'Fyll inn riktig antall tall i alle brukte felt':'';
+  }
   function normalize(input){
     const event=eventNameFor(input);
     const req=requiredDigits(event);
     const digits=String(input.value||'').replace(/\D/g,'').slice(0,req);
     const formatted=formatDigits(event,digits);
     if(input.value!==formatted){input.value=formatted;try{input.setSelectionRange(formatted.length,formatted.length);}catch(_e){}}
-    validate(input);
-    const apply=document.querySelector('#whatIfApply');
-    if(apply){
-      const bad=[...document.querySelectorAll('[data-whatif]')].some(x=>String(x.value||'').trim()&&x.dataset.exactDigits!=='1');
-      apply.disabled=bad;
-      apply.style.opacity=bad?'0.45':'1';
-      apply.style.cursor=bad?'not-allowed':'pointer';
-      apply.title=bad?'Fyll inn riktig antall tall i alle brukte felt':'';
-    }
+    validate(input);updateApply();
+  }
+  function focusSibling(input,dir){
+    const fields=[...document.querySelectorAll('[data-whatif]')];
+    const i=fields.indexOf(input);
+    const next=fields[i+dir];
+    if(!next)return;
+    next.focus();
+    try{next.setSelectionRange(next.value.length,next.value.length);}catch(_e){}
   }
   function upgrade(input){
     if(!input||input.dataset.digitInputReady==='1')return;
     input.dataset.digitInputReady='1';
-    const event=eventNameFor(input),req=requiredDigits(event);
-    input.setAttribute('inputmode','numeric');input.setAttribute('pattern','[0-9]*');input.setAttribute('autocomplete','off');
-    input.placeholder=`${req} tall`;
+    const event=eventNameFor(input);
+    input.setAttribute('inputmode','numeric');
+    input.setAttribute('pattern','[0-9]*');
+    input.setAttribute('autocomplete','off');
+    input.placeholder=maskFor(event);
     input.addEventListener('beforeinput',ev=>{if(ev.inputType==='insertText'&&ev.data&&/\D/.test(ev.data))ev.preventDefault();});
+    input.addEventListener('keydown',ev=>{
+      if(ev.key==='ArrowDown'){ev.preventDefault();focusSibling(input,1);}
+      else if(ev.key==='ArrowUp'){ev.preventDefault();focusSibling(input,-1);}
+    });
     normalize(input);
   }
   document.addEventListener('input',ev=>{const input=ev.target?.closest?.('[data-whatif]');if(input)normalize(input);},true);
-  function scan(){document.querySelectorAll('[data-whatif]').forEach(upgrade);}
+  function scan(){document.querySelectorAll('[data-whatif]').forEach(upgrade);updateApply();}
   const mo=new MutationObserver(scan);
   function start(){mo.observe(document.body,{subtree:true,childList:true});scan();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
