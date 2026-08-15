@@ -2,7 +2,7 @@ export async function onRequestGet({request}){
   try{
     const u=new URL(request.url);
     const target=`${u.origin}/api/live?t=${Date.now()}`;
-    const r=await fetch(target,{headers:{Accept:'application/json'},cf:{cacheTtl:0,cacheEverything:false}});
+    const r=await fetch(target,{headers:{Accept:'application/json','Cache-Control':'no-cache'},cf:{cacheTtl:0,cacheEverything:false}});
     const data=await r.json();
     const w=data?.women||{};
     const sample=[];
@@ -11,7 +11,9 @@ export async function onRequestGet({request}){
       if(sample.length>=12)break;
     }
     return new Response(JSON.stringify({
+      diagnosticVersion:'LIVE_API_PROXY_V2',
       source:'PRODUCTION /api/live',
+      target,
       http:r.status,
       updatedAt:data?.updatedAt||null,
       completedEvents:w.completedEvents??null,
@@ -21,6 +23,6 @@ export async function onRequestGet({request}){
       sample
     },null,2),{headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store, no-cache, must-revalidate, max-age=0'}});
   }catch(e){
-    return new Response(JSON.stringify({error:String(e?.message||e)},null,2),{status:500,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}});
+    return new Response(JSON.stringify({diagnosticVersion:'LIVE_API_PROXY_V2',error:String(e?.message||e)},null,2),{status:500,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}});
   }
 }
