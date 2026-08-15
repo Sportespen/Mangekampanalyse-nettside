@@ -1,6 +1,8 @@
 (function(){
   const nativeFetch=window.fetch.bind(window);
   let lastAnalysis=null;
+  let preservedBox=null;
+  let switchingType=false;
   window.fetch=async function(input,init){
     let finalInput=input;
     try{
@@ -26,6 +28,13 @@
   const key=()=>`mangekamp_compare_test_${typeof currentType==='string'?currentType:'men'}`;
   let restoring=false;
 
+  function keepCompareBoxMounted(){
+    const current=document.querySelector('#athleteCompareBox');
+    if(current){preservedBox=current;return;}
+    if(switchingType||!preservedBox)return;
+    const panel=document.querySelector('#forecast');
+    if(panel&&!preservedBox.isConnected)panel.appendChild(preservedBox);
+  }
   function updatePlaceholder(){
     const input=document.querySelector('#athleteCompareSearch');
     if(!input)return;
@@ -99,6 +108,7 @@
   function selectedName(){return document.querySelector('#athleteCompareOutput h3')?.textContent?.trim()||'';}
   function capture(){const name=selectedName();if(name)write(name);}
   function restore(){
+    keepCompareBoxMounted();
     const saved=read();
     const input=document.querySelector('#athleteCompareSearch');
     const btn=document.querySelector('#athleteCompareBtn');
@@ -112,13 +122,17 @@
       setTimeout(()=>{restoring=false;capture();},650);
     },450);
   }
-  function refresh(){updatePlaceholder();updateModalSize();addIndoorOutdoorColumn();capture();}
+  function refresh(){keepCompareBoxMounted();updatePlaceholder();updateModalSize();addIndoorOutdoorColumn();capture();}
 
   document.addEventListener('click',ev=>{
     const pick=ev.target.closest?.('#athleteCompareResults button[data-name]');
     if(pick)write(pick.dataset.name);
     if(ev.target.closest?.('#removeCompareBtn'))clear();
-    if(ev.target.closest?.('.event-switch-btn'))setTimeout(()=>{updatePlaceholder();restore();},120);
+    if(ev.target.closest?.('.event-switch-btn')){
+      switchingType=true;
+      preservedBox=null;
+      setTimeout(()=>{switchingType=false;keepCompareBoxMounted();updatePlaceholder();restore();},300);
+    }
     if(ev.target.closest?.('[data-basis],#whatIfBtn'))setTimeout(()=>{updateModalSize();addIndoorOutdoorColumn();},0);
   },true);
   document.addEventListener('visibilitychange',()=>{if(document.hidden)capture();else setTimeout(restore,150);});
