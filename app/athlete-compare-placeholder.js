@@ -3,6 +3,7 @@
   let lastAnalysis=null;
   let switchingType=false;
   let suppressResults=false;
+  let preservedSelectedBox=null;
 
   window.fetch=async function(input,init){
     let finalInput=input;
@@ -38,18 +39,33 @@
     const results=document.querySelector('#athleteCompareResults');
     if(results){results.style.display='none';results.innerHTML='';}
   }
+  function boxHasSelected(box){return !!box?.querySelector?.('#athleteCompareOutput h3');}
   function ensureStableMount(){
     if(switchingType)return;
     const forecast=document.querySelector('#forecast');
-    const box=document.querySelector('#athleteCompareBox');
-    if(!forecast||!box)return;
-    /* IMPORTANT: keep comparison UI OUTSIDE #forecast. Live refresh replaces parts of
-       the forecast panel; as a sibling the selected athlete/scenario cannot be removed. */
-    if(box.parentElement===forecast || box.previousElementSibling!==forecast){
-      forecast.insertAdjacentElement('afterend',box);
-      box.style.marginTop='22px';
-      box.style.marginBottom='0';
+    let box=document.querySelector('#athleteCompareBox');
+    if(!forecast)return;
+
+    if(boxHasSelected(box))preservedSelectedBox=box;
+
+    /* A live refresh may create a fresh blank compare box. Never let that blank box
+       replace the already selected athlete DOM. Restore the exact old node so its
+       event handlers, state and What-if content survive intact. */
+    if(preservedSelectedBox&&box&&box!==preservedSelectedBox&&!boxHasSelected(box)){
+      box.replaceWith(preservedSelectedBox);
+      box=preservedSelectedBox;
     }
+    if(!box&&preservedSelectedBox){
+      forecast.insertAdjacentElement('afterend',preservedSelectedBox);
+      box=preservedSelectedBox;
+    }
+    if(!box)return;
+
+    /* Keep comparison UI outside #forecast because the live engine rerenders forecast. */
+    if(box.parentElement===forecast||box.previousElementSibling!==forecast){
+      forecast.insertAdjacentElement('afterend',box);
+    }
+    box.style.marginTop='22px';box.style.marginBottom='0';
   }
   function updatePlaceholder(){
     const input=document.querySelector('#athleteCompareSearch');
@@ -104,11 +120,18 @@
 
   document.addEventListener('click',ev=>{
     const pick=ev.target.closest?.('#athleteCompareResults button[data-name]');
-    if(pick){suppressResults=true;setTimeout(()=>{hideSearchResults();ensureStableMount();const input=document.querySelector('#athleteCompareSearch');if(input)input.blur();},0);}
+    if(pick){
+      suppressResults=true;
+      setTimeout(()=>{
+        hideSearchResults();ensureStableMount();
+        const input=document.querySelector('#athleteCompareSearch');if(input)input.blur();
+        const box=document.querySelector('#athleteCompareBox');if(boxHasSelected(box))preservedSelectedBox=box;
+      },100);
+    }
     if(ev.target.closest?.('#athleteCompareBtn'))suppressResults=false;
-    if(ev.target.closest?.('#removeCompareBtn')){suppressResults=false;hideSearchResults();}
+    if(ev.target.closest?.('#removeCompareBtn')){suppressResults=false;hideSearchResults();preservedSelectedBox=null;}
     if(ev.target.closest?.('.event-switch-btn')){
-      switchingType=true;suppressResults=false;hideSearchResults();
+      switchingType=true;suppressResults=false;hideSearchResults();preservedSelectedBox=null;
       setTimeout(()=>{switchingType=false;ensureStableMount();updatePlaceholder();},350);
     }
     if(ev.target.closest?.('[data-basis],#whatIfBtn'))setTimeout(()=>{hideSearchResults();updateModalSize();addIndoorOutdoorColumn();},0);
