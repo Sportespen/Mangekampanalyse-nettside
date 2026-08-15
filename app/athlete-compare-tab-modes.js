@@ -1,1 +1,1 @@
-(function(){if(document.querySelector('script[data-stable-compare-mount]'))return;const s=document.createElement('script');s.dataset.stableCompareMount='1';s.src='athlete-compare-stable-mount.js?v=20260815-stable19';document.body.appendChild(s);})();
+(function(){if(document.querySelector('script[data-stable-compare-mount]'))return;const s=document.createElement('script');s.dataset.stableCompareMount='1';s.src='athlete-compare-stable-mount.js?v=20260815-stable20';document.body.appendChild(s);})();
