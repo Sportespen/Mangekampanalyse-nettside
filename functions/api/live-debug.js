@@ -1,15 +1,26 @@
-const TRPC='https://proxy.european-athletics.com/trpc';
-const COMPETITION_CODE='ECH26';
-const PHASE='ATHWHEPTATH-----------JT----------';
-const GROUPS=['ATHWHEPTATH-----------JT--A00100--','ATHWHEPTATH-----------JT--B00100--'];
-function enc(payload){return encodeURIComponent(JSON.stringify({json:payload}));}
-async function query(proc,payload,allow404=false){const url=`${TRPC}/${proc}?input=${enc(payload)}`;const r=await fetch(url,{headers:{'X-Client-Platform':'Desktop','Accept':'application/json','User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/151 Safari/537.36'},cf:{cacheTtl:0,cacheEverything:false}});if(allow404&&r.status===404)return null;if(!r.ok)throw new Error(`${proc}: HTTP ${r.status}`);const data=await r.json();return data?.result?.data?.json??null;}
-function cleanName(v){return String(v||'').replace(/\s+/g,' ').trim();}
-function athleteObjects(payload){const out=[];const seen=new Set();function walk(v,depth=0){if(v==null||depth>6)return;if(Array.isArray(v)){for(const x of v)walk(x,depth+1);return;}if(typeof v!=='object')return;const hasName=!!(v.fullName||v.firstName||v.lastName||v.name||v.athleteName);const hasKey=v.athleteId!=null||v.federationId!=null||v.id!=null||v.bib!=null;if(hasName&&hasKey){const key=String(v.athleteId??v.federationId??v.id??v.bib);if(!seen.has(key)){seen.add(key);out.push(v);}}for(const x of Object.values(v))walk(x,depth+1);}walk(payload);return out;}
-async function athleteMap(){const data=await query('liveResults.getAthletesFeed',{competitionCode:COMPETITION_CODE})||{};const out={};for(const a of athleteObjects(data)){const meta={name:cleanName(a.fullName||a.name||a.athleteName||`${a.firstName||''} ${a.lastName||''}`),nation:String(a.countryCode||a.nation||a.country||'')};for(const id of [a.athleteId,a.federationId,a.id])if(id!=null&&String(id)!=='')out['id:'+String(id)]=meta;if(a.bib!=null&&String(a.bib)!=='')out['bib:'+String(a.bib)]=meta;}return out;}
-function looksLikeAthleteRow(v){return !!(v&&typeof v==='object'&&!Array.isArray(v)&&(v.athleteId!=null||v.federationId!=null||v.fullName||v.athleteName));}
-function rowsFromPayload(payload){if(!payload)return[];if(Array.isArray(payload.athletes))return payload.athletes;if(Array.isArray(payload.results)&&payload.results.some(looksLikeAthleteRow))return payload.results;if(Array.isArray(payload)&&payload.some(looksLikeAthleteRow))return payload;const found=[];const seen=new Set();function walk(v,depth=0){if(v==null||depth>8)return;if(Array.isArray(v)){for(const item of v){if(looksLikeAthleteRow(item)){const key=String(item.athleteId??item.federationId??item.fullName??item.athleteName??found.length);if(!seen.has(key)){seen.add(key);found.push(item);}}else walk(item,depth+1);}return;}if(typeof v==='object'){for(const child of Object.values(v))walk(child,depth+1);}}walk(payload);return found;}
-function meaningful(v){return v!==undefined&&v!==null&&String(v).trim()!=='';}
-async function eventRows(){const reqs=[query('liveResults.getCombinedEventResultsFeed',{event:PHASE,competitionCode:COMPETITION_CODE,isSummary:true},true).catch(()=>null),query('liveResults.getCombinedEventResultsFeed',{event:PHASE,competitionCode:COMPETITION_CODE,isSummary:false},true).catch(()=>null),...GROUPS.map(g=>query('liveResults.getCombinedEventResultsFeed',{event:g,competitionCode:COMPETITION_CODE,isSummary:false},true).catch(()=>null))];const payloads=await Promise.all(reqs);const payloadCounts=payloads.map((p,i)=>({i,count:rowsFromPayload(p).length,subType:p?.eventSubType||null,hasAthletes:Array.isArray(p?.athletes)}));const byAthlete=new Map();for(const payload of payloads){for(const row of rowsFromPayload(payload)){const id=String(row?.athleteId||row?.federationId||'');if(!id)continue;const prev=byAthlete.get(id)||{};const next={...prev,...row};for(const k of ['result','performance','mark','resultValue','bestResult','bestMark','bestResultValue','bestPerformance','distance','resultMark','best'])if(!meaningful(row?.[k])&&meaningful(prev?.[k]))next[k]=prev[k];if((!row?.combinedResult||typeof row.combinedResult!=='object')&&prev?.combinedResult)next.combinedResult=prev.combinedResult;byAthlete.set(id,next);}}return{rows:[...byAthlete.values()],payloadCounts};}
-function parseMark(value){if(value==null)return null;const m=String(value).replace(',','.').match(/-?\d+(?:\.\d+)?/);return m?Number(m[0]):null;}
-export async function onRequestGet(){try{const [athletes,ev]=await Promise.all([athleteMap(),eventRows()]);const report=ev.rows.map(row=>{const id=String(row.athleteId||row.federationId||'');const bib=String(row.bib||'');const meta=athletes['id:'+id]||athletes['bib:'+bib]||{};const raw=row.result??row.performance??row.mark??row.resultValue??row.bestResult??row.distance??null;const mark=parseMark(raw);return{id,bib,name:meta.name||null,nation:meta.nation||null,raw,mark,points:row.combinedResult?.points??row.points??null,accepted:!!meta.name&&mark!=null};});return new Response(JSON.stringify({payloadCounts:ev.payloadCounts,mergedRows:ev.rows.length,accepted:report.filter(x=>x.accepted).length,rejected:report.filter(x=>!x.accepted),sample:report.slice(0,30)},null,2),{headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store, no-cache, must-revalidate, max-age=0'}});}catch(e){return new Response(JSON.stringify({error:String(e?.message||e)},null,2),{status:500,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}});}}
+export async function onRequestGet({request}){
+  try{
+    const u=new URL(request.url);
+    const target=`${u.origin}/api/live?t=${Date.now()}`;
+    const r=await fetch(target,{headers:{Accept:'application/json'},cf:{cacheTtl:0,cacheEverything:false}});
+    const data=await r.json();
+    const w=data?.women||{};
+    const sample=[];
+    for(const [name,row] of Object.entries(w.results||{})){
+      if(row?.Spyd) sample.push({name,spyd:row.Spyd.display??row.Spyd.mark,mark:row.Spyd.mark??null,points:row.Spyd.points??null});
+      if(sample.length>=12)break;
+    }
+    return new Response(JSON.stringify({
+      source:'PRODUCTION /api/live',
+      http:r.status,
+      updatedAt:data?.updatedAt||null,
+      completedEvents:w.completedEvents??null,
+      eventHasMarks:w.eventHasMarks||{},
+      resultAthletes:Object.keys(w.results||{}).length,
+      spydCount:Object.values(w.results||{}).filter(x=>x?.Spyd).length,
+      sample
+    },null,2),{headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store, no-cache, must-revalidate, max-age=0'}});
+  }catch(e){
+    return new Response(JSON.stringify({error:String(e?.message||e)},null,2),{status:500,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}});
+  }
+}
