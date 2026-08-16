@@ -27,12 +27,15 @@ async function fetchPage(cfg, year, page) {
 
 function parseAthletes(html,cfg,year) {
   const out=[];
-  const re=/<a\b[^>]*href=["']([^"']*\/athletes\/[^"']+?-(\d{7,9})(?:[?"'#][^"']*)?)["'][^>]*>([\s\S]*?)<\/a>/gi;
+  const re=/<a\b[^>]*href=["']([^"']*\/athletes\/[^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
   let m;
   while((m=re.exec(html))) {
-    const name=cleanText(m[3]);
+    const href=m[1];
+    const idMatch=href.match(/(?:-|athlete=)(\d{7,9})(?:$|[?&#/])/i);
+    if(!idMatch) continue;
+    const name=cleanText(m[2]);
     if(!name || name.length<3 || !/[A-Za-zÀ-ž]/.test(name)) continue;
-    out.push({id:m[2],name,nation:'',birth:'',discipline:cfg.label,type:cfg.type,sourceYear:year,url:m[1]});
+    out.push({id:idMatch[1],name,nation:'',birth:'',discipline:cfg.label,type:cfg.type,sourceYear:year,url:href});
   }
   return out;
 }
