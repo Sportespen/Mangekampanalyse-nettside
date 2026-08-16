@@ -1,4 +1,5 @@
 (function(){
+  if(window.__compareModalPbHardfix)return;window.__compareModalPbHardfix=true;
   const cache=new Map();
   let timer=0;
   const EVENTS=['100m','Lengde','Kule','Høyde','400m','110mh','Diskos','Stav','Spyd','1500m','100mh','200m','800m'];
@@ -13,8 +14,8 @@
     const id=identity();if(!id)return;
     const box=summaryBox(content);if(!box)return;
     const expected=(box.dataset.expectedValue||box.querySelector('.basis-expected-value')?.textContent||box.querySelector('b')?.textContent||'—').trim();box.dataset.expectedValue=expected;
-    const card=modal.querySelector('.modal-card');if(card){card.style.width='min(650px,calc(100vw - 24px))';card.style.maxWidth='650px';card.style.padding='14px 16px 16px';card.style.maxHeight='calc(100vh - 24px)';card.style.overflowY='auto';}
-    box.style.cssText='margin-top:10px;padding:10px 12px;background:#102a45;border-radius:8px;display:grid!important;grid-template-columns:1fr 1fr!important;align-items:end!important;gap:16px!important';
+    const card=modal.querySelector('.modal-card');if(card){card.style.width='min(650px,calc(100vw - 24px))';card.style.maxWidth='650px';card.style.height='auto';card.style.minHeight='0';card.style.padding='14px 16px 16px';card.style.maxHeight='calc(100vh - 24px)';card.style.overflowY='auto';}
+    box.style.cssText='margin-top:10px;padding:10px 12px;background:#102a45;border-radius:8px;display:grid!important;grid-template-columns:1fr 1fr!important;align-items:end!important;gap:16px!important;height:auto!important;min-height:0!important';
     if(!box.querySelector('.basis-expected-col')){
       box.innerHTML=`<div class="basis-expected-col"><small style="display:block;color:#9fb2c6;font-size:12px">Forventet resultat</small><b class="basis-expected-value" style="display:block;font-size:23px;line-height:1.15;margin-top:2px">${expected}</b></div><div class="basis-pb-col" style="text-align:right"><small style="display:block;color:#9fb2c6;font-size:12px">PB</small><b class="basis-pb-value" style="display:block;font-size:23px;line-height:1.15;margin-top:2px">…</b></div>`;
     }
@@ -25,7 +26,7 @@
   }
   function cleanRow(){document.querySelectorAll('#athleteCompareOutput .compare-pb,#athleteCompareOutput .compare-pb-total').forEach(x=>x.remove());}
   function schedule(){clearTimeout(timer);timer=setTimeout(apply,20);}
-  document.addEventListener('click',()=>{cleanRow();schedule();setTimeout(apply,120);setTimeout(apply,450);setTimeout(apply,1000);},true);
+  document.addEventListener('click',()=>{cleanRow();schedule();setTimeout(apply,120);setTimeout(apply,450);},true);
   new MutationObserver(()=>{cleanRow();if(document.querySelector('#modal')?.classList.contains('open'))schedule();}).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
   cleanRow();
 })();
