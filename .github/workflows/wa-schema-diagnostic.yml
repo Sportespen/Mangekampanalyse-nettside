@@ -1,4 +1,4 @@
-name: WA toplist access diagnostic
+name: WA toplist athlete markup diagnostic
 on:
   push:
     paths:
@@ -9,13 +9,21 @@ jobs:
   diagnose:
     runs-on: ubuntu-latest
     steps:
-      - name: Test direct World Athletics toplist access
+      - name: Inspect target athlete markup
         shell: bash
         run: |
           set -u
-          URL='https://worldathletics.org/records/toplists/combined-events/decathlon/all/men/senior/2026?ageCategory=senior&bestResultsOnly=true&maxResultsByCountry=all&page=1&regionType=world&windReading=regular'
-          CODE=$(curl -L -A 'Mozilla/5.0' -sS -o /tmp/wa.html -w '%{http_code}' "$URL")
-          echo "HTTP=$CODE"
-          echo "BYTES=$(wc -c </tmp/wa.html)"
-          grep -Eoi 'Jonathan[^<]{0,80}|Markus[^<]{0,80}|Leo[^<]{0,80}' /tmp/wa.html | head -20 || true
-          head -c 300 /tmp/wa.html | tr '\n' ' ' || true
+          fetch(){
+            YEAR="$1"; PAGE="$2"; OUT="$3"
+            URL="https://worldathletics.org/records/toplists/combined-events/decathlon/all/men/senior/${YEAR}?ageCategory=senior&bestResultsOnly=true&maxResultsByCountry=all&page=${PAGE}&regionType=world&windReading=regular"
+            curl -L -A 'Mozilla/5.0' -sS -o "$OUT" "$URL"
+          }
+          fetch 2024 1 /tmp/wa2024.html
+          fetch 2025 1 /tmp/wa2025p1.html
+          echo '=== MARKUS 2024 ==='
+          grep -in -C 2 'Markus' /tmp/wa2024.html | head -80 || true
+          echo '=== JONATHAN 2025 PAGES ==='
+          for p in $(seq 1 15); do
+            fetch 2025 "$p" "/tmp/j${p}.html"
+            if grep -qi 'Jonathan' "/tmp/j${p}.html"; then echo "PAGE $p"; grep -in -C 2 'Jonathan' "/tmp/j${p}.html" | head -60; fi
+          done
