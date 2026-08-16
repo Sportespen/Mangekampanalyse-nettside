@@ -56,4 +56,11 @@
   const observer=new MutationObserver(()=>{cleanMainRowPB();decorateWR();});
   observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
   cleanMainRowPB();setTimeout(decorateWR,300);
+
+  if(!window.__athleteNameAutocompleteV3){
+    const s=document.createElement('script');
+    s.src='athlete-name-autocomplete.js?v=20260816-index-v3';
+    s.async=false;
+    document.head.appendChild(s);
+  }
 })();
