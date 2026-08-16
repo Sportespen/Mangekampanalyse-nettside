@@ -1,0 +1,35 @@
+name: Update athlete name index
+on:
+  push:
+    paths:
+      - 'scripts/build-athlete-name-index.mjs'
+      - '.github/workflows/update-athlete-name-index.yml'
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build and verify WA name index
+        run: node scripts/build-athlete-name-index.mjs
+      - name: Commit refreshed index
+        shell: bash
+        run: |
+          if git diff --quiet -- app/data/athlete-name-index.json; then
+            echo 'No index changes'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/data/athlete-name-index.json
+          git commit -m 'Refresh World Athletics athlete name index'
+          git push
