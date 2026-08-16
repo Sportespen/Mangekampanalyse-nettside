@@ -13,27 +13,28 @@ async function getJson(url){const r=await fetch(url,{headers:{Accept:'applicatio
 function val(o,keys){for(const k of keys){if(o&&typeof o[k]==='string'&&o[k])return o[k];}return typeof o==='string'?o:'';}
 function isCombined(a,type,wasFiltered){if(wasFiltered)return true;const d=JSON.stringify(a?.disciplines||'').toLowerCase();return type==='women'?/heptathlon|\bhep\b/.test(d):/decathlon|\bdec\b/.test(d);}
 function addUnique(map,a,filtered){const id=String(a?.aaAthleteId||'');if(!id)return;const old=map.get(id);if(!old)map.set(id,{a,filtered:!!filtered});else if(filtered)old.filtered=true;}
-async function gql(endpoint,apiKey,variables,ttl=60){const r=await fetch(endpoint,{method:'POST',headers:{Accept:'application/json','Content-Type':'application/json','x-api-key':apiKey},body:JSON.stringify({query:QUERY,variables}),cf:{cacheTtl:ttl,cacheEverything:true}});if(!r.ok)throw new Error(`GraphQL HTTP ${r.status}`);const j=await r.json();return Array.isArray(j?.data?.searchCompetitors)?j.data.searchCompetitors:[];}
+async function gql(endpoint,apiKey,variables,ttl=300){const r=await fetch(endpoint,{method:'POST',headers:{Accept:'application/json','Content-Type':'application/json','x-api-key':apiKey},body:JSON.stringify({query:QUERY,variables}),cf:{cacheTtl:ttl,cacheEverything:true}});if(!r.ok)throw new Error(`GraphQL HTTP ${r.status}`);const j=await r.json();return Array.isArray(j?.data?.searchCompetitors)?j.data.searchCompetitors:[];}
 async function collectRows(endpoint,apiKey,base,disciplineCode,q){
   const merged=new Map();
   const single=tokens(q).length===1;
-
-  // For a single name, build a live index of the complete DEC/HEP pool first.
-  // This is cached at the edge and refreshes automatically, so new athletes are included.
-  if(single){
-    const indexRows=await gql(endpoint,apiKey,{...base,query:null,disciplineCode},1800).catch(()=>[]);
-    for(const a of indexRows)addUnique(merged,a,true);
-  }
-
-  // Always supplement with the normal WA name search. This keeps surname/full-name
-  // behaviour unchanged and catches athletes not yet present in the cached pool.
-  const [filteredRows,allRows]=await Promise.all([
-    gql(endpoint,apiKey,{...base,query:q,disciplineCode}).catch(()=>[]),
-    gql(endpoint,apiKey,{...base,query:q,disciplineCode:null}).catch(()=>[])
+  const direct=await Promise.all([
+    gql(endpoint,apiKey,{...base,query:q,disciplineCode},300).catch(()=>[]),
+    gql(endpoint,apiKey,{...base,query:q,disciplineCode:null},300).catch(()=>[])
   ]);
-  for(const a of filteredRows)addUnique(merged,a,true);
-  for(const a of allRows)addUnique(merged,a,false);
+  for(const a of direct[0])addUnique(merged,a,true);
+  for(const a of direct[1])addUnique(merged,a,false);
+  if(!single)return merged;
 
+  // WA's direct first-name search is incomplete. Build a dynamic pool of
+  // combined-events athletes from alphabet searches, then filter locally.
+  const letters='abcdefghijklmnopqrstuvwxyz'.split('');
+  for(let i=0;i<letters.length;i+=6){
+    const batch=letters.slice(i,i+6);
+    const resultSets=await Promise.all(batch.map(letter=>
+      gql(endpoint,apiKey,{...base,query:letter,disciplineCode},21600).catch(()=>[])
+    ));
+    for(const rows of resultSets)for(const a of rows)addUnique(merged,a,true);
+  }
   return merged;
 }
 export async function onRequestGet({request}){
