@@ -1,4 +1,4 @@
-name: WA GraphQL schema diagnostic
+name: WA toplist access diagnostic
 on:
   push:
     paths:
@@ -9,13 +9,13 @@ jobs:
   diagnose:
     runs-on: ubuntu-latest
     steps:
-      - name: Inspect WA GraphQL query fields
+      - name: Test direct World Athletics toplist access
         shell: bash
         run: |
-          set -euo pipefail
-          CFG='https://worldathletics.nimarion.de'
-          ENDPOINT=$(curl -fsSL "$CFG/graphql/endpoint" | jq -r '.endpoint // .url // .value // .')
-          APIKEY=$(curl -fsSL "$CFG/graphql/api-key" | jq -r '.apiKey // .key // .value // .')
-          Q='{"query":"query { __type(name: \"Query\") { fields { name args { name type { kind name ofType { kind name } } } } } }"}'
-          curl -fsSL "$ENDPOINT" -H 'content-type: application/json' -H "x-api-key: $APIKEY" --data "$Q" \
-            | jq -r '.data.__type.fields[] | select(.name|test("top|rank|list|compet|athlete";"i")) | [.name, ([.args[].name] | join(","))] | @tsv'
+          set -u
+          URL='https://worldathletics.org/records/toplists/combined-events/decathlon/all/men/senior/2026?ageCategory=senior&bestResultsOnly=true&maxResultsByCountry=all&page=1&regionType=world&windReading=regular'
+          CODE=$(curl -L -A 'Mozilla/5.0' -sS -o /tmp/wa.html -w '%{http_code}' "$URL")
+          echo "HTTP=$CODE"
+          echo "BYTES=$(wc -c </tmp/wa.html)"
+          grep -Eoi 'Jonathan[^<]{0,80}|Markus[^<]{0,80}|Leo[^<]{0,80}' /tmp/wa.html | head -20 || true
+          head -c 300 /tmp/wa.html | tr '\n' ' ' || true
