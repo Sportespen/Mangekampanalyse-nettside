@@ -6,4 +6,5 @@
   const s=document.createElement('script');s.dataset.compareForecastLayout='1';s.src='athlete-compare-forecast-layout.js?v=20260815-row5-'+Date.now();document.body.appendChild(s);
   const oldFinal=document.querySelector('script[data-compare-final-fixes]');if(oldFinal)oldFinal.remove();
   const f=document.createElement('script');f.dataset.compareFinalFixes='1';f.src='athlete-compare-final-fixes.js?v=20260816-final2-'+Date.now();document.body.appendChild(f);
+  if(!document.querySelector('script[data-athlete-name-autocomplete]')){const a=document.createElement('script');a.dataset.athleteNameAutocomplete='1';a.src='athlete-name-autocomplete.js?v=20260816-search1-'+Date.now();document.body.appendChild(a);}
 })();
