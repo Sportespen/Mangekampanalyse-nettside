@@ -37,7 +37,9 @@
     if(document.querySelector('.tab.active')?.dataset?.tab!=='analyse')return;
     const out=document.querySelector('#athleteCompareOutput'),table=out?.querySelector('table');if(!table)return;
     const heads=[...table.querySelectorAll('thead th')].map(x=>x.textContent.trim());
-    const wrI=heads.indexOf('WR'),athI=heads.indexOf('Utøver');if(wrI<0||athI<0)return;
+    const wrI=heads.indexOf('WR');
+    const athI=heads.findIndex(h=>['Utøver','Athlete','Athlet'].includes(h));
+    if(wrI<0||athI<0)return;
     const row=table.querySelector('tbody tr');if(!row)return;
     const cells=[...row.children],name=cells[athI]?.textContent.trim();if(!name)return;
     const cell=cells[wrI];if(!cell||cell.dataset.wrLoaded==='1')return;
@@ -56,11 +58,4 @@
   const observer=new MutationObserver(()=>{cleanMainRowPB();decorateWR();});
   observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
   cleanMainRowPB();setTimeout(decorateWR,300);
-
-  if(!window.__athleteNameAutocompleteV3){
-    const s=document.createElement('script');
-    s.src='athlete-name-autocomplete.js?v=20260816-index-v3';
-    s.async=false;
-    document.head.appendChild(s);
-  }
 })();
