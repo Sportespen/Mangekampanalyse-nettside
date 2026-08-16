@@ -1,0 +1,21 @@
+name: WA GraphQL schema diagnostic
+on:
+  push:
+    paths:
+      - '.github/workflows/wa-schema-diagnostic.yml'
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Inspect WA GraphQL query fields
+        shell: bash
+        run: |
+          set -euo pipefail
+          CFG='https://worldathletics.nimarion.de'
+          ENDPOINT=$(curl -fsSL "$CFG/graphql/endpoint" | jq -r '.endpoint // .url // .value // .')
+          APIKEY=$(curl -fsSL "$CFG/graphql/api-key" | jq -r '.apiKey // .key // .value // .')
+          Q='{"query":"query { __type(name: \"Query\") { fields { name args { name type { kind name ofType { kind name } } } } } }"}'
+          curl -fsSL "$ENDPOINT" -H 'content-type: application/json' -H "x-api-key: $APIKEY" --data "$Q" \
+            | jq -r '.data.__type.fields[] | select(.name|test("top|rank|list|compet|athlete";"i")) | [.name, ([.args[].name] | join(","))] | @tsv'
