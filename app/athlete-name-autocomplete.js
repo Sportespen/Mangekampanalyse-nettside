@@ -1,6 +1,6 @@
 (function(){
-  if(window.__athleteNameAutocompleteV4)return;
-  window.__athleteNameAutocompleteV4=true;
+  if(window.__athleteNameAutocompleteV5)return;
+  window.__athleteNameAutocompleteV5=true;
   let timer=0,seq=0,indexPromise=null;
   function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
   function type(){return document.querySelector('.event-switch-btn.active')?.dataset?.type||'men';}
@@ -30,24 +30,33 @@
     [...results.querySelectorAll('[data-suggest-id]')].forEach((b,i)=>b.onclick=()=>choose(list[i],input,btn,results));
   }
   async function suggest(input,btn,results,status){
-    if(type()!=='men')return;
-    const q=input.value.trim(),my=++seq;if(q.length<2){results.style.display='none';return;}
+    const q=input.value.trim(),my=++seq,currentType=type();
+    if(q.length<2){results.style.display='none';return;}
     try{
-      const idx=await loadIndex();if(my!==seq||type()!=='men')return;
-      const source=Array.isArray(idx?.men)?idx.men:[];
+      const idx=await loadIndex();if(my!==seq||type()!==currentType)return;
+      const source=Array.isArray(idx?.[currentType])?idx[currentType]:[];
       const list=source.filter(a=>a?.name&&matches(a.name,q)).sort((a,b)=>rank(a.name,q)-rank(b.name,q)||a.name.localeCompare(b.name,'nb')).slice(0,40);
       if(list.length){render(list,input,btn,results,status);return;}
     }catch(_){/* ordinary search remains available */}
   }
   function bind(){
     const input=document.querySelector('#athleteCompareSearch'),btn=document.querySelector('#athleteCompareBtn'),results=document.querySelector('#athleteCompareResults'),status=document.querySelector('#athleteCompareStatus');
-    if(!input||!btn||!results||input.dataset.menAutocompleteV4==='1')return;
-    input.dataset.menAutocompleteV4='1';results.style.maxHeight='390px';results.style.overflowY='auto';
+    if(!input||!btn||!results||input.dataset.autocompleteV5==='1')return;
+    input.dataset.autocompleteV5='1';results.style.maxHeight='390px';results.style.overflowY='auto';
     loadIndex().catch(()=>{});
-    input.addEventListener('input',()=>{if(type()!=='men')return;clearTimeout(timer);timer=setTimeout(()=>suggest(input,btn,results,status),70);});
-    input.addEventListener('focus',()=>{if(type()==='men'&&results.children.length&&input.value.trim().length>=2)results.style.display='block';});
+    input.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(()=>suggest(input,btn,results,status),70);});
+    input.addEventListener('focus',()=>{if(results.children.length&&input.value.trim().length>=2)results.style.display='block';});
   }
+  document.addEventListener('click',e=>{
+    if(!e.target.closest?.('.event-switch-btn'))return;
+    seq++;
+    clearTimeout(timer);
+    const results=document.querySelector('#athleteCompareResults'),input=document.querySelector('#athleteCompareSearch'),status=document.querySelector('#athleteCompareStatus');
+    if(results){results.innerHTML='';results.style.display='none';}
+    if(status)status.textContent='';
+    setTimeout(()=>{bind();const btn=document.querySelector('#athleteCompareBtn'),r=document.querySelector('#athleteCompareResults'),s=document.querySelector('#athleteCompareStatus');if(input&&btn&&r&&input.value.trim().length>=2)suggest(input,btn,r,s);},40);
+  },true);
   new MutationObserver(bind).observe(document.documentElement,{childList:true,subtree:true});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind);else bind();
-  if('requestIdleCallback' in window)requestIdleCallback(()=>loadIndex().catch(()=>{}));else setTimeout(()=>loadIndex().catch(()=>{}),200);
+  loadIndex().catch(()=>{});
 })();
