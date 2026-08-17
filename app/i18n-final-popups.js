@@ -10,25 +10,17 @@
   };
   const d=()=>dict[lang()]||dict.nb;
   function translateBasisModal(){
-    const m=document.querySelector('#modalContent');if(!m)return;
+    const m=document.querySelector('#modalContent');if(!m||!m.children.length)return;
     const h=m.querySelector('h2');
     if(h&&h.textContent.includes(' – ')){
       const i=h.textContent.lastIndexOf(' – '),raw=h.textContent.slice(i+3).trim();
       h.textContent=h.textContent.slice(0,i)+' – '+eventLabel(raw);
     }
     const p=m.querySelector('h2 + p');
-    if(p){
-      const q=p.textContent.trim();
-      if(/Prognosen bruker de 3 beste|forecast uses|Prognose verwendet/i.test(q))p.textContent=d().forecastUses;
-      else if(/færre enn 4 gyldige|fewer than 4 valid|weniger als 4 gültige/i.test(q))p.textContent=d().forecastFewer;
-    }
+    if(p){const q=p.textContent.trim();if(/Prognosen bruker de 3 beste|forecast uses|Prognose verwendet/i.test(q))p.textContent=d().forecastUses;else if(/færre enn 4 gyldige|fewer than 4 valid|weniger als 4 gültige/i.test(q))p.textContent=d().forecastFewer;}
     const map={Dato:d().date,Date:d().date,Datum:d().date,Resultat:d().result,Result:d().result,Ergebnis:d().result,Vind:d().wind,Wind:d().wind,'Konkurranse / sted':d().venue,'Competition / venue':d().venue,'Wettkampf / Ort':d().venue};
     m.querySelectorAll('th').forEach(x=>{const q=x.textContent.trim();if(map[q])x.textContent=map[q]});
-    [...m.querySelectorAll('small')].forEach(s=>{
-      const q=s.textContent.trim();
-      if(/^(Forventet resultat|Expected result|Erwartetes Ergebnis)$/i.test(q))s.textContent=d().expected;
-      else if(/^PB \((personlig rekord|personal best|persönliche Bestleistung)\)$/i.test(q))s.textContent=d().pb;
-    });
+    [...m.querySelectorAll('small')].forEach(s=>{const q=s.textContent.trim();if(/^(Forventet resultat|Expected result|Erwartetes Ergebnis)$/i.test(q))s.textContent=d().expected;else if(/^PB \((personlig rekord|personal best|persönliche Bestleistung)\)$/i.test(q))s.textContent=d().pb;});
   }
   function translateScoreDropdown(){
     const box=document.querySelector('.forecast-score-dropdown');if(!box)return;
@@ -39,14 +31,10 @@
     rows.slice(7).forEach(r=>{const s=r.querySelector('small');if(s)s.textContent=eventLabel(s.textContent.trim())});
   }
   function apply(){translateBasisModal();translateScoreDropdown();}
-  function after(){queueMicrotask(apply);requestAnimationFrame(apply);setTimeout(apply,0);setTimeout(apply,40);}
+  function after(){setTimeout(apply,0);setTimeout(apply,30);}
   document.addEventListener('mka:languagechange',after);
-  document.addEventListener('click',after,false);
-  document.addEventListener('dblclick',after,false);
-  const modal=document.querySelector('#modalContent');
-  if(modal)new MutationObserver(()=>after()).observe(modal,{childList:true,subtree:true});
-  const bodyObserver=new MutationObserver(list=>{for(const rec of list){for(const n of rec.addedNodes){if(n.nodeType===1&&(n.matches?.('.forecast-score-dropdown')||n.querySelector?.('.forecast-score-dropdown'))){after();return;}}}});
-  bodyObserver.observe(document.body,{childList:true,subtree:false});
+  document.addEventListener('click',after,true);
+  document.addEventListener('dblclick',after,true);
   window.addEventListener('load',after);
   after();
 })();
