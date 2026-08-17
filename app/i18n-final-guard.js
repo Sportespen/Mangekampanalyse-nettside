@@ -6,23 +6,24 @@
     de:{flag:'🇩🇪',name:'Deutsch',what:'Was wäre wenn?',desc:'Geben Sie eigene Ergebnisse in einer oder mehreren Disziplinen ein. Leere Felder verwenden die Standardprognose.',expected:'Erwartet:',placeholder:'Ergebnis eingeben',standard:'Standardprognose',scenario:'Was wäre wenn',change:'Änderung',reset:'Zurücksetzen',apply:'Szenario anwenden',events:['100m','Weitsprung','Kugelstoß','Hochsprung','400m','110 m Hürden','Diskuswurf','Stabhochsprung','Speerwurf','1500m']}
   };
   const lang=()=>localStorage.getItem('mka-language')||'nb';
+  function ensureStyle(){
+    let st=document.querySelector('#mka-final-lang-style');if(st)return;
+    st=document.createElement('style');st.id='mka-final-lang-style';st.textContent=`
+      #mkaLanguageSwitcher{margin-left:auto;display:flex;align-items:center;gap:7px;padding-left:14px;z-index:1000}
+      #mkaLanguageSwitcher button{width:42px!important;height:34px!important;border:1px solid #355b7c!important;border-radius:8px!important;background-color:#0b2038!important;background-repeat:no-repeat!important;background-position:center!important;background-size:32px 22px!important;display:block!important;font-size:0!important;line-height:0!important;color:transparent!important;cursor:pointer!important;opacity:.76!important;overflow:hidden!important}
+      #mkaLanguageSwitcher button[data-lang="nb"]{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 16'%3E%3Crect width='22' height='16' fill='%23BA0C2F'/%3E%3Cpath d='M0 6h22v4H0zM6 0h4v16H6z' fill='white'/%3E%3Cpath d='M0 7h22v2H0zM7 0h2v16H7z' fill='%2300215B'/%3E%3C/svg%3E")!important}
+      #mkaLanguageSwitcher button[data-lang="en"]{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 40'%3E%3Crect width='60' height='40' fill='%23012169'/%3E%3Cpath d='M0 0l60 40M60 0L0 40' stroke='white' stroke-width='8'/%3E%3Cpath d='M0 0l60 40M60 0L0 40' stroke='%23C8102E' stroke-width='4'/%3E%3Cpath d='M30 0v40M0 20h60' stroke='white' stroke-width='12'/%3E%3Cpath d='M30 0v40M0 20h60' stroke='%23C8102E' stroke-width='7'/%3E%3C/svg%3E")!important}
+      #mkaLanguageSwitcher button[data-lang="de"]{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 5 3'%3E%3Crect width='5' height='1' fill='%23000'/%3E%3Crect width='5' height='1' y='1' fill='%23DD0000'/%3E%3Crect width='5' height='1' y='2' fill='%23FFCE00'/%3E%3C/svg%3E")!important}
+      #mkaLanguageSwitcher button.active{opacity:1!important;border-color:#ff8a19!important;box-shadow:0 0 0 2px #ff8a1933!important}
+      @media(max-width:650px){#mkaLanguageSwitcher{gap:4px;padding-left:6px}#mkaLanguageSwitcher button{width:36px!important;height:31px!important;background-size:28px 19px!important}}
+    `;document.head.appendChild(st);
+  }
   function ensureSwitcher(){
-    let w=document.querySelector('#mkaLanguageSwitcher');
-    if(!w){
-      const st=document.createElement('style');st.id='mka-final-lang-style';st.textContent=`#mkaLanguageSwitcher{margin-left:auto;display:flex;align-items:center;gap:7px;padding-left:14px;z-index:1000}#mkaLanguageSwitcher button{width:42px;height:34px;border:1px solid #355b7c;border-radius:8px;background:#0b2038;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;opacity:.76}#mkaLanguageSwitcher button.active{opacity:1;border-color:#ff8a19;box-shadow:0 0 0 2px #ff8a1933}@media(max-width:650px){#mkaLanguageSwitcher{gap:4px;padding-left:6px}#mkaLanguageSwitcher button{width:36px;height:31px;font-size:19px}}`;document.head.appendChild(st);
-      w=document.createElement('div');w.id='mkaLanguageSwitcher';w.setAttribute('role','group');['nb','en','de'].forEach(code=>{const b=document.createElement('button');b.type='button';b.dataset.lang=code;b.textContent=L[code].flag;b.title=L[code].name;b.setAttribute('aria-label',L[code].name);b.onclick=()=>{localStorage.setItem('mka-language',code);if(window.MKA_I18N?.setLanguage)window.MKA_I18N.setLanguage(code);else document.dispatchEvent(new CustomEvent('mka:languagechange',{detail:{language:code}}));setTimeout(apply,0);};w.appendChild(b)});(document.querySelector('.topbar')||document.querySelector('header')||document.body).appendChild(w);
-    }
-    const l=lang();w.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.lang===l));
+    ensureStyle();let w=document.querySelector('#mkaLanguageSwitcher');
+    if(!w){w=document.createElement('div');w.id='mkaLanguageSwitcher';w.setAttribute('role','group');['nb','en','de'].forEach(code=>{const b=document.createElement('button');b.type='button';b.dataset.lang=code;b.textContent='';b.title=L[code].name;b.setAttribute('aria-label',L[code].name);b.onclick=()=>{localStorage.setItem('mka-language',code);if(window.MKA_I18N?.setLanguage)window.MKA_I18N.setLanguage(code);else document.dispatchEvent(new CustomEvent('mka:languagechange',{detail:{language:code}}));setTimeout(apply,0);};w.appendChild(b)});(document.querySelector('.topbar')||document.querySelector('header')||document.body).appendChild(w);}
+    w.querySelectorAll('button').forEach(b=>{b.textContent='';b.classList.toggle('active',b.dataset.lang===lang());});
   }
-  function fixWhatIf(){
-    const rows=[...document.querySelectorAll('#modalContent [data-whatif]')].map(i=>i.closest('div')).filter(Boolean);if(!rows.length)return;
-    const x=L[lang()]||L.nb;
-    const h=document.querySelector('#modalContent h2');if(h){const s=h.textContent||'',dash=s.lastIndexOf(' – ');h.textContent=(dash>=0?s.slice(0,dash):s)+' – '+x.what;}
-    const p=document.querySelector('#modalContent h2 + p');if(p)p.textContent=x.desc;
-    rows.forEach((row,i)=>{const b=row.querySelector('b'),sp=row.querySelector('span'),inp=row.querySelector('[data-whatif]');if(b&&x.events[i])b.textContent=x.events[i];if(sp){const value=(sp.textContent||'').replace(/^.*?:\s*/,'');sp.textContent=x.expected+' '+value;}if(inp)inp.placeholder=x.placeholder;});
-    const smalls=[...document.querySelectorAll('#modalContent small')];if(smalls[0])smalls[0].textContent=x.standard;if(smalls[1])smalls[1].textContent=x.scenario;if(smalls[2])smalls[2].textContent=x.change;
-    const reset=document.querySelector('#whatIfReset');if(reset)reset.textContent=x.reset;const applyBtn=document.querySelector('#whatIfApply');if(applyBtn)applyBtn.textContent=x.apply;
-  }
+  function fixWhatIf(){const rows=[...document.querySelectorAll('#modalContent [data-whatif]')].map(i=>i.closest('div')).filter(Boolean);if(!rows.length)return;const x=L[lang()]||L.nb;const h=document.querySelector('#modalContent h2');if(h){const s=h.textContent||'',dash=s.lastIndexOf(' – ');h.textContent=(dash>=0?s.slice(0,dash):s)+' – '+x.what;}const p=document.querySelector('#modalContent h2 + p');if(p)p.textContent=x.desc;rows.forEach((row,i)=>{const b=row.querySelector('b'),sp=row.querySelector('span'),inp=row.querySelector('[data-whatif]');if(b&&x.events[i])b.textContent=x.events[i];if(sp){const value=(sp.textContent||'').replace(/^.*?:\s*/,'');sp.textContent=x.expected+' '+value;}if(inp)inp.placeholder=x.placeholder;});const smalls=[...document.querySelectorAll('#modalContent small')];if(smalls[0])smalls[0].textContent=x.standard;if(smalls[1])smalls[1].textContent=x.scenario;if(smalls[2])smalls[2].textContent=x.change;const reset=document.querySelector('#whatIfReset');if(reset)reset.textContent=x.reset;const applyBtn=document.querySelector('#whatIfApply');if(applyBtn)applyBtn.textContent=x.apply;}
   function apply(){ensureSwitcher();fixWhatIf();}
   let t;const obs=new MutationObserver(()=>{clearTimeout(t);t=setTimeout(apply,20)});obs.observe(document.body,{childList:true,subtree:true});document.addEventListener('mka:languagechange',()=>setTimeout(apply,0));setTimeout(apply,50);
 })();
