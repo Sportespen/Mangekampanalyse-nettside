@@ -1,0 +1,52 @@
+name: Production uptime monitor
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check public site
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --max-time 20 --retry 2 --retry-delay 3 \
+            https://mangekampanalyse.no/ >/dev/null
+
+      - name: Check app
+        run: |
+          set -euo pipefail
+          BODY="$(mktemp)"
+          curl --fail --silent --show-error --location --max-time 20 --retry 2 --retry-delay 3 \
+            https://mangekampanalyse.no/app/ -o "$BODY"
+          grep -q 'Mangekampanalyse Pro' "$BODY"
+          grep -q 'liveForecastBody' "$BODY"
+
+      - name: Check live API
+        run: |
+          set -euo pipefail
+          BODY="$(mktemp)"
+          curl --fail --silent --show-error --location --max-time 25 --retry 2 --retry-delay 3 \
+            "https://mangekampanalyse.no/api/live?t=$(date +%s)" -o "$BODY"
+          python - "$BODY" <<'PY'
+          import json, sys
+          path = sys.argv[1]
+          with open(path, encoding='utf-8') as f:
+              data = json.load(f)
+          if not isinstance(data, dict):
+              raise SystemExit('Live API returned non-object JSON')
+          if 'error' in data and data['error']:
+              raise SystemExit(f"Live API error: {data['error']}")
+          men = data.get('men')
+          if not isinstance(men, dict):
+              raise SystemExit('Live API missing men section')
+          if not isinstance(men.get('results'), dict):
+              raise SystemExit('Live API missing men.results')
+          print('Production and live API checks passed')
+          PY
