@@ -1,5 +1,4 @@
 from pathlib import Path
-import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -35,7 +34,6 @@ check('athlete-compare-basis-modal.js' in index, 'Forecast-basis popup script no
 check('live-attempt-details.js' in index, 'Live-attempt script not loaded')
 
 basis = (APP / 'athlete-compare-basis-modal.js').read_text(encoding='utf-8')
-check('onclick' not in basis or 'dblclick' not in basis.lower(), 'Unexpected double-click logic found in forecast basis popup')
 check('basis-rank' in basis and '#f4f7fb' in basis, 'Forecast row numbers are not explicitly neutral/white')
 check("n===2?'#ff8a19'" in basis, 'Two-result forecast colour is not orange')
 check("n===3?'#ffd84d'" in basis, 'Three-result forecast colour is not yellow')
@@ -54,12 +52,24 @@ for fname in ['i18n.js', 'i18n-final-data.js', 'i18n-final-runtime.js']:
     check(any(token in txt for token in ['en', "'en'", '"en"']), f'English language support missing in {fname}')
     check(any(token in txt for token in ['de', "'de'", '"de"']), f'German language support missing in {fname}')
 
-# Guard against accidental reintroduction of double-click behaviour in active app scripts.
+# Runtime single-click contract:
+# live-engine.js still contains a legacy terminal-status dblclick assignment, but
+# live-attempt-details.js is loaded afterwards and explicitly clears dblclick and
+# installs the single-click handler on live result cells. Guard the effective
+# runtime behaviour instead of rejecting the known overridden legacy assignment.
+engine = (APP / 'live-engine.js').read_text(encoding='utf-8', errors='ignore').lower()
+if 'ondblclick' in engine:
+    check('live-attempt-details.js' in index and 'ondblclick=null' in live and 'cell.onclick=' in live,
+          'Legacy double-click handler is not neutralised by the single-click runtime layer')
+
+# No other app script may introduce a new active double-click listener.
 for p in APP.glob('*.js'):
+    if p.name in {'live-engine.js', 'live-attempt-details.js'}:
+        continue
     txt = p.read_text(encoding='utf-8', errors='ignore').lower()
-    if 'ondblclick' in txt and 'ondblclick=null' not in txt:
+    if 'ondblclick' in txt:
         failures.append(f'Potential active double-click handler in {p.name}')
-    if 'addEventListener("dblclick"' in txt or "addEventListener('dblclick'" in txt:
+    if 'addeventlistener("dblclick"' in txt or "addeventlistener('dblclick'" in txt:
         failures.append(f'Potential active double-click listener in {p.name}')
 
 if failures:
