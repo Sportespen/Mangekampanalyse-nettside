@@ -1,0 +1,1 @@
+window.MANGEKAMP_LIVE_DECASTAR={competition:'Décastar Talence 2026',updatedAt:null,men:{completedEvents:0,results:{},eventStatus:{},eventHasMarks:{}},women:{completedEvents:0,results:{},eventStatus:{},eventHasMarks:{}}};
