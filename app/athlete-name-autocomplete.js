@@ -9,7 +9,7 @@
   function rank(name,q){const n=norm(name),qt=tokens(q),nt=tokens(name);if(n===norm(q))return 0;if(qt.length===1&&nt.includes(qt[0]))return 1;if(qt.every(x=>nt.some(y=>y===x)))return 2;if(qt.every(x=>nt.some(y=>y.startsWith(x))))return 3;if(qt.every(x=>nt.some(y=>y.includes(x))))return 4;return 9;}
   function matches(name,q){const nt=tokens(name),qt=tokens(q);return qt.length&&qt.every(x=>nt.some(y=>y===x||y.startsWith(x)||y.includes(x)));}
   function loadIndex(){
-    if(!indexPromise) indexPromise=fetch('/app/data/athlete-name-index.json',{cache:'force-cache'}).then(r=>{if(!r.ok)throw new Error('index');return r.json();});
+    if(!indexPromise) indexPromise=fetch('/data/athlete-name-index.json',{cache:'force-cache'}).then(r=>{if(!r.ok)throw new Error('index');return r.json();});
     return indexPromise;
   }
   async function choose(a,input,btn,results){
