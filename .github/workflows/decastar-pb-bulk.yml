@@ -1,0 +1,131 @@
+name: Décastar PB bulk audit
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/decastar-pb-bulk.yml'
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Fetch and verify Décastar Talence 2026 senior PBs
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          global.window={};
+          for(const p of ['./app/data/00_base.js','./app/data/decastar_men.js','./app/data/decastar_women.js']) require(p);
+
+          const roster={men:window.MANGEKAMP_DATA.men.decastar,women:window.MANGEKAMP_DATA.women.decastar};
+          const base='https://worldathletics.nimarion.de';
+
+          const eventMap={
+            men:{'100m':'100 Metres','Lengde':'Long Jump','Kule':'Shot Put','Høyde':'High Jump','400m':'400 Metres','110mh':'110 Metres Hurdles','Diskos':'Discus Throw','Stav':'Pole Vault','Spyd':'Javelin Throw','1500m':'1500 Metres'},
+            women:{'100mh':'100 Metres Hurdles','Høyde':'High Jump','Kule':'Shot Put','200m':'200 Metres','Lengde':'Long Jump','Spyd':'Javelin Throw','800m':'800 Metres'}
+          };
+          const windEvents=new Set(['100m','Lengde','110mh','100mh','200m']);
+          const scoreMap={
+            men:{'100m':[25.4347,18,1.81,'time'],'Lengde':[0.14354,220,1.4,'cm'],'Kule':[51.39,1.5,1.05,'field'],'Høyde':[0.8465,75,1.42,'cm'],'400m':[1.53775,82,1.81,'time'],'110mh':[5.74352,28.5,1.92,'time'],'Diskos':[12.91,4,1.1,'field'],'Stav':[0.2797,100,1.35,'cm'],'Spyd':[10.14,7,1.08,'field'],'1500m':[0.03768,480,1.85,'time']},
+            women:{'100mh':[9.23076,26.7,1.835,'time'],'Høyde':[1.84523,75,1.348,'cm'],'Kule':[56.0211,1.5,1.05,'field'],'200m':[4.99087,42.5,1.81,'time'],'Lengde':[0.188807,210,1.41,'cm'],'Spyd':[15.9803,3.8,1.04,'field'],'800m':[0.11193,254,1.88,'time']}
+          };
+          const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+          const arr=x=>Array.isArray(x)?x:(x&&typeof x==='object'?(x.items||x.results||x.data||x.athletes||[]):[]);
+          const athleteId=o=>o&&(o.id??o.athleteId??o.aaId??o.competitorId);
+          async function getJson(url){
+            const r=await fetch(url,{headers:{accept:'application/json','user-agent':'Mangekampanalyse-Pro/1.0'}});
+            const t=await r.text();
+            if(!r.ok) throw new Error(`${r.status} ${url} ${t.slice(0,200)}`);
+            return JSON.parse(t);
+          }
+          function value(event,mark){
+            const m=String(mark).match(/^(\d+):(\d+(?:\.\d+)?)$/);
+            if(m) return Number(m[1])*60+Number(m[2]);
+            return Number(String(mark).replace(',','.'));
+          }
+          function score(type,event,v){
+            let [A,B,C,kind]=scoreMap[type][event];
+            if(kind==='time') return Math.floor(A*Math.pow(B-v,C));
+            if(kind==='cm') v*=100;
+            return Math.floor(A*Math.pow(v-B,C));
+          }
+          function venue(row){
+            const l=row?.location||{};
+            const first=[l.stadium,l.city].filter(Boolean).join(', ');
+            const country=l.country?` (${l.country})`:'';
+            const indoor=l.indoor?' (i)':'';
+            return `${first}${country}${indoor}`.trim();
+          }
+          function isoDate(row){return row?.date?String(row.date).slice(0,10):''}
+          function isIndoor(row){return !!row?.location?.indoor || /\(i\)|indoor/i.test(venue(row));}
+          function windApproved(event,row){
+            if(!windEvents.has(event)||isIndoor(row))return true;
+            if(row?.legal===true)return true;
+            const raw=String(row?.wind??row?.windReading??'').trim().replace(',','.');
+            if(!raw)return false;
+            const w=Number(raw.replace(/[^0-9.+-]/g,''));
+            return Number.isFinite(w)&&w<=2.0;
+          }
+          function birthYear(profile){
+            const raw=profile?.birthDate||profile?.dateOfBirth||profile?.yearOfBirth||'';
+            const m=String(raw).match(/(?:19|20)\d{2}/);
+            return m?m[0]:'';
+          }
+
+          (async()=>{
+            const audit={generatedAt:new Date().toISOString(),source:'World Athletics profile data via structured proxy',athletes:{},missing:[]};
+            const verified={men:{},women:{}};
+            for(const type of ['men','women']){
+              for(const athlete of roster[type]){
+                const name=athlete.name;
+                let search;
+                try{ search=await getJson(`${base}/athletes/search?name=${encodeURIComponent(name)}`); }
+                catch(e){ audit.missing.push({athlete:name,type,error:String(e.message||e)}); continue; }
+                const list=arr(search);
+                const exact=list.find(x=>`${x.firstname||''} ${x.lastname||''}`.trim().normalize('NFC').toLowerCase()===name.normalize('NFC').toLowerCase())||list[0];
+                const id=athleteId(exact);
+                if(!id){ audit.missing.push({athlete:name,type,error:'no WA id found'}); continue; }
+                const profile=await getJson(`${base}/athletes/${id}`);
+                const pbs=Array.isArray(profile.personalbests)?profile.personalbests:[];
+                audit.athletes[name]={waId:id,type,events:{}};
+                verified[type][name]={birth:birthYear(profile)};
+                for(const [event,discipline] of Object.entries(eventMap[type])){
+                  const candidates=pbs.filter(r=>r.discipline===discipline && r.legal!==false && windApproved(event,r));
+                  let row=candidates[0]||null;
+                  if(candidates.length>1){
+                    const lower=['100m','400m','110mh','1500m','100mh','200m','800m'].includes(event);
+                    row=[...candidates].sort((a,b)=>lower?value(event,a.mark)-value(event,b.mark):value(event,b.mark)-value(event,a.mark))[0];
+                  }
+                  if(!row){ audit.athletes[name].events[event]='MISSING'; continue; }
+                  const wa=value(event,row.mark);
+                  verified[type][name][event]={display:String(row.mark),mark:wa,points:score(type,event,wa),venue:venue(row),date:isoDate(row)};
+                  audit.athletes[name].events[event]='OK';
+                }
+                await sleep(80);
+              }
+            }
+
+            let js=`// AUTO-GENERATED by .github/workflows/decastar-pb-bulk.yml\n// Exact senior disciplines only. Wind-dependent outdoor PBs are wind-approved.\n(function(){\n const R=window.MANGEKAMP_DATA; if(!R)return;\n const V=${JSON.stringify(verified)};\n for(const type of ['men','women']){\n  const list=R[type]?.decastar; if(!list)continue;\n  for(const a of list){\n   const v=V[type][a.name]; if(!v)continue;\n   if(v.birth) a.birth=v.birth;\n   let theoretical=0,count=0;\n   for(const [e,p] of Object.entries(v)){ if(e==='birth')continue; if(a.bests) a.bests[e]=p; theoretical+=Number(p.points)||0; count++; }\n   if(count>0){ a.theoretical=theoretical; a.theoreticalPB=theoretical; a.potential=theoretical-(Number(a.pb)||0); a.utilization=Number(a.pb)?Math.round((Number(a.pb)/theoretical)*1000)/10:0; }\n  }\n }\n})();\n`;
+            fs.writeFileSync('app/data/decastar_pb_audit.json',JSON.stringify(audit,null,2));
+            fs.writeFileSync('app/data/decastar_pb_verified.js',js);
+            console.log('DONE men='+roster.men.length+' women='+roster.women.length+' missing='+audit.missing.length);
+            if(audit.missing.length) console.log('MISSING '+JSON.stringify(audit.missing));
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+      - name: Commit verified Décastar data
+        if: always()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/data/decastar_pb_audit.json app/data/decastar_pb_verified.js
+          git diff --cached --quiet && exit 0
+          git commit -m 'Audit Décastar Talence 2026 senior wind-legal PBs from WA profiles'
+          git push
