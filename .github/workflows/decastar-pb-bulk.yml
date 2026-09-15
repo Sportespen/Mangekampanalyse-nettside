@@ -50,6 +50,55 @@ jobs:
             }
             return JSON.parse(t);
           }
+
+          // Same approach as Sportespen/Rankingstevner (functions/_shared/wa-graphql.js,
+          // functions/api/athlete-search.js): worldathletics.nimarion.de's own REST wrapper
+          // (/athletes/search, /athletes/{id}) is a single-maintainer proxy with no SLA that goes
+          // down for extended periods - confirmed here (every call 500s, even retried). Its two
+          // tiny GraphQL-discovery routes are a separate, much simpler piece of that same service
+          // though, and Rankingstevner's codebase treats them as reliable: use them only to learn
+          // World Athletics' own GraphQL endpoint+key, then query that real backend directly for
+          // both the athlete search and the results themselves. nimarion's REST wrapper is kept
+          // only as a last-resort fallback if the direct path fails outright for an athlete.
+          async function discoverWaGraphql(){
+            const [endpointRes,keyRes]=await Promise.all([
+              fetch('https://worldathletics.nimarion.de/graphql/endpoint',{headers:{accept:'application/json'}}),
+              fetch('https://worldathletics.nimarion.de/graphql/api-key',{headers:{accept:'application/json'}})
+            ]);
+            if(!endpointRes.ok||!keyRes.ok) throw new Error('WA GraphQL discovery failed');
+            const endpointData=await endpointRes.json();
+            const keyData=await keyRes.json();
+            const endpoint=endpointData?.endpoint||endpointData?.url||endpointData?.value||endpointData?.apiEndpoint;
+            const apiKey=keyData?.apiKey||keyData?.key||keyData?.value||keyData?.token;
+            if(!endpoint||!apiKey) throw new Error('Incomplete WA GraphQL discovery');
+            return {endpoint,apiKey};
+          }
+          async function waGraphQL(gql,query,variables){
+            const r=await fetch(gql.endpoint,{method:'POST',headers:{'content-type':'application/json','x-api-key':gql.apiKey},body:JSON.stringify({query,variables})});
+            const t=await r.text();
+            let payload=null; try{payload=JSON.parse(t);}catch(_){}
+            if(!r.ok) throw new Error(`WA GraphQL ${r.status}: ${t.slice(0,200)}`);
+            if(Array.isArray(payload?.errors)&&payload.errors.length) throw new Error(payload.errors[0]?.message||'WA GraphQL error');
+            return payload?.data;
+          }
+          const SEARCH_QUERY=`query searchCompetitors($name: String) { searchCompetitors(query: $name) { aaAthleteId familyName givenName birthDate disciplines gender country } }`;
+          async function searchAthleteDirect(gql,name){
+            const data=await waGraphQL(gql,SEARCH_QUERY,{name});
+            return Array.isArray(data?.searchCompetitors)?data.searchCompetitors:[];
+          }
+          const RESULTS_QUERY=`query GetSingleCompetitorResultsDiscipline($id: Int, $resultsByYearOrderBy: String, $resultsByYear: Int) {
+            getSingleCompetitorResultsDiscipline(id: $id, resultsByYear: $resultsByYear, resultsByYearOrderBy: $resultsByYearOrderBy) {
+              resultsByEvent { discipline results { date competition place mark wind notLegal resultScore category } }
+            }
+          }`;
+          async function resultsForYearDirect(gql,id,year){
+            const data=await waGraphQL(gql,RESULTS_QUERY,{id:Number(id),resultsByYear:year,resultsByYearOrderBy:'discipline'});
+            const events=data?.getSingleCompetitorResultsDiscipline?.resultsByEvent;
+            if(!Array.isArray(events)) throw new Error('No results in response');
+            const flat=[];
+            for(const ev of events) for(const r of (ev?.results||[])) flat.push({discipline:ev?.discipline,mark:r.mark,date:r.date,legal:r.notLegal!==true,wind:r.wind,category:r.category});
+            return flat;
+          }
           function value(event,mark){
             const m=String(mark).match(/^(\d+):(\d+(?:\.\d+)?)$/);
             if(m) return Number(m[1])*60+Number(m[2]);
@@ -85,24 +134,64 @@ jobs:
           }
 
           (async()=>{
-            const audit={generatedAt:new Date().toISOString(),source:'World Athletics profile data via structured proxy',athletes:{},missing:[]};
+            const audit={generatedAt:new Date().toISOString(),source:'World Athletics GraphQL (direct, nimarion for key discovery only) with nimarion REST as last resort',athletes:{},missing:[]};
             const verified={men:{},women:{}};
+
+            let gql=null,gqlError=null;
+            try{ gql=await discoverWaGraphql(); }
+            catch(e){ gqlError=String(e.message||e); }
+            audit.graphqlDiscovery=gql?'ok':`failed: ${gqlError}`;
+
+            const thisYear=new Date().getUTCFullYear();
+            const years=[thisYear,thisYear-1,thisYear-2];
+
             for(const type of ['men','women']){
               for(const athlete of roster[type]){
                 const name=athlete.name;
-                let search;
-                try{ search=await getJson(`${base}/athletes/search?name=${encodeURIComponent(name)}`); }
-                catch(e){ audit.missing.push({athlete:name,type,error:String(e.message||e)}); continue; }
-                const list=arr(search);
-                const exact=list.find(x=>`${x.firstname||''} ${x.lastname||''}`.trim().normalize('NFC').toLowerCase()===name.normalize('NFC').toLowerCase())||list[0];
-                const id=athleteId(exact);
-                if(!id){ audit.missing.push({athlete:name,type,error:'no WA id found'}); continue; }
-                const profile=await getJson(`${base}/athletes/${id}`);
-                const pbs=Array.isArray(profile.personalbests)?profile.personalbests:[];
-                audit.athletes[name]={waId:id,type,events:{}};
-                verified[type][name]={birth:birthYear(profile)};
+                audit.athletes[name]={type,events:{}};
+                let id=null,birth='',pbRows=null,source=null;
+
+                if(gql){
+                  try{
+                    const candidates=await searchAthleteDirect(gql,name.split(' ')[0]);
+                    const target=name.normalize('NFC').toLowerCase();
+                    const exact=candidates.find(c=>`${c.givenName||''} ${c.familyName||''}`.trim().normalize('NFC').toLowerCase()===target)||candidates[0];
+                    if(exact){ id=exact.aaAthleteId; birth=birthYear({birthDate:exact.birthDate}); }
+                  }catch(e){ audit.athletes[name].searchDirectError=String(e.message||e); }
+                }
+                if(!id){
+                  try{
+                    const search=await getJson(`${base}/athletes/search?name=${encodeURIComponent(name)}`);
+                    const list=arr(search);
+                    const exact=list.find(x=>`${x.firstname||''} ${x.lastname||''}`.trim().normalize('NFC').toLowerCase()===name.normalize('NFC').toLowerCase())||list[0];
+                    id=athleteId(exact);
+                    audit.athletes[name].searchSource='nimarion-rest';
+                  }catch(e){ audit.athletes[name].searchNimarionError=String(e.message||e); }
+                }
+                if(!id){ audit.missing.push({athlete:name,type,error:'no WA id found via any source'}); continue; }
+                audit.athletes[name].waId=id;
+
+                if(gql){
+                  try{
+                    const perYear=await Promise.all(years.map(y=>resultsForYearDirect(gql,id,y).catch(()=>[])));
+                    pbRows=perYear.flat();
+                    if(pbRows.length) source='wa-graphql-direct';
+                  }catch(e){ audit.athletes[name].resultsDirectError=String(e.message||e); }
+                }
+                if(!pbRows||!pbRows.length){
+                  try{
+                    const profile=await getJson(`${base}/athletes/${id}`);
+                    pbRows=(Array.isArray(profile.personalbests)?profile.personalbests:[]).map(r=>({discipline:r.discipline,mark:r.mark,date:r.date,legal:r.legal,wind:r.wind??r.windReading}));
+                    if(!birth) birth=birthYear(profile);
+                    source='nimarion-rest';
+                  }catch(e){ audit.athletes[name].resultsNimarionError=String(e.message||e); }
+                }
+                audit.athletes[name].source=source||'none';
+                if(!pbRows||!pbRows.length){ audit.missing.push({athlete:name,type,error:'no results from any source'}); continue; }
+
+                verified[type][name]={birth};
                 for(const [event,discipline] of Object.entries(eventMap[type])){
-                  const candidates=pbs.filter(r=>r.discipline===discipline && r.legal!==false && windApproved(event,r));
+                  const candidates=pbRows.filter(r=>r.discipline===discipline && r.legal!==false && windApproved(event,r));
                   let row=candidates[0]||null;
                   if(candidates.length>1){
                     const lower=['100m','400m','110mh','1500m','100mh','200m','800m'].includes(event);
