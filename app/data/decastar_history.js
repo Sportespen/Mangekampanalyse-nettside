@@ -1163,236 +1163,6 @@ window.MANGEKAMP_HISTORY=window.MANGEKAMP_HISTORY||{};
    ]
   ]
  },
- "Sammy Ball": {
-  "100m": [
-   [
-    10.56,
-    "10.56",
-    "Scotstoun Stadium, Glasgow (GBR)",
-    "2026",
-    "2026-07-30T00:00:00.000Z",
-    "XXIII Commonwealth Games"
-   ],
-   [
-    10.88,
-    "10.88",
-    "Bedford Athletic Stadium, Bedford (GBR)",
-    "2026",
-    "2026-07-04T00:00:00.000Z",
-    "UK Combined Event Championships"
-   ],
-   [
-    10.89,
-    "10.89",
-    "Alexander Stadium, Birmingham (GBR)",
-    "2026",
-    "2026-06-20T00:00:00.000Z",
-    "Novuna UK Athletics Championships"
-   ]
-  ],
-  "Lengde": [
-   [
-    6.84,
-    "6.84",
-    "Bedford Athletic Stadium, Bedford (GBR)",
-    "2026",
-    "2026-08-29T00:00:00.000Z",
-    "BIG on TOUR Final"
-   ],
-   [
-    7.49,
-    "7.49",
-    "Scotstoun Stadium, Glasgow (GBR)",
-    "2026",
-    "2026-07-30T00:00:00.000Z",
-    "XXIII Commonwealth Games"
-   ],
-   [
-    7.19,
-    "7.19",
-    "Bedford Athletic Stadium, Bedford (GBR)",
-    "2026",
-    "2026-07-04T00:00:00.000Z",
-    "UK Combined Event Championships"
-   ],
-   [
-    7.23,
-    "7.23",
-    "Emirates Arena, Glasgow (GBR) (i)",
-    "2026",
-    "2026-02-28T00:00:00.000Z",
-    "UK Indoor Combined Events Championships"
-   ]
-  ],
-  "Kule": [
-   [
-    13.73,
-    "13.73",
-    "Scotstoun Stadium, Glasgow (GBR)",
-    "2026",
-    "2026-07-30T00:00:00.000Z",
-    "XXIII Commonwealth Games"
-   ],
-   [
-    14.02,
-    "14.02",
-    "Bedford Athletic Stadium, Bedford (GBR)",
-    "2026",
-    "2026-07-04T00:00:00.000Z",
-    "UK Combined Event Championships"
-   ],
-   [
-    14.83,
-    "14.83",
-    "Emirates Arena, Glasgow (GBR) (i)",
-    "2026",
-    "2026-02-28T00:00:00.000Z",
-    "UK Indoor Combined Events Championships"
-   ]
-  ],
-  "Høyde": [
-   [
-    1.97,
-    "1.97",
-    "Scotstoun Stadium, Glasgow (GBR)",
-    "2026",
-    "2026-07-30T00:00:00.000Z",
-    "XXIII Commonwealth Games"
-   ],
-   [
-    1.97,
-    "1.97",
-    "Bedford Athletic Stadium, Bedford (GBR)",
-    "2026",
-    "2026-07-04T00:00:00.000Z",
-    "UK Combined Event Championships"
-   ],
-   [
-    1.97,
-    "1.97",
-    "Emirates Arena, Glasgow (GBR) (i)",
-    "2026",
-    "2026-02-28T00:00:00.000Z",
-    "UK Indoor Combined Events Championships"
-   ]
-  ],
-  "400m": [
-   [
-    48.86,
-    "48.86",
-    "Scotstoun Stadium, Glasgow (GBR)",
-    "2026",
-    "2026-07-30T00:00:00.000Z",
-    "XXIII Commonwealth Games"
-   ],
-   [
-    49.14,
-    "49.14",
-    "Bedford Athletic Stadium, Bedford (GBR)",
-    "2026",
-    "2026-07-04T00:00:00.000Z",
-    "UK Combined Event Championships"
-   ]
-  ],
-  "110mh": [
-   [
-    14.61,
-    "14.61",
-    "Scotstoun Stadium, Glasgow (GBR)",
-    "2026",
-    "2026-07-31T00:00:00.000Z",
-    "XXIII Commonwealth Games"
-   ],
-   [
-    14.62,
-    "14.62",
-    "Bedford Athletic Stadium, Bedford (GBR)",
-    "2026",
-    "2026-07-05T00:00:00.000Z",
-    "UK Combined Event Championships"
-   ]
-  ],
-  "Diskos": [
-   [
-    42.43,
-    "42.43",
-    "Scotstoun Stadium, Glasgow (GBR)",
-    "2026",
-    "2026-07-31T00:00:00.000Z",
-    "XXIII Commonwealth Games"
-   ],
-   [
-    44.54,
-    "44.54",
-    "Bedford Athletic Stadium, Bedford (GBR)",
-    "2026",
-    "2026-07-05T00:00:00.000Z",
-    "UK Combined Event Championships"
-   ]
-  ],
-  "Stav": [
-   [
-    4.6,
-    "4.60",
-    "Scotstoun Stadium, Glasgow (GBR)",
-    "2026",
-    "2026-07-31T00:00:00.000Z",
-    "XXIII Commonwealth Games"
-   ],
-   [
-    4.6,
-    "4.60",
-    "Bedford Athletic Stadium, Bedford (GBR)",
-    "2026",
-    "2026-07-05T00:00:00.000Z",
-    "UK Combined Event Championships"
-   ],
-   [
-    4.61,
-    "4.61",
-    "Emirates Arena, Glasgow (GBR) (i)",
-    "2026",
-    "2026-03-01T00:00:00.000Z",
-    "UK Indoor Combined Events Championships"
-   ]
-  ],
-  "Spyd": [
-   [
-    44.88,
-    "44.88",
-    "Scotstoun Stadium, Glasgow (GBR)",
-    "2026",
-    "2026-07-31T00:00:00.000Z",
-    "XXIII Commonwealth Games"
-   ],
-   [
-    45.26,
-    "45.26",
-    "Bedford Athletic Stadium, Bedford (GBR)",
-    "2026",
-    "2026-07-05T00:00:00.000Z",
-    "UK Combined Event Championships"
-   ]
-  ],
-  "1500m": [
-   [
-    272.29,
-    "4:32.29",
-    "Scotstoun Stadium, Glasgow (GBR)",
-    "2026",
-    "2026-07-31T00:00:00.000Z",
-    "XXIII Commonwealth Games"
-   ],
-   [
-    270.86,
-    "4:30.86",
-    "Bedford Athletic Stadium, Bedford (GBR)",
-    "2026",
-    "2026-07-05T00:00:00.000Z",
-    "UK Combined Event Championships"
-   ]
-  ]
- },
  "Jami Schlueter": {
   "100m": [
    [
@@ -2093,6 +1863,190 @@ window.MANGEKAMP_HISTORY=window.MANGEKAMP_HISTORY||{};
    ]
   ]
  },
+ "Niamh Emerson": {
+  "100mh": [
+   [
+    14.03,
+    "14.03",
+    "Scotstoun Stadium, Glasgow (GBR)",
+    "2026",
+    "2026-07-28T00:00:00.000Z",
+    "XXIII Commonwealth Games"
+   ],
+   [
+    13.81,
+    "13.81",
+    "Antonio Domínguez Stadium, Arona (ESP)",
+    "2026",
+    "2026-06-06T00:00:00.000Z",
+    "XV Meeting Arona Pruebas Combinadas"
+   ],
+   [
+    13.9,
+    "13.90",
+    "Loughborough University Track, Loughborough (GBR)",
+    "2026",
+    "2026-05-17T00:00:00.000Z",
+    "Loughborough International"
+   ],
+   [
+    14.35,
+    "14.35",
+    "Centro Gabre Gabric, Brescia (ITA)",
+    "2026",
+    "2026-04-25T00:00:00.000Z",
+    "39th Multistars"
+   ]
+  ],
+  "Høyde": [
+   [
+    1.79,
+    "1.79",
+    "Scotstoun Stadium, Glasgow (GBR)",
+    "2026",
+    "2026-07-28T00:00:00.000Z",
+    "XXIII Commonwealth Games"
+   ],
+   [
+    1.74,
+    "1.74",
+    "Antonio Domínguez Stadium, Arona (ESP)",
+    "2026",
+    "2026-06-06T00:00:00.000Z",
+    "XV Meeting Arona Pruebas Combinadas"
+   ],
+   [
+    1.74,
+    "1.74",
+    "Bedford Athletic Stadium, Bedford (GBR)",
+    "2026",
+    "2026-05-25T00:00:00.000Z",
+    "BIGish Jumps & Throws Fest"
+   ],
+   [
+    1.65,
+    "1.65",
+    "Centro Gabre Gabric, Brescia (ITA)",
+    "2026",
+    "2026-04-25T00:00:00.000Z",
+    "39th Multistars"
+   ]
+  ],
+  "Kule": [
+   [
+    12.94,
+    "12.94",
+    "Scotstoun Stadium, Glasgow (GBR)",
+    "2026",
+    "2026-07-28T00:00:00.000Z",
+    "XXIII Commonwealth Games"
+   ],
+   [
+    14.03,
+    "14.03",
+    "Alexander Stadium, Birmingham (GBR)",
+    "2026",
+    "2026-06-20T00:00:00.000Z",
+    "Novuna UK Athletics Championships"
+   ],
+   [
+    14.27,
+    "14.27",
+    "Antonio Domínguez Stadium, Arona (ESP)",
+    "2026",
+    "2026-06-06T00:00:00.000Z",
+    "XV Meeting Arona Pruebas Combinadas"
+   ],
+   [
+    14.37,
+    "14.37",
+    "Chelmsford Sport And Athletics Centre Melbourne Park, Chelmsford (GBR)",
+    "2026",
+    "2026-05-23T00:00:00.000Z",
+    "National Athletics League - Regional East"
+   ]
+  ],
+  "200m": [
+   [
+    24.95,
+    "24.95",
+    "Scotstoun Stadium, Glasgow (GBR)",
+    "2026",
+    "2026-07-28T00:00:00.000Z",
+    "XXIII Commonwealth Games"
+   ],
+   [
+    25.03,
+    "25.03",
+    "Centro Gabre Gabric, Brescia (ITA)",
+    "2026",
+    "2026-04-25T00:00:00.000Z",
+    "39th Multistars"
+   ]
+  ],
+  "Lengde": [
+   [
+    5.96,
+    "5.96",
+    "Scotstoun Stadium, Glasgow (GBR)",
+    "2026",
+    "2026-07-29T00:00:00.000Z",
+    "XXIII Commonwealth Games"
+   ],
+   [
+    5.68,
+    "5.68",
+    "Centro Gabre Gabric, Brescia (ITA)",
+    "2026",
+    "2026-04-26T00:00:00.000Z",
+    "39th Multistars"
+   ]
+  ],
+  "Spyd": [
+   [
+    39.91,
+    "39.91",
+    "Scotstoun Stadium, Glasgow (GBR)",
+    "2026",
+    "2026-07-29T00:00:00.000Z",
+    "XXIII Commonwealth Games"
+   ],
+   [
+    38.78,
+    "38.78",
+    "Chelmsford Sport And Athletics Centre Melbourne Park, Chelmsford (GBR)",
+    "2026",
+    "2026-05-23T00:00:00.000Z",
+    "National Athletics League - Regional East"
+   ],
+   [
+    41.79,
+    "41.79",
+    "Centro Gabre Gabric, Brescia (ITA)",
+    "2026",
+    "2026-04-26T00:00:00.000Z",
+    "39th Multistars"
+   ]
+  ],
+  "800m": [
+   [
+    131.37,
+    "2:11.37",
+    "Scotstoun Stadium, Glasgow (GBR)",
+    "2026",
+    "2026-07-29T00:00:00.000Z",
+    "XXIII Commonwealth Games"
+   ],
+   [
+    132.02,
+    "2:12.02",
+    "Centro Gabre Gabric, Brescia (ITA)",
+    "2026",
+    "2026-04-26T00:00:00.000Z",
+    "39th Multistars"
+   ]
+  ]
+ },
  "Anna-Elisabeth Ehlers": {
   "100mh": [
    [
@@ -2290,190 +2244,6 @@ window.MANGEKAMP_HISTORY=window.MANGEKAMP_HISTORY||{};
     "2026",
     "2026-06-07T00:00:00.000Z",
     "XV Meeting Arona Pruebas Combinadas"
-   ]
-  ]
- },
- "Niamh Emerson": {
-  "100mh": [
-   [
-    14.03,
-    "14.03",
-    "Scotstoun Stadium, Glasgow (GBR)",
-    "2026",
-    "2026-07-28T00:00:00.000Z",
-    "XXIII Commonwealth Games"
-   ],
-   [
-    13.81,
-    "13.81",
-    "Antonio Domínguez Stadium, Arona (ESP)",
-    "2026",
-    "2026-06-06T00:00:00.000Z",
-    "XV Meeting Arona Pruebas Combinadas"
-   ],
-   [
-    13.9,
-    "13.90",
-    "Loughborough University Track, Loughborough (GBR)",
-    "2026",
-    "2026-05-17T00:00:00.000Z",
-    "Loughborough International"
-   ],
-   [
-    14.35,
-    "14.35",
-    "Centro Gabre Gabric, Brescia (ITA)",
-    "2026",
-    "2026-04-25T00:00:00.000Z",
-    "39th Multistars"
-   ]
-  ],
-  "Høyde": [
-   [
-    1.79,
-    "1.79",
-    "Scotstoun Stadium, Glasgow (GBR)",
-    "2026",
-    "2026-07-28T00:00:00.000Z",
-    "XXIII Commonwealth Games"
-   ],
-   [
-    1.74,
-    "1.74",
-    "Antonio Domínguez Stadium, Arona (ESP)",
-    "2026",
-    "2026-06-06T00:00:00.000Z",
-    "XV Meeting Arona Pruebas Combinadas"
-   ],
-   [
-    1.74,
-    "1.74",
-    "Bedford Athletic Stadium, Bedford (GBR)",
-    "2026",
-    "2026-05-25T00:00:00.000Z",
-    "BIGish Jumps & Throws Fest"
-   ],
-   [
-    1.65,
-    "1.65",
-    "Centro Gabre Gabric, Brescia (ITA)",
-    "2026",
-    "2026-04-25T00:00:00.000Z",
-    "39th Multistars"
-   ]
-  ],
-  "Kule": [
-   [
-    12.94,
-    "12.94",
-    "Scotstoun Stadium, Glasgow (GBR)",
-    "2026",
-    "2026-07-28T00:00:00.000Z",
-    "XXIII Commonwealth Games"
-   ],
-   [
-    14.03,
-    "14.03",
-    "Alexander Stadium, Birmingham (GBR)",
-    "2026",
-    "2026-06-20T00:00:00.000Z",
-    "Novuna UK Athletics Championships"
-   ],
-   [
-    14.27,
-    "14.27",
-    "Antonio Domínguez Stadium, Arona (ESP)",
-    "2026",
-    "2026-06-06T00:00:00.000Z",
-    "XV Meeting Arona Pruebas Combinadas"
-   ],
-   [
-    14.37,
-    "14.37",
-    "Chelmsford Sport And Athletics Centre Melbourne Park, Chelmsford (GBR)",
-    "2026",
-    "2026-05-23T00:00:00.000Z",
-    "National Athletics League - Regional East"
-   ]
-  ],
-  "200m": [
-   [
-    24.95,
-    "24.95",
-    "Scotstoun Stadium, Glasgow (GBR)",
-    "2026",
-    "2026-07-28T00:00:00.000Z",
-    "XXIII Commonwealth Games"
-   ],
-   [
-    25.03,
-    "25.03",
-    "Centro Gabre Gabric, Brescia (ITA)",
-    "2026",
-    "2026-04-25T00:00:00.000Z",
-    "39th Multistars"
-   ]
-  ],
-  "Lengde": [
-   [
-    5.96,
-    "5.96",
-    "Scotstoun Stadium, Glasgow (GBR)",
-    "2026",
-    "2026-07-29T00:00:00.000Z",
-    "XXIII Commonwealth Games"
-   ],
-   [
-    5.68,
-    "5.68",
-    "Centro Gabre Gabric, Brescia (ITA)",
-    "2026",
-    "2026-04-26T00:00:00.000Z",
-    "39th Multistars"
-   ]
-  ],
-  "Spyd": [
-   [
-    39.91,
-    "39.91",
-    "Scotstoun Stadium, Glasgow (GBR)",
-    "2026",
-    "2026-07-29T00:00:00.000Z",
-    "XXIII Commonwealth Games"
-   ],
-   [
-    38.78,
-    "38.78",
-    "Chelmsford Sport And Athletics Centre Melbourne Park, Chelmsford (GBR)",
-    "2026",
-    "2026-05-23T00:00:00.000Z",
-    "National Athletics League - Regional East"
-   ],
-   [
-    41.79,
-    "41.79",
-    "Centro Gabre Gabric, Brescia (ITA)",
-    "2026",
-    "2026-04-26T00:00:00.000Z",
-    "39th Multistars"
-   ]
-  ],
-  "800m": [
-   [
-    131.37,
-    "2:11.37",
-    "Scotstoun Stadium, Glasgow (GBR)",
-    "2026",
-    "2026-07-29T00:00:00.000Z",
-    "XXIII Commonwealth Games"
-   ],
-   [
-    132.02,
-    "2:12.02",
-    "Centro Gabre Gabric, Brescia (ITA)",
-    "2026",
-    "2026-04-26T00:00:00.000Z",
-    "39th Multistars"
    ]
   ]
  },
@@ -3293,65 +3063,225 @@ window.MANGEKAMP_HISTORY=window.MANGEKAMP_HISTORY||{};
    ]
   ]
  },
- "Ysée Le Philippe": {
+ "Mareike Rösing": {
   "100mh": [
    [
-    13.64,
-    "13.64",
-    "Stadium Municipal, Albi (FRA)",
+    14.06,
+    "14.06",
+    "Erika-Fisch-Stadion, Hannover (GER)",
     "2026",
-    "2026-07-25T00:00:00.000Z",
-    "French Championships"
+    "2026-08-29T00:00:00.000Z",
+    "German Combined Events Championships"
    ],
    [
-    13.59,
-    "13.59",
-    "Stade Jean Leroi, Blois (FRA)",
+    13.91,
+    "13.91",
+    "Antonio Domínguez Stadium, Arona (ESP)",
     "2026",
-    "2026-07-12T00:00:00.000Z",
-    "Open de France et Décathlon Féminin"
+    "2026-06-06T00:00:00.000Z",
+    "XV Meeting Arona Pruebas Combinadas"
    ],
    [
-    13.75,
-    "13.75",
-    "Stade Jean Leroi, Blois (FRA)",
+    14,
+    "14.00",
+    "Rhein-Wied-Stadion, Neuwied (GER)",
     "2026",
-    "2026-07-12T00:00:00.000Z",
-    "Open de France et Décathlon Féminin"
+    "2026-05-16T00:00:00.000Z",
+    "LOTTO Deichmeeting"
    ],
    [
-    13.75,
-    "13.75",
-    "Stade Jean Leroi, Blois (FRA)",
+    14.2,
+    "14.20",
+    "Otto-Schott-Stadion, Mainz (GER)",
     "2026",
-    "2026-07-11T00:00:00.000Z",
-    "Open de France et Décathlon Féminin"
+    "2026-05-09T00:00:00.000Z",
+    "Regionsmeisterschaft Region Mainz"
    ]
   ],
   "Høyde": [
    [
-    1.78,
-    "1.78",
-    "Stadium Municipal, Albi (FRA)",
+    1.8,
+    "1.80",
+    "Erika-Fisch-Stadion, Hannover (GER)",
+    "2026",
+    "2026-08-29T00:00:00.000Z",
+    "German Combined Events Championships"
+   ],
+   [
+    1.74,
+    "1.74",
+    "Antonio Domínguez Stadium, Arona (ESP)",
+    "2026",
+    "2026-06-06T00:00:00.000Z",
+    "XV Meeting Arona Pruebas Combinadas"
+   ],
+   [
+    1.77,
+    "1.77",
+    "Rhein-Wied-Stadion, Neuwied (GER)",
+    "2026",
+    "2026-05-16T00:00:00.000Z",
+    "LOTTO Deichmeeting"
+   ]
+  ],
+  "Kule": [
+   [
+    14.09,
+    "14.09",
+    "Erika-Fisch-Stadion, Hannover (GER)",
+    "2026",
+    "2026-08-29T00:00:00.000Z",
+    "German Combined Events Championships"
+   ],
+   [
+    13.52,
+    "13.52",
+    "Antonio Domínguez Stadium, Arona (ESP)",
+    "2026",
+    "2026-06-06T00:00:00.000Z",
+    "XV Meeting Arona Pruebas Combinadas"
+   ],
+   [
+    14.62,
+    "14.62",
+    "Rhein-Wied-Stadion, Neuwied (GER)",
+    "2026",
+    "2026-05-16T00:00:00.000Z",
+    "LOTTO Deichmeeting"
+   ],
+   [
+    14.39,
+    "14.39",
+    "Otto-Schott-Stadion, Mainz (GER)",
+    "2026",
+    "2026-05-09T00:00:00.000Z",
+    "Regionsmeisterschaft Region Mainz"
+   ]
+  ],
+  "200m": [
+   [
+    25.63,
+    "25.63",
+    "Erika-Fisch-Stadion, Hannover (GER)",
+    "2026",
+    "2026-08-29T00:00:00.000Z",
+    "German Combined Events Championships"
+   ],
+   [
+    25.58,
+    "25.58",
+    "Antonio Domínguez Stadium, Arona (ESP)",
+    "2026",
+    "2026-06-06T00:00:00.000Z",
+    "XV Meeting Arona Pruebas Combinadas"
+   ]
+  ],
+  "Lengde": [
+   [
+    6.03,
+    "6.03",
+    "Erika-Fisch-Stadion, Hannover (GER)",
+    "2026",
+    "2026-08-30T00:00:00.000Z",
+    "German Combined Events Championships"
+   ],
+   [
+    6.1,
+    "6.10",
+    "Antonio Domínguez Stadium, Arona (ESP)",
+    "2026",
+    "2026-06-07T00:00:00.000Z",
+    "XV Meeting Arona Pruebas Combinadas"
+   ]
+  ],
+  "Spyd": [
+   [
+    46.44,
+    "46.44",
+    "Erika-Fisch-Stadion, Hannover (GER)",
+    "2026",
+    "2026-08-30T00:00:00.000Z",
+    "German Combined Events Championships"
+   ],
+   [
+    44.39,
+    "44.39",
+    "Otto-Schott-Stadion, Mainz (GER)",
+    "2026",
+    "2026-05-09T00:00:00.000Z",
+    "Regionsmeisterschaft Region Mainz"
+   ]
+  ],
+  "800m": [
+   [
+    136.15,
+    "2:16.15",
+    "Erika-Fisch-Stadion, Hannover (GER)",
+    "2026",
+    "2026-08-30T00:00:00.000Z",
+    "German Combined Events Championships"
+   ]
+  ]
+ },
+ "Liana Trümpi": {
+  "100mh": [
+   [
+    14.02,
+    "14.02",
+    "Stadion Schützenmatte, Basel (SUI)",
+    "2026",
+    "2026-09-06T00:00:00.000Z",
+    "Swiss U23 Championships"
+   ],
+   [
+    13.98,
+    "13.98",
+    "Stadion Schützenmatte, Basel (SUI)",
+    "2026",
+    "2026-09-05T00:00:00.000Z",
+    "Swiss U23 Championships"
+   ],
+   [
+    14.49,
+    "14.49",
+    "Letzigrund, Zürich (SUI)",
+    "2026",
+    "2026-07-26T00:00:00.000Z",
+    "Swiss Championships"
+   ],
+   [
+    14.02,
+    "14.02",
+    "Letzigrund, Zürich (SUI)",
+    "2026",
+    "2026-07-26T00:00:00.000Z",
+    "Swiss Championships"
+   ]
+  ],
+  "Høyde": [
+   [
+    1.71,
+    "1.71",
+    "Stadion Schützenmatte, Basel (SUI)",
+    "2026",
+    "2026-09-06T00:00:00.000Z",
+    "Swiss U23 Championships"
+   ],
+   [
+    1.73,
+    "1.73",
+    "Letzigrund, Zürich (SUI)",
     "2026",
     "2026-07-25T00:00:00.000Z",
-    "French Championships"
+    "Swiss Championships"
    ],
    [
-    1.68,
-    "1.68",
-    "Stade Jean Leroi, Blois (FRA)",
+    1.74,
+    "1.74",
+    "Landhaus, Teufen (SUI)",
     "2026",
-    "2026-07-12T00:00:00.000Z",
-    "Open de France et Décathlon Féminin"
-   ],
-   [
-    1.72,
-    "1.72",
-    "Stade Jean Leroi, Blois (FRA)",
-    "2026",
-    "2026-07-11T00:00:00.000Z",
-    "Open de France et Décathlon Féminin"
+    "2026-06-27T00:00:00.000Z",
+    "Swiss Combined Events Championships"
    ],
    [
     1.68,
@@ -3364,110 +3294,126 @@ window.MANGEKAMP_HISTORY=window.MANGEKAMP_HISTORY||{};
   ],
   "Kule": [
    [
-    12.36,
-    "12.36",
-    "Parc Départemental de Parilly, Vénissieux (FRA)",
+    12.85,
+    "12.85",
+    "Letzigrund, Zürich (SUI)",
     "2026",
-    "2026-06-28T00:00:00.000Z",
-    "Championnats AURA CJES"
+    "2026-07-26T00:00:00.000Z",
+    "Swiss Championships"
    ],
    [
-    11.69,
-    "11.69",
-    "Stade du Rhône, Vénissieux (FRA)",
+    12.94,
+    "12.94",
+    "Landhaus, Teufen (SUI)",
     "2026",
-    "2026-06-14T00:00:00.000Z",
-    "Championnats Vallée du Rhône CJES"
+    "2026-06-27T00:00:00.000Z",
+    "Swiss Combined Events Championships"
    ],
    [
-    11.74,
-    "11.74",
+    12.57,
+    "12.57",
     "Mösle-Stadium, Götzis (AUT)",
     "2026",
     "2026-05-30T00:00:00.000Z",
     "Hypomeeting"
    ],
    [
-    10.78,
-    "10.78",
-    "Stadium Jean-Pellez, Aubière (FRA) (i)",
+    13.28,
+    "13.28",
+    "Landquart Ried, Landquart (SUI)",
     "2026",
-    "2026-02-28T00:00:00.000Z",
-    "French Indoor Championships"
+    "2026-05-23T00:00:00.000Z",
+    "41. (Intern)-Nationales Mehrkampfmeeting / Decathlon / Heptathlon"
    ]
   ],
   "200m": [
    [
-    24.54,
-    "24.54",
-    "Stadium Municipal, Albi (FRA)",
+    24.26,
+    "24.26",
+    "Stadion Allmend, Luzern (SUI)",
     "2026",
-    "2026-07-25T00:00:00.000Z",
-    "French Championships"
+    "2026-07-16T00:00:00.000Z",
+    "Spitzen Leichtathletik Luzern"
    ],
    [
-    24.21,
-    "24.21",
-    "Stade du Rhône, Vénissieux (FRA)",
+    24.24,
+    "24.24",
+    "Landhaus, Teufen (SUI)",
     "2026",
-    "2026-06-14T00:00:00.000Z",
-    "Championnats Vallée du Rhône CJES"
+    "2026-06-27T00:00:00.000Z",
+    "Swiss Combined Events Championships"
    ],
    [
-    24.64,
-    "24.64",
+    24.19,
+    "24.19",
     "Mösle-Stadium, Götzis (AUT)",
     "2026",
     "2026-05-30T00:00:00.000Z",
     "Hypomeeting"
+   ],
+   [
+    24.2,
+    "24.20",
+    "Landquart Ried, Landquart (SUI)",
+    "2026",
+    "2026-05-23T00:00:00.000Z",
+    "41. (Intern)-Nationales Mehrkampfmeeting / Decathlon / Heptathlon"
    ]
   ],
   "Lengde": [
    [
-    6.21,
-    "6.21",
-    "Stadium Municipal, Albi (FRA)",
+    5.85,
+    "5.85",
+    "Stadion Schützenmatte, Basel (SUI)",
     "2026",
-    "2026-07-26T00:00:00.000Z",
-    "French Championships"
+    "2026-09-06T00:00:00.000Z",
+    "Swiss U23 Championships"
    ],
    [
     6.29,
     "6.29",
-    "Stade Jean Leroi, Blois (FRA)",
+    "Letzigrund, Zürich (SUI)",
     "2026",
-    "2026-07-12T00:00:00.000Z",
-    "Open de France et Décathlon Féminin"
+    "2026-07-25T00:00:00.000Z",
+    "Swiss Championships"
    ],
    [
-    6.35,
-    "6.35",
-    "Stade Jean Leroi, Blois (FRA)",
+    6.09,
+    "6.09",
+    "Landhaus, Teufen (SUI)",
     "2026",
-    "2026-07-12T00:00:00.000Z",
-    "Open de France et Décathlon Féminin"
+    "2026-06-28T00:00:00.000Z",
+    "Swiss Combined Events Championships"
    ],
    [
-    6.08,
-    "6.08",
-    "Stade Jean Leroi, Blois (FRA)",
+    5.89,
+    "5.89",
+    "Mösle-Stadium, Götzis (AUT)",
     "2026",
-    "2026-07-11T00:00:00.000Z",
-    "Open de France et Décathlon Féminin"
+    "2026-05-31T00:00:00.000Z",
+    "Hypomeeting"
    ]
   ],
   "Spyd": [
    [
-    37.05,
-    "37.05",
-    "Stadium Municipal, Albi (FRA)",
+    38.63,
+    "38.63",
+    "Stadion Schützenmatte, Basel (SUI)",
     "2026",
-    "2026-07-26T00:00:00.000Z",
-    "French Championships"
+    "2026-09-05T00:00:00.000Z",
+    "Swiss U23 Championships"
    ],
    [
-    31.57,
-    "31.57",
+    40.64,
+    "40.64",
+    "Landhaus, Teufen (SUI)",
+    "2026",
+    "2026-06-28T00:00:00.000Z",
+    "Swiss Combined Events Championships"
+   ],
+   [
+    35.85,
+    "35.85",
     "Mösle-Stadium, Götzis (AUT)",
     "2026",
     "2026-05-31T00:00:00.000Z",
@@ -3476,28 +3422,20 @@ window.MANGEKAMP_HISTORY=window.MANGEKAMP_HISTORY||{};
   ],
   "800m": [
    [
-    132.55,
-    "2:12.55",
-    "Stadium Municipal, Albi (FRA)",
+    139.43,
+    "2:19.43",
+    "Landhaus, Teufen (SUI)",
     "2026",
-    "2026-07-26T00:00:00.000Z",
-    "French Championships"
+    "2026-06-28T00:00:00.000Z",
+    "Swiss Combined Events Championships"
    ],
    [
-    131.23,
-    "2:11.23",
+    136.27,
+    "2:16.27",
     "Mösle-Stadium, Götzis (AUT)",
     "2026",
     "2026-05-31T00:00:00.000Z",
     "Hypomeeting"
-   ],
-   [
-    133.11,
-    "2:13.11",
-    "Stade Bachelard, Grenoble (FRA)",
-    "2026",
-    "2026-05-17T00:00:00.000Z",
-    "Championnat de France des clubs Elite 2"
    ]
   ]
  },
@@ -3741,65 +3679,65 @@ window.MANGEKAMP_HISTORY=window.MANGEKAMP_HISTORY||{};
    ]
   ]
  },
- "Liana Trümpi": {
+ "Ysée Le Philippe": {
   "100mh": [
    [
-    14.02,
-    "14.02",
-    "Stadion Schützenmatte, Basel (SUI)",
+    13.64,
+    "13.64",
+    "Stadium Municipal, Albi (FRA)",
     "2026",
-    "2026-09-06T00:00:00.000Z",
-    "Swiss U23 Championships"
+    "2026-07-25T00:00:00.000Z",
+    "French Championships"
    ],
    [
-    13.98,
-    "13.98",
-    "Stadion Schützenmatte, Basel (SUI)",
+    13.59,
+    "13.59",
+    "Stade Jean Leroi, Blois (FRA)",
     "2026",
-    "2026-09-05T00:00:00.000Z",
-    "Swiss U23 Championships"
+    "2026-07-12T00:00:00.000Z",
+    "Open de France et Décathlon Féminin"
    ],
    [
-    14.49,
-    "14.49",
-    "Letzigrund, Zürich (SUI)",
+    13.75,
+    "13.75",
+    "Stade Jean Leroi, Blois (FRA)",
     "2026",
-    "2026-07-26T00:00:00.000Z",
-    "Swiss Championships"
+    "2026-07-12T00:00:00.000Z",
+    "Open de France et Décathlon Féminin"
    ],
    [
-    14.02,
-    "14.02",
-    "Letzigrund, Zürich (SUI)",
+    13.75,
+    "13.75",
+    "Stade Jean Leroi, Blois (FRA)",
     "2026",
-    "2026-07-26T00:00:00.000Z",
-    "Swiss Championships"
+    "2026-07-11T00:00:00.000Z",
+    "Open de France et Décathlon Féminin"
    ]
   ],
   "Høyde": [
    [
-    1.71,
-    "1.71",
-    "Stadion Schützenmatte, Basel (SUI)",
-    "2026",
-    "2026-09-06T00:00:00.000Z",
-    "Swiss U23 Championships"
-   ],
-   [
-    1.73,
-    "1.73",
-    "Letzigrund, Zürich (SUI)",
+    1.78,
+    "1.78",
+    "Stadium Municipal, Albi (FRA)",
     "2026",
     "2026-07-25T00:00:00.000Z",
-    "Swiss Championships"
+    "French Championships"
    ],
    [
-    1.74,
-    "1.74",
-    "Landhaus, Teufen (SUI)",
+    1.68,
+    "1.68",
+    "Stade Jean Leroi, Blois (FRA)",
     "2026",
-    "2026-06-27T00:00:00.000Z",
-    "Swiss Combined Events Championships"
+    "2026-07-12T00:00:00.000Z",
+    "Open de France et Décathlon Féminin"
+   ],
+   [
+    1.72,
+    "1.72",
+    "Stade Jean Leroi, Blois (FRA)",
+    "2026",
+    "2026-07-11T00:00:00.000Z",
+    "Open de France et Décathlon Féminin"
    ],
    [
     1.68,
@@ -3812,126 +3750,110 @@ window.MANGEKAMP_HISTORY=window.MANGEKAMP_HISTORY||{};
   ],
   "Kule": [
    [
-    12.85,
-    "12.85",
-    "Letzigrund, Zürich (SUI)",
+    12.36,
+    "12.36",
+    "Parc Départemental de Parilly, Vénissieux (FRA)",
     "2026",
-    "2026-07-26T00:00:00.000Z",
-    "Swiss Championships"
+    "2026-06-28T00:00:00.000Z",
+    "Championnats AURA CJES"
    ],
    [
-    12.94,
-    "12.94",
-    "Landhaus, Teufen (SUI)",
+    11.69,
+    "11.69",
+    "Stade du Rhône, Vénissieux (FRA)",
     "2026",
-    "2026-06-27T00:00:00.000Z",
-    "Swiss Combined Events Championships"
+    "2026-06-14T00:00:00.000Z",
+    "Championnats Vallée du Rhône CJES"
    ],
    [
-    12.57,
-    "12.57",
+    11.74,
+    "11.74",
     "Mösle-Stadium, Götzis (AUT)",
     "2026",
     "2026-05-30T00:00:00.000Z",
     "Hypomeeting"
    ],
    [
-    13.28,
-    "13.28",
-    "Landquart Ried, Landquart (SUI)",
+    10.78,
+    "10.78",
+    "Stadium Jean-Pellez, Aubière (FRA) (i)",
     "2026",
-    "2026-05-23T00:00:00.000Z",
-    "41. (Intern)-Nationales Mehrkampfmeeting / Decathlon / Heptathlon"
+    "2026-02-28T00:00:00.000Z",
+    "French Indoor Championships"
    ]
   ],
   "200m": [
    [
-    24.26,
-    "24.26",
-    "Stadion Allmend, Luzern (SUI)",
+    24.54,
+    "24.54",
+    "Stadium Municipal, Albi (FRA)",
     "2026",
-    "2026-07-16T00:00:00.000Z",
-    "Spitzen Leichtathletik Luzern"
+    "2026-07-25T00:00:00.000Z",
+    "French Championships"
    ],
    [
-    24.24,
-    "24.24",
-    "Landhaus, Teufen (SUI)",
+    24.21,
+    "24.21",
+    "Stade du Rhône, Vénissieux (FRA)",
     "2026",
-    "2026-06-27T00:00:00.000Z",
-    "Swiss Combined Events Championships"
+    "2026-06-14T00:00:00.000Z",
+    "Championnats Vallée du Rhône CJES"
    ],
    [
-    24.19,
-    "24.19",
+    24.64,
+    "24.64",
     "Mösle-Stadium, Götzis (AUT)",
     "2026",
     "2026-05-30T00:00:00.000Z",
     "Hypomeeting"
-   ],
-   [
-    24.2,
-    "24.20",
-    "Landquart Ried, Landquart (SUI)",
-    "2026",
-    "2026-05-23T00:00:00.000Z",
-    "41. (Intern)-Nationales Mehrkampfmeeting / Decathlon / Heptathlon"
    ]
   ],
   "Lengde": [
    [
-    5.85,
-    "5.85",
-    "Stadion Schützenmatte, Basel (SUI)",
+    6.21,
+    "6.21",
+    "Stadium Municipal, Albi (FRA)",
     "2026",
-    "2026-09-06T00:00:00.000Z",
-    "Swiss U23 Championships"
+    "2026-07-26T00:00:00.000Z",
+    "French Championships"
    ],
    [
     6.29,
     "6.29",
-    "Letzigrund, Zürich (SUI)",
+    "Stade Jean Leroi, Blois (FRA)",
     "2026",
-    "2026-07-25T00:00:00.000Z",
-    "Swiss Championships"
+    "2026-07-12T00:00:00.000Z",
+    "Open de France et Décathlon Féminin"
    ],
    [
-    6.09,
-    "6.09",
-    "Landhaus, Teufen (SUI)",
+    6.35,
+    "6.35",
+    "Stade Jean Leroi, Blois (FRA)",
     "2026",
-    "2026-06-28T00:00:00.000Z",
-    "Swiss Combined Events Championships"
+    "2026-07-12T00:00:00.000Z",
+    "Open de France et Décathlon Féminin"
    ],
    [
-    5.89,
-    "5.89",
-    "Mösle-Stadium, Götzis (AUT)",
+    6.08,
+    "6.08",
+    "Stade Jean Leroi, Blois (FRA)",
     "2026",
-    "2026-05-31T00:00:00.000Z",
-    "Hypomeeting"
+    "2026-07-11T00:00:00.000Z",
+    "Open de France et Décathlon Féminin"
    ]
   ],
   "Spyd": [
    [
-    38.63,
-    "38.63",
-    "Stadion Schützenmatte, Basel (SUI)",
+    37.05,
+    "37.05",
+    "Stadium Municipal, Albi (FRA)",
     "2026",
-    "2026-09-05T00:00:00.000Z",
-    "Swiss U23 Championships"
+    "2026-07-26T00:00:00.000Z",
+    "French Championships"
    ],
    [
-    40.64,
-    "40.64",
-    "Landhaus, Teufen (SUI)",
-    "2026",
-    "2026-06-28T00:00:00.000Z",
-    "Swiss Combined Events Championships"
-   ],
-   [
-    35.85,
-    "35.85",
+    31.57,
+    "31.57",
     "Mösle-Stadium, Götzis (AUT)",
     "2026",
     "2026-05-31T00:00:00.000Z",
@@ -3940,20 +3862,28 @@ window.MANGEKAMP_HISTORY=window.MANGEKAMP_HISTORY||{};
   ],
   "800m": [
    [
-    139.43,
-    "2:19.43",
-    "Landhaus, Teufen (SUI)",
+    132.55,
+    "2:12.55",
+    "Stadium Municipal, Albi (FRA)",
     "2026",
-    "2026-06-28T00:00:00.000Z",
-    "Swiss Combined Events Championships"
+    "2026-07-26T00:00:00.000Z",
+    "French Championships"
    ],
    [
-    136.27,
-    "2:16.27",
+    131.23,
+    "2:11.23",
     "Mösle-Stadium, Götzis (AUT)",
     "2026",
     "2026-05-31T00:00:00.000Z",
     "Hypomeeting"
+   ],
+   [
+    133.11,
+    "2:13.11",
+    "Stade Bachelard, Grenoble (FRA)",
+    "2026",
+    "2026-05-17T00:00:00.000Z",
+    "Championnat de France des clubs Elite 2"
    ]
   ]
  },
@@ -4066,6 +3996,214 @@ window.MANGEKAMP_HISTORY=window.MANGEKAMP_HISTORY||{};
     "2022",
     "2022-06-05T00:00:00.000Z",
     "Défi’Athlon"
+   ]
+  ]
+ },
+ "Myke Van De Wiel": {
+  "100mh": [
+   [
+    14.47,
+    "14.47",
+    "Atletiekbaan Breda, Breda (NED)",
+    "2026",
+    "2026-09-13T00:00:00.000Z",
+    "SPAR NK Teams - 1e divisie Promotie/Degradatie"
+   ],
+   [
+    14.39,
+    "14.39",
+    "Atletiekbaan Breda, Breda (NED)",
+    "2026",
+    "2026-07-11T00:00:00.000Z",
+    "Trackmeeting Breda"
+   ],
+   [
+    13.58,
+    "13.58",
+    "Stadionring, Ratingen (GER)",
+    "2026",
+    "2026-06-27T00:00:00.000Z",
+    "Stadtwerke Ratingen Mehrkampf-Meeting"
+   ],
+   [
+    13.71,
+    "13.71",
+    "Sportpark Stadsbroek, Assen (NED)",
+    "2026",
+    "2026-06-06T00:00:00.000Z",
+    "Dutch Combined Events Championships"
+   ]
+  ],
+  "Høyde": [
+   [
+    1.63,
+    "1.63",
+    "Stadionring, Ratingen (GER)",
+    "2026",
+    "2026-06-27T00:00:00.000Z",
+    "Stadtwerke Ratingen Mehrkampf-Meeting"
+   ],
+   [
+    1.56,
+    "1.56",
+    "Sportpark Stadsbroek, Assen (NED)",
+    "2026",
+    "2026-06-06T00:00:00.000Z",
+    "Dutch Combined Events Championships"
+   ],
+   [
+    1.61,
+    "1.61",
+    "Sportpark Ter Specke, Lisse (NED)",
+    "2026",
+    "2026-05-09T00:00:00.000Z",
+    "Ter Specke Bokaal"
+   ],
+   [
+    1.67,
+    "1.67",
+    "Omnisport, Apeldoorn (NED) (i)",
+    "2026",
+    "2026-02-15T00:00:00.000Z",
+    "Dutch Indoor Combined Events Championships"
+   ]
+  ],
+  "Kule": [
+   [
+    12.3,
+    "12.30",
+    "Stadionring, Ratingen (GER)",
+    "2026",
+    "2026-06-27T00:00:00.000Z",
+    "Stadtwerke Ratingen Mehrkampf-Meeting"
+   ],
+   [
+    12.4,
+    "12.40",
+    "Sportpark Stadsbroek, Assen (NED)",
+    "2026",
+    "2026-06-06T00:00:00.000Z",
+    "Dutch Combined Events Championships"
+   ],
+   [
+    11.64,
+    "11.64",
+    "Sportpark Ter Specke, Lisse (NED)",
+    "2026",
+    "2026-05-09T00:00:00.000Z",
+    "Ter Specke Bokaal"
+   ],
+   [
+    11.8,
+    "11.80",
+    "Omnisport, Apeldoorn (NED) (i)",
+    "2026",
+    "2026-02-15T00:00:00.000Z",
+    "Dutch Indoor Combined Events Championships"
+   ]
+  ],
+  "200m": [
+   [
+    23.89,
+    "23.89",
+    "Stadionring, Ratingen (GER)",
+    "2026",
+    "2026-06-27T00:00:00.000Z",
+    "Stadtwerke Ratingen Mehrkampf-Meeting"
+   ],
+   [
+    23.97,
+    "23.97",
+    "Sportpark Stadsbroek, Assen (NED)",
+    "2026",
+    "2026-06-06T00:00:00.000Z",
+    "Dutch Combined Events Championships"
+   ],
+   [
+    24.05,
+    "24.05",
+    "Sportcomplex De Leidse Hout, Leiden (NED)",
+    "2026",
+    "2026-05-30T00:00:00.000Z",
+    "SplitTime NK Teams"
+   ],
+   [
+    24.51,
+    "24.51",
+    "Stade Jean Delbert, Montreuil (FRA)",
+    "2026",
+    "2026-05-17T00:00:00.000Z",
+    "Championnats de France des Clubs Elite 1"
+   ]
+  ],
+  "Lengde": [
+   [
+    5.69,
+    "5.69",
+    "Atletiekbaan Breda, Breda (NED)",
+    "2026",
+    "2026-09-13T00:00:00.000Z",
+    "SPAR NK Teams - 1e divisie Promotie/Degradatie"
+   ],
+   [
+    5.97,
+    "5.97",
+    "FBK Stadium, Hengelo (NED)",
+    "2026",
+    "2026-07-26T00:00:00.000Z",
+    "Dutch Championships"
+   ],
+   [
+    6.22,
+    "6.22",
+    "Stadionring, Ratingen (GER)",
+    "2026",
+    "2026-06-28T00:00:00.000Z",
+    "Stadtwerke Ratingen Mehrkampf-Meeting"
+   ],
+   [
+    5.97,
+    "5.97",
+    "Sportpark Stadsbroek, Assen (NED)",
+    "2026",
+    "2026-06-07T00:00:00.000Z",
+    "Dutch Combined Events Championships"
+   ]
+  ],
+  "Spyd": [
+   [
+    44.66,
+    "44.66",
+    "Stadionring, Ratingen (GER)",
+    "2026",
+    "2026-06-28T00:00:00.000Z",
+    "Stadtwerke Ratingen Mehrkampf-Meeting"
+   ],
+   [
+    41.83,
+    "41.83",
+    "Stade Jean Delbert, Montreuil (FRA)",
+    "2026",
+    "2026-05-17T00:00:00.000Z",
+    "Championnats de France des Clubs Elite 1"
+   ]
+  ],
+  "800m": [
+   [
+    136.49,
+    "2:16.49",
+    "Stadionring, Ratingen (GER)",
+    "2026",
+    "2026-06-28T00:00:00.000Z",
+    "Stadtwerke Ratingen Mehrkampf-Meeting"
+   ],
+   [
+    137.11,
+    "2:17.11",
+    "Sportpark Stadsbroek, Assen (NED)",
+    "2026",
+    "2026-06-07T00:00:00.000Z",
+    "Dutch Combined Events Championships"
    ]
   ]
  }
