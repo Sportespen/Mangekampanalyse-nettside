@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-15T11:52:06.802Z",
+  "generatedAt": "2026-09-15T13:13:29.066Z",
   "source": "1) worldathletics.org profile HTML (direct, no key) 2) WA GraphQL direct (nimarion for key discovery only) 3) nimarion REST as last resort",
   "athletes": {
     "Damian Warner": {
