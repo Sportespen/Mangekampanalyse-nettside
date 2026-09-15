@@ -65,6 +65,29 @@ jobs:
             return first||String(competition||'');
           }
 
+          // The current season (resultsByYear defaults to it with no way to request another
+          // year via URL - confirmed via a throwaway diagnostic run: the page's own recognized
+          // query params are only country+competitorId, and WA's real per-year filter is a
+          // separate live GraphQL call needing a captured API key, same as Rankingstevner's
+          // wa-key-refresh.mjs Playwright setup) sometimes has nothing usable for a discipline:
+          // no competition in it at all, or only a DNS/DNF. Fall back to progressionOfSeasonsBests
+          // (season's-best per year back to 2010, already present in the same fetched competitor
+          // object - no extra request) so a real gap becomes "last known result" instead of a
+          // bare dash, consistent with the app's own "results from 2025-2026" forecast text.
+          function fallbackFromProgression(discipline,progression){
+            const p=(progression||[]).find(x=>x.discipline===discipline);
+            if(!p||!Array.isArray(p.results)||!p.results.length) return [];
+            const rows=[];
+            for(const r of p.results){
+              const parsed=parseWaDate(r.date);
+              const numeric=Number.isFinite(r.numericResult)?r.numericResult:toNumericMark(r.mark);
+              if(!parsed||numeric==null) continue;
+              rows.push({numeric,display:String(r.mark),venue:r.venue||'',year:parsed.year,iso:parsed.iso,meet:meetName(r.competition),season:Number(r.season)||0});
+            }
+            rows.sort((a,b)=>b.season-a.season);
+            return rows.slice(0,4).map(r=>[r.numeric,r.display,r.venue,r.year,r.iso,r.meet]);
+          }
+
           // Same technique as functions/_shared/wa-html.js in Rankingstevner and as
           // decastar-pb-bulk.yml: the public profile page embeds its data as plain JSON in a
           // <script id="__NEXT_DATA__"> tag - no API key, no nimarion dependency at all.
@@ -108,17 +131,20 @@ jobs:
                   const byEvent={};
                   for(const [ourEvent,discipline] of Object.entries(eventMap[type])){
                     const ev=events.find(e=>e.discipline===discipline);
-                    if(!ev||!Array.isArray(ev.results)||!ev.results.length) continue;
-                    const rows=[];
-                    for(const row of ev.results){
-                      const parsed=parseWaDate(row.date);
-                      const numeric=toNumericMark(row.mark);
-                      if(!parsed||numeric==null) continue;
-                      rows.push({numeric,display:String(row.mark),venue:row.venue||'',year:parsed.year,iso:parsed.iso});
-                      rows[rows.length-1].meet=meetName(row.competition);
+                    let top4=[];
+                    if(ev&&Array.isArray(ev.results)&&ev.results.length){
+                      const rows=[];
+                      for(const row of ev.results){
+                        const parsed=parseWaDate(row.date);
+                        const numeric=toNumericMark(row.mark);
+                        if(!parsed||numeric==null) continue;
+                        rows.push({numeric,display:String(row.mark),venue:row.venue||'',year:parsed.year,iso:parsed.iso});
+                        rows[rows.length-1].meet=meetName(row.competition);
+                      }
+                      rows.sort((a,b)=>b.iso.localeCompare(a.iso));
+                      top4=rows.slice(0,4).map(r=>[r.numeric,r.display,r.venue,r.year,r.iso,r.meet]);
                     }
-                    rows.sort((a,b)=>b.iso.localeCompare(a.iso));
-                    const top4=rows.slice(0,4).map(r=>[r.numeric,r.display,r.venue,r.year,r.iso,r.meet]);
+                    if(!top4.length) top4=fallbackFromProgression(discipline,competitor?.progressionOfSeasonsBests);
                     if(top4.length) byEvent[ourEvent]=top4;
                   }
                   if(Object.keys(byEvent).length){ H[name]=byEvent; report.athletes[name]={events:Object.keys(byEvent)}; }
