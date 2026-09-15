@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-15T15:18:24.414Z",
+  "generatedAt": "2026-09-15T18:01:38.520Z",
   "source": "1) worldathletics.org profile HTML (direct, no key) 2) WA GraphQL direct (nimarion for key discovery only) 3) nimarion REST as last resort",
   "athletes": {
     "Damian Warner": {
@@ -350,114 +350,66 @@
     "Lovisa Karlsson": {
       "type": "women",
       "waId": 14593982,
-      "events": {
-        "100mh": "OK",
-        "Høyde": "OK",
-        "Kule": "OK",
-        "200m": "OK",
-        "Lengde": "OK",
-        "Spyd": "OK",
-        "800m": "OK"
-      },
-      "source": "wa-html-direct"
+      "events": {},
+      "htmlError": "__NEXT_DATA__ not found",
+      "resultsNimarionError": "500 https://worldathletics.nimarion.de/athletes/14593982 {\"message\":\"Internal Server Error\",\"statusCode\":500}",
+      "source": "none"
     },
     "Anna-Elisabeth Ehlers": {
       "type": "women",
       "waId": 14926486,
-      "events": {
-        "100mh": "OK",
-        "Høyde": "OK",
-        "Kule": "OK",
-        "200m": "OK",
-        "Lengde": "OK",
-        "Spyd": "OK",
-        "800m": "OK"
-      },
-      "source": "wa-html-direct"
+      "events": {},
+      "htmlError": "__NEXT_DATA__ not found",
+      "resultsNimarionError": "500 https://worldathletics.nimarion.de/athletes/14926486 {\"message\":\"Internal Server Error\",\"statusCode\":500}",
+      "source": "none"
     },
     "Léonie Cambours": {
       "type": "women",
       "waId": 14734285,
-      "events": {
-        "100mh": "OK",
-        "Høyde": "OK",
-        "Kule": "OK",
-        "200m": "OK",
-        "Lengde": "OK",
-        "Spyd": "OK",
-        "800m": "OK"
-      },
-      "source": "wa-html-direct"
+      "events": {},
+      "htmlError": "__NEXT_DATA__ not found",
+      "resultsNimarionError": "500 https://worldathletics.nimarion.de/athletes/14734285 {\"message\":\"Internal Server Error\",\"statusCode\":500}",
+      "source": "none"
     },
     "Marie Dehning": {
       "type": "women",
       "waId": 14810666,
-      "events": {
-        "100mh": "OK",
-        "Høyde": "OK",
-        "Kule": "OK",
-        "200m": "OK",
-        "Lengde": "OK",
-        "Spyd": "OK",
-        "800m": "OK"
-      },
-      "source": "wa-html-direct"
+      "events": {},
+      "htmlError": "__NEXT_DATA__ not found",
+      "resultsNimarionError": "500 https://worldathletics.nimarion.de/athletes/14810666 {\"message\":\"Internal Server Error\",\"statusCode\":500}",
+      "source": "none"
     },
     "Ellen Barber": {
       "type": "women",
       "waId": 14642887,
-      "events": {
-        "100mh": "OK",
-        "Høyde": "OK",
-        "Kule": "OK",
-        "200m": "OK",
-        "Lengde": "OK",
-        "Spyd": "OK",
-        "800m": "OK"
-      },
-      "source": "wa-html-direct"
+      "events": {},
+      "htmlError": "__NEXT_DATA__ not found",
+      "resultsNimarionError": "500 https://worldathletics.nimarion.de/athletes/14642887 {\"message\":\"Internal Server Error\",\"statusCode\":500}",
+      "source": "none"
     },
     "Célia Perron": {
       "type": "women",
       "waId": 14516958,
-      "events": {
-        "100mh": "OK",
-        "Høyde": "OK",
-        "Kule": "OK",
-        "200m": "OK",
-        "Lengde": "OK",
-        "Spyd": "OK",
-        "800m": "OK"
-      },
-      "source": "wa-html-direct"
+      "events": {},
+      "htmlError": "__NEXT_DATA__ not found",
+      "resultsNimarionError": "500 https://worldathletics.nimarion.de/athletes/14516958 {\"message\":\"Internal Server Error\",\"statusCode\":500}",
+      "source": "none"
     },
     "Mareike Rösing": {
       "type": "women",
       "waId": 14659312,
-      "events": {
-        "100mh": "OK",
-        "Høyde": "OK",
-        "Kule": "OK",
-        "200m": "OK",
-        "Lengde": "OK",
-        "Spyd": "OK",
-        "800m": "OK"
-      },
-      "source": "wa-html-direct"
+      "events": {},
+      "htmlError": "__NEXT_DATA__ not found",
+      "resultsNimarionError": "500 https://worldathletics.nimarion.de/athletes/14659312 {\"message\":\"Internal Server Error\",\"statusCode\":500}",
+      "source": "none"
     },
     "Liana Trümpi": {
       "type": "women",
       "waId": 14944600,
-      "events": {
-        "100mh": "OK",
-        "Høyde": "OK",
-        "Kule": "OK",
-        "200m": "OK",
-        "Lengde": "OK",
-        "Spyd": "OK",
-        "800m": "OK"
-      },
-      "source": "wa-html-direct"
+      "events": {},
+      "htmlError": "__NEXT_DATA__ not found",
+      "resultsNimarionError": "500 https://worldathletics.nimarion.de/athletes/14944600 {\"message\":\"Internal Server Error\",\"statusCode\":500}",
+      "source": "none"
     },
     "Maddie Wilson": {
       "type": "women",
@@ -493,6 +445,46 @@
     }
   },
   "missing": [
+    {
+      "athlete": "Lovisa Karlsson",
+      "type": "women",
+      "error": "no results from any source"
+    },
+    {
+      "athlete": "Anna-Elisabeth Ehlers",
+      "type": "women",
+      "error": "no results from any source"
+    },
+    {
+      "athlete": "Léonie Cambours",
+      "type": "women",
+      "error": "no results from any source"
+    },
+    {
+      "athlete": "Marie Dehning",
+      "type": "women",
+      "error": "no results from any source"
+    },
+    {
+      "athlete": "Ellen Barber",
+      "type": "women",
+      "error": "no results from any source"
+    },
+    {
+      "athlete": "Célia Perron",
+      "type": "women",
+      "error": "no results from any source"
+    },
+    {
+      "athlete": "Mareike Rösing",
+      "type": "women",
+      "error": "no results from any source"
+    },
+    {
+      "athlete": "Liana Trümpi",
+      "type": "women",
+      "error": "no results from any source"
+    },
     {
       "athlete": "Maddie Wilson",
       "type": "women",
