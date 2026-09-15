@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-15T11:52:06.966Z",
+  "generatedAt": "2026-09-15T12:44:41.402Z",
   "athletes": {
     "Damian Warner": {
       "events": [
@@ -137,7 +137,9 @@
         "Høyde",
         "Kule",
         "200m",
-        "Lengde"
+        "Lengde",
+        "Spyd",
+        "800m"
       ]
     },
     "Beatričė Juškevičiūtė": {
@@ -252,7 +254,8 @@
         "Kule",
         "200m",
         "Lengde",
-        "Spyd"
+        "Spyd",
+        "800m"
       ]
     }
   },
