@@ -1,0 +1,159 @@
+name: Décastar history bulk (recent results)
+
+permissions:
+  contents: write
+  pull-requests: write
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/decastar-history-bulk.yml'
+  workflow_dispatch:
+
+jobs:
+  history:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Fetch recent 2026-season results for Décastar-only athletes
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          global.window={};
+          for(const p of ['./app/data/00_base.js','./app/data/decastar_men.js','./app/data/decastar_women.js','./app/data/men_b_01.js','./app/data/men_b_02.js','./app/data/men_b_03.js','./app/data/men_rest.js','./app/data/men_g.js','./app/data/jip_de_greef.js','./app/data/women_b_a.js','./app/data/women_b_b.js','./app/data/women_g.js','./app/data/history_web.js','./app/data/history_sulek_2025_2026.js']) require(p);
+
+          const roster={men:window.MANGEKAMP_DATA.men.decastar,women:window.MANGEKAMP_DATA.women.decastar};
+          const existingHistory=window.MANGEKAMP_HISTORY||{};
+
+          // Same name-matching heuristic as live-engine.js's sameAthleteName, so we skip
+          // athletes who already have recent-results history from the Birmingham data files
+          // (avoids ever overwriting/duplicating data for athletes in both competitions).
+          function normName(v){return String(v||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]+/g,' ').trim().toLowerCase();}
+          const histKeys=Object.keys(existingHistory).map(k=>({raw:k,norm:normName(k)}));
+          function hasHistory(name){
+            const n=normName(name);
+            return histKeys.some(h=>h.norm===n||h.norm.includes(n)||n.includes(h.norm));
+          }
+
+          const eventMap={
+            men:{'100m':'100 Metres','Lengde':'Long Jump','Kule':'Shot Put','Høyde':'High Jump','400m':'400 Metres','110mh':'110 Metres Hurdles','Diskos':'Discus Throw','Stav':'Pole Vault','Spyd':'Javelin Throw','1500m':'1500 Metres'},
+            women:{'100mh':'100 Metres Hurdles','Høyde':'High Jump','Kule':'Shot Put','200m':'200 Metres','Lengde':'Long Jump','Spyd':'Javelin Throw','800m':'800 Metres'}
+          };
+
+          const MONTHS={JAN:1,FEB:2,MAR:3,APR:4,MAY:5,JUN:6,JUL:7,AUG:8,SEP:9,OCT:10,NOV:11,DEC:12};
+          function parseWaDate(s){
+            const m=String(s||'').trim().match(/^(\d{1,2})\s+([A-Z]{3})\s+(\d{4})$/);
+            if(!m) return null;
+            const [,d,mon,y]=m;
+            const month=MONTHS[mon];
+            if(!month) return null;
+            return {iso:`${y}-${String(month).padStart(2,'0')}-${String(d).padStart(2,'0')}T00:00:00.000Z`,year:y};
+          }
+          function toNumericMark(mark){
+            const s=String(mark||'').trim();
+            const t=s.match(/^(\d+):(\d+(?:\.\d+)?)$/);
+            if(t) return Number(t[1])*60+Number(t[2]);
+            const n=Number(s.replace(',','.'));
+            return Number.isFinite(n)?n:null;
+          }
+          function meetName(competition){
+            const first=String(competition||'').split(',')[0].trim();
+            return first||String(competition||'');
+          }
+
+          // Same technique as functions/_shared/wa-html.js in Rankingstevner and as
+          // decastar-pb-bulk.yml: the public profile page embeds its data as plain JSON in a
+          // <script id="__NEXT_DATA__"> tag - no API key, no nimarion dependency at all.
+          // Unlike the PB audit (which only needs personalBests), this page's competitor JSON
+          // also carries resultsByYear.resultsByEvent - full per-competition results (mark,
+          // venue, date, competition name) for the current season - which is exactly the
+          // recent-results basis the forecast engine (window.MANGEKAMP_HISTORY) needs. A
+          // ?resultsByYear=YYYY query param does not change which year is returned (confirmed
+          // via a throwaway diagnostic run), so this only gets the current season; that is
+          // consistent with the app's own "Gul/Oransje/Rød" quality indicator for athletes with
+          // fewer than 4 recent results.
+          async function fetchCompetitor(id){
+            const r=await fetch(`https://worldathletics.org/athletes/-/${id}`,{headers:{'User-Agent':'Mozilla/5.0 Mangekampanalyse-Pro/1.0'}});
+            if(!r.ok) throw new Error(`worldathletics.org ${r.status}`);
+            const html=await r.text();
+            const marker='id="__NEXT_DATA__"';
+            const idx=html.indexOf(marker);
+            if(idx===-1) throw new Error('__NEXT_DATA__ not found');
+            const openEnd=html.indexOf('>',idx)+1;
+            const closeIdx=html.indexOf('</script>',openEnd);
+            const nextData=JSON.parse(html.slice(openEnd,closeIdx));
+            const competitor=nextData?.props?.pageProps?.competitor;
+            if(!competitor) throw new Error('no competitor in page');
+            return competitor;
+          }
+
+          const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+          (async()=>{
+            const H={};
+            const report={generatedAt:new Date().toISOString(),athletes:{},missing:[]};
+            for(const type of ['men','women']){
+              for(const athlete of roster[type]){
+                const name=athlete.name;
+                if(hasHistory(name)){ report.athletes[name]={skipped:'already has history'}; continue; }
+                const id=athlete.waId;
+                if(!id){ report.missing.push({athlete:name,error:'no waId in roster file'}); continue; }
+                try{
+                  const competitor=await fetchCompetitor(id);
+                  const events=competitor?.resultsByYear?.resultsByEvent||[];
+                  const byEvent={};
+                  for(const [ourEvent,discipline] of Object.entries(eventMap[type])){
+                    const ev=events.find(e=>e.discipline===discipline);
+                    if(!ev||!Array.isArray(ev.results)||!ev.results.length) continue;
+                    const rows=[];
+                    for(const row of ev.results){
+                      const parsed=parseWaDate(row.date);
+                      const numeric=toNumericMark(row.mark);
+                      if(!parsed||numeric==null) continue;
+                      rows.push({numeric,display:String(row.mark),venue:row.venue||'',year:parsed.year,iso:parsed.iso});
+                      rows[rows.length-1].meet=meetName(row.competition);
+                    }
+                    rows.sort((a,b)=>b.iso.localeCompare(a.iso));
+                    const top4=rows.slice(0,4).map(r=>[r.numeric,r.display,r.venue,r.year,r.iso,r.meet]);
+                    if(top4.length) byEvent[ourEvent]=top4;
+                  }
+                  if(Object.keys(byEvent).length){ H[name]=byEvent; report.athletes[name]={events:Object.keys(byEvent)}; }
+                  else report.athletes[name]={events:[],note:'no events with usable results'};
+                }catch(e){
+                  report.athletes[name]={error:String(e.message||e)};
+                  report.missing.push({athlete:name,error:String(e.message||e)});
+                }
+                await sleep(150);
+              }
+            }
+            const js=`// AUTO-GENERATED by .github/workflows/decastar-history-bulk.yml\n// Recent 2026-season per-event results for Décastar-only athletes, fetched from WA profile\n// pages. Only fills names not already present in window.MANGEKAMP_HISTORY (never overwrites\n// existing Birmingham-sourced history for athletes in both competitions).\nwindow.MANGEKAMP_HISTORY=window.MANGEKAMP_HISTORY||{};\n(function(){\n const H=${JSON.stringify(H,null,1)};\n for(const [name,byEvent] of Object.entries(H)){ if(!window.MANGEKAMP_HISTORY[name]) window.MANGEKAMP_HISTORY[name]=byEvent; }\n})();\n`;
+            fs.writeFileSync('app/data/decastar_history.js',js);
+            fs.writeFileSync('app/data/decastar_history_report.json',JSON.stringify(report,null,2));
+            console.log('DONE fetched='+Object.keys(H).length+' missing='+report.missing.length);
+            if(report.missing.length) console.log('MISSING '+JSON.stringify(report.missing));
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+      - name: Commit history data to a branch
+        if: always()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/data/decastar_history.js app/data/decastar_history_report.json
+          git diff --cached --quiet && exit 0
+          BRANCH="decastar-history-$(date +%Y%m%d-%H%M%S)"
+          git checkout -b "$BRANCH"
+          git commit -m 'Fetch recent 2026-season results for Décastar-only athletes'
+          git push -u origin "$BRANCH"
+          echo "BRANCH=$BRANCH" >> "$GITHUB_ENV"
+      - name: Open pull request
+        if: always() && env.BRANCH != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr create --base main --head "$BRANCH" \
+            --title 'Fetch recent Décastar results for forecast basis' \
+            --body 'Auto-generated by decastar-history-bulk.yml. Review app/data/decastar_history_report.json for any missing/errored athletes before merging.'
