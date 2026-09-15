@@ -1,0 +1,279 @@
+{
+  "generatedAt": "2026-09-15T08:53:22.256Z",
+  "source": "World Athletics GraphQL (direct, nimarion for key discovery only) with nimarion REST as last resort",
+  "athletes": {
+    "Damian Warner": {
+      "type": "men",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Damian%20Warner {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Pierce LePage": {
+      "type": "men",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Pierce%20LePage {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Karel Tilga": {
+      "type": "men",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Karel%20Tilga {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Harrison Williams": {
+      "type": "men",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Harrison%20Williams {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Sven Roosen": {
+      "type": "men",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Sven%20Roosen {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Makenson Gletty": {
+      "type": "men",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Makenson%20Gletty {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Hakim McMorris": {
+      "type": "men",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Hakim%20McMorris {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Devon Williams": {
+      "type": "men",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Devon%20Williams {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Amadeus Gräber": {
+      "type": "men",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Amadeus%20Gr%C3%A4ber {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Antoine Ferranti": {
+      "type": "men",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Antoine%20Ferranti {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Andrin Huber": {
+      "type": "men",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Andrin%20Huber {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Sammy Ball": {
+      "type": "men",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Sammy%20Ball {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Jami Schlueter": {
+      "type": "men",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Jami%20Schlueter {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Tristan Marcy": {
+      "type": "men",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Tristan%20Marcy {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Nafissatou Thiam": {
+      "type": "women",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Nafissatou%20Thiam {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Beatričė Juškevičiūtė": {
+      "type": "women",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Beatri%C4%8D%C4%97%20Ju%C5%A1kevi%C4%8Di%C5%ABt%C4%97 {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Lovisa Karlsson": {
+      "type": "women",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Lovisa%20Karlsson {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Anna-Elisabeth Ehlers": {
+      "type": "women",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Anna-Elisabeth%20Ehlers {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Niamh Emerson": {
+      "type": "women",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Niamh%20Emerson {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Léonie Cambours": {
+      "type": "women",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=L%C3%A9onie%20Cambours {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Marie Dehning": {
+      "type": "women",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Marie%20Dehning {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Ellen Barber": {
+      "type": "women",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Ellen%20Barber {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Célia Perron": {
+      "type": "women",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=C%C3%A9lia%20Perron {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Ysée Le Philippe": {
+      "type": "women",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Ys%C3%A9e%20Le%20Philippe {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Maddie Wilson": {
+      "type": "women",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Maddie%20Wilson {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Liana Trümpi": {
+      "type": "women",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Liana%20Tr%C3%BCmpi {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    "Elisa Pineau": {
+      "type": "women",
+      "events": {},
+      "searchNimarionError": "500 https://worldathletics.nimarion.de/athletes/search?name=Elisa%20Pineau {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    }
+  },
+  "missing": [
+    {
+      "athlete": "Damian Warner",
+      "type": "men",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Pierce LePage",
+      "type": "men",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Karel Tilga",
+      "type": "men",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Harrison Williams",
+      "type": "men",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Sven Roosen",
+      "type": "men",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Makenson Gletty",
+      "type": "men",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Hakim McMorris",
+      "type": "men",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Devon Williams",
+      "type": "men",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Amadeus Gräber",
+      "type": "men",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Antoine Ferranti",
+      "type": "men",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Andrin Huber",
+      "type": "men",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Sammy Ball",
+      "type": "men",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Jami Schlueter",
+      "type": "men",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Tristan Marcy",
+      "type": "men",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Nafissatou Thiam",
+      "type": "women",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Beatričė Juškevičiūtė",
+      "type": "women",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Lovisa Karlsson",
+      "type": "women",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Anna-Elisabeth Ehlers",
+      "type": "women",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Niamh Emerson",
+      "type": "women",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Léonie Cambours",
+      "type": "women",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Marie Dehning",
+      "type": "women",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Ellen Barber",
+      "type": "women",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Célia Perron",
+      "type": "women",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Ysée Le Philippe",
+      "type": "women",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Maddie Wilson",
+      "type": "women",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Liana Trümpi",
+      "type": "women",
+      "error": "no WA id found via any source"
+    },
+    {
+      "athlete": "Elisa Pineau",
+      "type": "women",
+      "error": "no WA id found via any source"
+    }
+  ],
+  "graphqlDiscovery": "failed: WA GraphQL discovery failed"
+}
