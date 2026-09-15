@@ -99,11 +99,15 @@ jobs:
           // Defensive: this page's exact personal-bests field name isn't confirmed anywhere in
           // Rankingstevner's codebase (it only ever reads basicData/worldRankings from this same
           // page), so try every plausible shape rather than assuming one.
+          // Confirmed via a throwaway diagnostic run: personalBests.results rows carry a ready
+          // venue string and an eventName (the meet name), same shape family as resultsByYear's
+          // rows used elsewhere in this pipeline - venue/competition were previously dropped here
+          // entirely, leaving "Personlig beste pr. øvelse"'s Sted (venue) column always blank.
           function extractPbRowsFromCompetitor(c){
             const candidates=[c?.personalBests,c?.personalbests,c?.seasonsBests?.personalBests,c?.honours?.personalBests];
             for(const cand of candidates){
               const list=Array.isArray(cand)?cand:(Array.isArray(cand?.results)?cand.results:null);
-              if(list&&list.length) return list.map(r=>({discipline:r.discipline||r.disciplineName||r.event,mark:r.mark||r.result,date:r.date,legal:r.legal,wind:r.wind??r.windReading}));
+              if(list&&list.length) return list.map(r=>({discipline:r.discipline||r.disciplineName||r.event,mark:r.mark||r.result,date:r.date,legal:r.legal,wind:r.wind??r.windReading,venue:r.venue,competition:r.eventName||r.competition}));
             }
             return null;
           }
@@ -121,9 +125,12 @@ jobs:
             return flat;
           }
           function value(event,mark){
-            const m=String(mark).match(/^(\d+):(\d+(?:\.\d+)?)$/);
+            // Tied marks come back like "10.12=" (WA's tie notation) - strip trailing
+            // non-numeric markers before parsing, otherwise this silently returns NaN.
+            const s=String(mark).replace(/[=*]+$/,'').trim();
+            const m=s.match(/^(\d+):(\d+(?:\.\d+)?)$/);
             if(m) return Number(m[1])*60+Number(m[2]);
-            return Number(String(mark).replace(',','.'));
+            return Number(s.replace(',','.'));
           }
           function score(type,event,v){
             let [A,B,C,kind]=scoreMap[type][event];
@@ -132,13 +139,30 @@ jobs:
             return Math.floor(A*Math.pow(v-B,C));
           }
           function venue(row){
+            // wa-html-direct rows already carry a ready venue string (e.g. "Mösle-Stadium,
+            // Götzis (AUT)"); the location-object shape below is kept for the other tiers
+            // (GraphQL-direct / nimarion REST), which don't use this field shape.
+            if(typeof row?.venue==='string'&&row.venue) return row.venue;
             const l=row?.location||{};
             const first=[l.stadium,l.city].filter(Boolean).join(', ');
             const country=l.country?` (${l.country})`:'';
             const indoor=l.indoor?' (i)':'';
             return `${first}${country}${indoor}`.trim();
           }
-          function isoDate(row){return row?.date?String(row.date).slice(0,10):''}
+          const MONTHS={JAN:1,FEB:2,MAR:3,APR:4,MAY:5,JUN:6,JUL:7,AUG:8,SEP:9,OCT:10,NOV:11,DEC:12};
+          function isoDate(row){
+            const raw=row?.date;
+            if(!raw) return '';
+            // wa-html-direct dates are "DD MON YYYY" (e.g. "25 MAY 2019"), not ISO - naively
+            // slicing the first 10 chars of that format cuts off the last digit of the year
+            // (confirmed live: Damian Warner's 100m PB date stored as "25 MAY 201").
+            const m=String(raw).trim().match(/^(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})$/);
+            if(m){
+              const month=MONTHS[m[2].toUpperCase()];
+              if(month) return `${m[3]}-${String(month).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`;
+            }
+            return String(raw).slice(0,10);
+          }
           function isIndoor(row){return !!row?.location?.indoor || /\(i\)|indoor/i.test(venue(row));}
           function windApproved(event,row){
             if(!windEvents.has(event)||isIndoor(row))return true;
