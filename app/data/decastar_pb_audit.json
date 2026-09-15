@@ -1,296 +1,7 @@
 {
-  "generatedAt": "2026-09-15T15:18:24.414Z",
-  "source": "1) worldathletics.org profile HTML (direct, no key) 2) WA GraphQL direct (nimarion for key discovery only) 3) nimarion REST as last resort",
+  "generatedAt": "2026-09-15T18:20:53.130Z",
+  "source": "worldathletics.org profile HTML (direct, no key, no nimarion)",
   "athletes": {
-    "Damian Warner": {
-      "type": "men",
-      "waId": 14173337,
-      "events": {
-        "100m": "OK",
-        "Lengde": "OK",
-        "Kule": "OK",
-        "Høyde": "OK",
-        "400m": "OK",
-        "110mh": "OK",
-        "Diskos": "OK",
-        "Stav": "OK",
-        "Spyd": "OK",
-        "1500m": "OK"
-      },
-      "source": "wa-html-direct"
-    },
-    "Pierce LePage": {
-      "type": "men",
-      "waId": 14541853,
-      "events": {
-        "100m": "OK",
-        "Lengde": "OK",
-        "Kule": "OK",
-        "Høyde": "OK",
-        "400m": "OK",
-        "110mh": "OK",
-        "Diskos": "OK",
-        "Stav": "OK",
-        "Spyd": "OK",
-        "1500m": "OK"
-      },
-      "source": "wa-html-direct"
-    },
-    "Sander Skotheim": {
-      "type": "men",
-      "waId": 14834505,
-      "events": {
-        "100m": "OK",
-        "Lengde": "OK",
-        "Kule": "OK",
-        "Høyde": "OK",
-        "400m": "OK",
-        "110mh": "OK",
-        "Diskos": "OK",
-        "Stav": "OK",
-        "Spyd": "OK",
-        "1500m": "OK"
-      },
-      "source": "wa-html-direct"
-    },
-    "Karel Tilga": {
-      "type": "men",
-      "waId": 14665173,
-      "events": {
-        "100m": "OK",
-        "Lengde": "OK",
-        "Kule": "OK",
-        "Høyde": "OK",
-        "400m": "OK",
-        "110mh": "OK",
-        "Diskos": "OK",
-        "Stav": "OK",
-        "Spyd": "OK",
-        "1500m": "OK"
-      },
-      "source": "wa-html-direct"
-    },
-    "Harrison Williams": {
-      "type": "men",
-      "waId": 14563272,
-      "events": {
-        "100m": "OK",
-        "Lengde": "OK",
-        "Kule": "OK",
-        "Høyde": "OK",
-        "400m": "OK",
-        "110mh": "OK",
-        "Diskos": "OK",
-        "Stav": "OK",
-        "Spyd": "OK",
-        "1500m": "OK"
-      },
-      "source": "wa-html-direct"
-    },
-    "Sven Roosen": {
-      "type": "men",
-      "waId": 14758769,
-      "events": {
-        "100m": "OK",
-        "Lengde": "OK",
-        "Kule": "OK",
-        "Høyde": "OK",
-        "400m": "OK",
-        "110mh": "OK",
-        "Diskos": "OK",
-        "Stav": "OK",
-        "Spyd": "OK",
-        "1500m": "OK"
-      },
-      "source": "wa-html-direct"
-    },
-    "Makenson Gletty": {
-      "type": "men",
-      "waId": 14676383,
-      "events": {
-        "100m": "OK",
-        "Lengde": "OK",
-        "Kule": "OK",
-        "Høyde": "OK",
-        "400m": "OK",
-        "110mh": "OK",
-        "Diskos": "OK",
-        "Stav": "OK",
-        "Spyd": "OK",
-        "1500m": "OK"
-      },
-      "source": "wa-html-direct"
-    },
-    "Hakim McMorris": {
-      "type": "men",
-      "waId": 14883424,
-      "events": {
-        "100m": "OK",
-        "Lengde": "OK",
-        "Kule": "OK",
-        "Høyde": "OK",
-        "400m": "OK",
-        "110mh": "OK",
-        "Diskos": "OK",
-        "Stav": "OK",
-        "Spyd": "OK",
-        "1500m": "OK"
-      },
-      "source": "wa-html-direct"
-    },
-    "Devon Williams": {
-      "type": "men",
-      "waId": 14436228,
-      "events": {
-        "100m": "OK",
-        "Lengde": "OK",
-        "Kule": "OK",
-        "Høyde": "OK",
-        "400m": "OK",
-        "110mh": "OK",
-        "Diskos": "OK",
-        "Stav": "OK",
-        "Spyd": "OK",
-        "1500m": "OK"
-      },
-      "source": "wa-html-direct"
-    },
-    "Jeff Tesselaar": {
-      "type": "men",
-      "waId": 14869313,
-      "events": {
-        "100m": "OK",
-        "Lengde": "OK",
-        "Kule": "OK",
-        "Høyde": "OK",
-        "400m": "OK",
-        "110mh": "OK",
-        "Diskos": "OK",
-        "Stav": "OK",
-        "Spyd": "OK",
-        "1500m": "OK"
-      },
-      "source": "wa-html-direct"
-    },
-    "Amadeus Gräber": {
-      "type": "men",
-      "waId": 14971456,
-      "events": {
-        "100m": "OK",
-        "Lengde": "OK",
-        "Kule": "OK",
-        "Høyde": "OK",
-        "400m": "OK",
-        "110mh": "OK",
-        "Diskos": "OK",
-        "Stav": "OK",
-        "Spyd": "OK",
-        "1500m": "OK"
-      },
-      "source": "wa-html-direct"
-    },
-    "Dario Dester": {
-      "type": "men",
-      "waId": 14765376,
-      "events": {
-        "100m": "OK",
-        "Lengde": "OK",
-        "Kule": "OK",
-        "Høyde": "OK",
-        "400m": "OK",
-        "110mh": "OK",
-        "Diskos": "OK",
-        "Stav": "OK",
-        "Spyd": "OK",
-        "1500m": "OK"
-      },
-      "source": "wa-html-direct"
-    },
-    "Antoine Ferranti": {
-      "type": "men",
-      "waId": 14882253,
-      "events": {
-        "100m": "OK",
-        "Lengde": "OK",
-        "Kule": "OK",
-        "Høyde": "OK",
-        "400m": "OK",
-        "110mh": "OK",
-        "Diskos": "OK",
-        "Stav": "OK",
-        "Spyd": "OK",
-        "1500m": "OK"
-      },
-      "source": "wa-html-direct"
-    },
-    "Andrin Huber": {
-      "type": "men",
-      "waId": 14930124,
-      "events": {
-        "100m": "OK",
-        "Lengde": "OK",
-        "Kule": "OK",
-        "Høyde": "OK",
-        "400m": "OK",
-        "110mh": "OK",
-        "Diskos": "OK",
-        "Stav": "OK",
-        "Spyd": "OK",
-        "1500m": "OK"
-      },
-      "source": "wa-html-direct"
-    },
-    "Jami Schlueter": {
-      "type": "men",
-      "waId": 14851276,
-      "events": {
-        "100m": "OK",
-        "Lengde": "OK",
-        "Kule": "OK",
-        "Høyde": "OK",
-        "400m": "OK",
-        "110mh": "OK",
-        "Diskos": "OK",
-        "Stav": "OK",
-        "Spyd": "OK",
-        "1500m": "OK"
-      },
-      "source": "wa-html-direct"
-    },
-    "Nino Portmann": {
-      "type": "men",
-      "waId": 14742775,
-      "events": {
-        "100m": "OK",
-        "Lengde": "OK",
-        "Kule": "OK",
-        "Høyde": "OK",
-        "400m": "OK",
-        "110mh": "OK",
-        "Diskos": "OK",
-        "Stav": "OK",
-        "Spyd": "OK",
-        "1500m": "OK"
-      },
-      "source": "wa-html-direct"
-    },
-    "Tristan Marcy": {
-      "type": "men",
-      "waId": 14757313,
-      "events": {
-        "100m": "OK",
-        "Lengde": "OK",
-        "Kule": "OK",
-        "Høyde": "OK",
-        "400m": "OK",
-        "110mh": "OK",
-        "Diskos": "OK",
-        "Stav": "OK",
-        "Spyd": "OK",
-        "1500m": "OK"
-      },
-      "source": "wa-html-direct"
-    },
     "Nafissatou Thiam": {
       "type": "women",
       "waId": 14428253,
@@ -462,57 +173,59 @@
     "Maddie Wilson": {
       "type": "women",
       "waId": 14733354,
-      "events": {},
-      "htmlError": "__NEXT_DATA__ not found",
-      "resultsNimarionError": "500 https://worldathletics.nimarion.de/athletes/14733354 {\"message\":\"Internal Server Error\",\"statusCode\":500}",
-      "source": "none"
+      "events": {
+        "100mh": "OK",
+        "Høyde": "OK",
+        "Kule": "OK",
+        "200m": "OK",
+        "Lengde": "OK",
+        "Spyd": "OK",
+        "800m": "OK"
+      },
+      "source": "wa-html-direct"
     },
     "Ysée Le Philippe": {
       "type": "women",
       "waId": 14826183,
-      "events": {},
-      "htmlError": "__NEXT_DATA__ not found",
-      "resultsNimarionError": "500 https://worldathletics.nimarion.de/athletes/14826183 {\"message\":\"Internal Server Error\",\"statusCode\":500}",
-      "source": "none"
+      "events": {
+        "100mh": "OK",
+        "Høyde": "OK",
+        "Kule": "OK",
+        "200m": "OK",
+        "Lengde": "OK",
+        "Spyd": "OK",
+        "800m": "OK"
+      },
+      "source": "wa-html-direct"
     },
     "Elisa Pineau": {
       "type": "women",
       "waId": 14624254,
-      "events": {},
-      "htmlError": "__NEXT_DATA__ not found",
-      "resultsNimarionError": "500 https://worldathletics.nimarion.de/athletes/14624254 {\"message\":\"Internal Server Error\",\"statusCode\":500}",
-      "source": "none"
+      "events": {
+        "100mh": "OK",
+        "Høyde": "OK",
+        "Kule": "OK",
+        "200m": "OK",
+        "Lengde": "OK",
+        "Spyd": "OK",
+        "800m": "OK"
+      },
+      "source": "wa-html-direct"
     },
     "Myke Van De Wiel": {
       "type": "women",
       "waId": 14604867,
-      "events": {},
-      "htmlError": "__NEXT_DATA__ not found",
-      "resultsNimarionError": "500 https://worldathletics.nimarion.de/athletes/14604867 {\"message\":\"Internal Server Error\",\"statusCode\":500}",
-      "source": "none"
+      "events": {
+        "100mh": "OK",
+        "Høyde": "OK",
+        "Kule": "OK",
+        "200m": "OK",
+        "Lengde": "OK",
+        "Spyd": "OK",
+        "800m": "OK"
+      },
+      "source": "wa-html-direct"
     }
   },
-  "missing": [
-    {
-      "athlete": "Maddie Wilson",
-      "type": "women",
-      "error": "no results from any source"
-    },
-    {
-      "athlete": "Ysée Le Philippe",
-      "type": "women",
-      "error": "no results from any source"
-    },
-    {
-      "athlete": "Elisa Pineau",
-      "type": "women",
-      "error": "no results from any source"
-    },
-    {
-      "athlete": "Myke Van De Wiel",
-      "type": "women",
-      "error": "no results from any source"
-    }
-  ],
-  "graphqlDiscovery": "failed: WA GraphQL discovery failed"
+  "missing": []
 }
