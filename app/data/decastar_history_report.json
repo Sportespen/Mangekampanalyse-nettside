@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-15T12:44:41.402Z",
+  "generatedAt": "2026-09-15T15:18:22.583Z",
   "athletes": {
     "Damian Warner": {
       "events": [
@@ -28,6 +28,9 @@
         "Spyd",
         "1500m"
       ]
+    },
+    "Sander Skotheim": {
+      "skipped": "already has history"
     },
     "Karel Tilga": {
       "skipped": "already has history"
@@ -80,7 +83,13 @@
         "1500m"
       ]
     },
+    "Jeff Tesselaar": {
+      "skipped": "already has history"
+    },
     "Amadeus Gräber": {
+      "skipped": "already has history"
+    },
+    "Dario Dester": {
       "skipped": "already has history"
     },
     "Antoine Ferranti": {
@@ -88,20 +97,6 @@
     },
     "Andrin Huber": {
       "skipped": "already has history"
-    },
-    "Sammy Ball": {
-      "events": [
-        "100m",
-        "Lengde",
-        "Kule",
-        "Høyde",
-        "400m",
-        "110mh",
-        "Diskos",
-        "Stav",
-        "Spyd",
-        "1500m"
-      ]
     },
     "Jami Schlueter": {
       "events": [
@@ -116,6 +111,9 @@
         "Spyd",
         "1500m"
       ]
+    },
+    "Nino Portmann": {
+      "skipped": "already has history"
     },
     "Tristan Marcy": {
       "events": [
@@ -142,13 +140,13 @@
         "800m"
       ]
     },
+    "Vanessa Grimm": {
+      "skipped": "already has history"
+    },
     "Beatričė Juškevičiūtė": {
       "skipped": "already has history"
     },
-    "Lovisa Karlsson": {
-      "skipped": "already has history"
-    },
-    "Anna-Elisabeth Ehlers": {
+    "Niamh Emerson": {
       "events": [
         "100mh",
         "Høyde",
@@ -159,7 +157,10 @@
         "800m"
       ]
     },
-    "Niamh Emerson": {
+    "Lovisa Karlsson": {
+      "skipped": "already has history"
+    },
+    "Anna-Elisabeth Ehlers": {
       "events": [
         "100mh",
         "Høyde",
@@ -214,18 +215,7 @@
         "800m"
       ]
     },
-    "Ysée Le Philippe": {
-      "events": [
-        "100mh",
-        "Høyde",
-        "Kule",
-        "200m",
-        "Lengde",
-        "Spyd",
-        "800m"
-      ]
-    },
-    "Maddie Wilson": {
+    "Mareike Rösing": {
       "events": [
         "100mh",
         "Høyde",
@@ -247,7 +237,40 @@
         "800m"
       ]
     },
+    "Maddie Wilson": {
+      "events": [
+        "100mh",
+        "Høyde",
+        "Kule",
+        "200m",
+        "Lengde",
+        "Spyd",
+        "800m"
+      ]
+    },
+    "Ysée Le Philippe": {
+      "events": [
+        "100mh",
+        "Høyde",
+        "Kule",
+        "200m",
+        "Lengde",
+        "Spyd",
+        "800m"
+      ]
+    },
     "Elisa Pineau": {
+      "events": [
+        "100mh",
+        "Høyde",
+        "Kule",
+        "200m",
+        "Lengde",
+        "Spyd",
+        "800m"
+      ]
+    },
+    "Myke Van De Wiel": {
       "events": [
         "100mh",
         "Høyde",
