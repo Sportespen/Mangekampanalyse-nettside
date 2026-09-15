@@ -2023,6 +2023,74 @@ window.MANGEKAMP_HISTORY=window.MANGEKAMP_HISTORY||{};
     "2026-07-15T00:00:00.000Z",
     "Meeting International d'Athlétisme de la Province de Liège"
    ]
+  ],
+  "Spyd": [
+   [
+    51.45,
+    "51.45",
+    "Gerard Bontinckstadion, Sint-Niklaas (BEL)",
+    "2025",
+    "2025-08-10T00:00:00.000Z",
+    "3de Speerwerpersfestival"
+   ],
+   [
+    54.04,
+    "54.04",
+    "Stade de France, Paris (FRA)",
+    "2024",
+    "2024-08-09T00:00:00.000Z",
+    "The XXXIII Olympic Games"
+   ],
+   [
+    52.61,
+    "52.61",
+    "Stadionring, Ratingen (GER)",
+    "2023",
+    "2023-06-18T00:00:00.000Z",
+    "Stadtwerke Ratingen Mehrkampf-Meeting"
+   ],
+   [
+    53.01,
+    "53.01",
+    "Hayward Field, Eugene, OR (USA)",
+    "2022",
+    "2022-07-18T00:00:00.000Z",
+    "World Athletics Championships"
+   ]
+  ],
+  "800m": [
+   [
+    130.62,
+    "2:10.62",
+    "Stade de France, Paris (FRA)",
+    "2024",
+    "2024-08-09T00:00:00.000Z",
+    "The XXXIII Olympic Games"
+   ],
+   [
+    133.6,
+    "2:13.60",
+    "Ataköy Arena, Istanbul (TUR) (i)",
+    "2023",
+    "2023-03-03T00:00:00.000Z",
+    "European Athletics Indoor Championships"
+   ],
+   [
+    133,
+    "2:13.00",
+    "Hayward Field, Eugene, OR (USA)",
+    "2022",
+    "2022-07-18T00:00:00.000Z",
+    "World Athletics Championships"
+   ],
+   [
+    135.98,
+    "2:15.98",
+    "National Stadium, Tokyo (JPN)",
+    "2021",
+    "2021-08-05T00:00:00.000Z",
+    "The XXXII Olympic Games"
+   ]
   ]
  },
  "Anna-Elisabeth Ehlers": {
@@ -3964,6 +4032,40 @@ window.MANGEKAMP_HISTORY=window.MANGEKAMP_HISTORY||{};
     "2026",
     "2026-07-26T00:00:00.000Z",
     "French Championships"
+   ]
+  ],
+  "800m": [
+   [
+    141.24,
+    "2:21.24",
+    "Stade Pierre Paul Bernard, Talence (FRA)",
+    "2025",
+    "2025-08-03T00:00:00.000Z",
+    "French Championships"
+   ],
+   [
+    141.27,
+    "2:21.27",
+    "Antonio Domínguez Stadium, Arona (ESP)",
+    "2024",
+    "2024-05-12T00:00:00.000Z",
+    "XIII Meeting Arona Pruebas Combinadas"
+   ],
+   [
+    145.86,
+    "2:25.86",
+    "Stade Philippides, Montpellier (FRA)",
+    "2023",
+    "2023-05-28T00:00:00.000Z",
+    "Meeting Elite Défi Athlon de Montpellier"
+   ],
+   [
+    148.01,
+    "2:28.01",
+    "Montpellier (FRA)",
+    "2022",
+    "2022-06-05T00:00:00.000Z",
+    "Défi’Athlon"
    ]
   ]
  }
