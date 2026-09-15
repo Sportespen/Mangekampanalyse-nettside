@@ -265,7 +265,12 @@ jobs:
                   verified[type][name][event]={display:String(row.mark),mark:wa,points:score(type,event,wa),venue:venue(row),date:isoDate(row)};
                   audit.athletes[name].events[event]=windAidedFallback?'OK (wind-aided fallback)':'OK';
                 }
-                await sleep(80);
+                // 80ms was too aggressive - the last ~4-12 athletes processed each run
+                // (always the tail of the men+women loop, never a fixed set of names)
+                // consistently got "__NEXT_DATA__ not found" from worldathletics.org and
+                // 500s from the nimarion mirror, while confirmed-valid IDs. Points to a
+                // per-run request budget on WA's side rather than per-athlete problems.
+                await sleep(600);
               }
             }
 
