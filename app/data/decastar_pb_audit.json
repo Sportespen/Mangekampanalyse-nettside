@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-15T18:20:53.130Z",
-  "source": "worldathletics.org profile HTML (direct, no key, no nimarion)",
+  "generatedAt": "2026-09-15T19:06:52.402Z",
+  "source": "worldathletics.org profile HTML (direct, no key, no nimarion), fetched in batches to stay under WA's per-run request cap",
   "athletes": {
     "Nafissatou Thiam": {
       "type": "women",
@@ -223,6 +223,278 @@
         "Lengde": "OK",
         "Spyd": "OK",
         "800m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Damian Warner": {
+      "type": "men",
+      "waId": 14173337,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Pierce LePage": {
+      "type": "men",
+      "waId": 14541853,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Sander Skotheim": {
+      "type": "men",
+      "waId": 14834505,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Karel Tilga": {
+      "type": "men",
+      "waId": 14665173,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Harrison Williams": {
+      "type": "men",
+      "waId": 14563272,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Sven Roosen": {
+      "type": "men",
+      "waId": 14758769,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Makenson Gletty": {
+      "type": "men",
+      "waId": 14676383,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Hakim McMorris": {
+      "type": "men",
+      "waId": 14883424,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Devon Williams": {
+      "type": "men",
+      "waId": 14436228,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Jeff Tesselaar": {
+      "type": "men",
+      "waId": 14869313,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Amadeus Gräber": {
+      "type": "men",
+      "waId": 14971456,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Dario Dester": {
+      "type": "men",
+      "waId": 14765376,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Antoine Ferranti": {
+      "type": "men",
+      "waId": 14882253,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Andrin Huber": {
+      "type": "men",
+      "waId": 14930124,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Jami Schlueter": {
+      "type": "men",
+      "waId": 14851276,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Nino Portmann": {
+      "type": "men",
+      "waId": 14742775,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
       },
       "source": "wa-html-direct"
     }
