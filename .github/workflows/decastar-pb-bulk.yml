@@ -12,22 +12,79 @@ on:
   workflow_dispatch:
     inputs:
       roster:
-        description: 'Which roster half to fetch (World Athletics seems to cap successful requests at ~20-21 per run regardless of pause length or time between runs - splitting men/women into separate dispatches keeps each run under that cap)'
+        description: 'Which roster half to fetch'
         type: choice
         options: [both, men, women]
         default: both
 
 jobs:
+  # World Athletics seems to cap successful HTML fetches at ~20-21 per single job execution,
+  # regardless of pause length between requests or gaps between separate workflow runs
+  # (confirmed repeatedly: 17 men + 16 women in one job consistently loses the tail, while an
+  # isolated 16-athlete run succeeds fully). A fresh job/runner resets that budget, so this
+  # plans a matrix of small batches - one job per batch, run sequentially - instead of a fixed
+  # men/women split. This scales automatically as rosters grow (e.g. ~24 per field in future
+  # championships) without needing another manual fix.
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      chunks: ${{ steps.plan.outputs.chunks }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Compute fetch batches
+        id: plan
+        env:
+          ROSTER: ${{ github.event.inputs.roster || 'both' }}
+        run: |
+          node <<'NODE' > /tmp/chunks.json
+          global.window={};
+          for(const p of ['./app/data/00_base.js','./app/data/decastar_men.js','./app/data/decastar_women.js']) require(p);
+          const roster={men:window.MANGEKAMP_DATA.men.decastar,women:window.MANGEKAMP_DATA.women.decastar};
+          const BATCH_SIZE=16;
+          const rosterFilter=(process.env.ROSTER||'both').trim();
+          const typesToFetch=rosterFilter==='men'||rosterFilter==='women'?[rosterFilter]:['men','women'];
+          const chunks=[];
+          for(const type of typesToFetch){
+            const names=roster[type].map(a=>a.name);
+            for(let i=0;i<names.length;i+=BATCH_SIZE) chunks.push({type,names:names.slice(i,i+BATCH_SIZE)});
+          }
+          process.stdout.write(JSON.stringify(chunks));
+          NODE
+          echo "chunks=$(cat /tmp/chunks.json)" >> "$GITHUB_OUTPUT"
+          echo "Planned batches:"; cat /tmp/chunks.json
+
   audit:
+    needs: plan
+    if: needs.plan.outputs.chunks != '[]'
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        chunk: ${{ fromJson(needs.plan.outputs.chunks) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Fetch and verify Décastar Talence 2026 senior PBs
+      - name: Check out this run's shared audit branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          BRANCH="decastar-pb-audit-${{ github.run_id }}"
+          if git fetch origin "$BRANCH" 2>/dev/null && git checkout "$BRANCH"; then
+            echo "Reusing existing branch $BRANCH (earlier batch in this run already created it)"
+          else
+            git checkout -b "$BRANCH"
+          fi
+          echo "BRANCH=$BRANCH" >> "$GITHUB_ENV"
+      - name: Fetch and verify this batch's Décastar Talence 2026 senior PBs
         env:
-          ROSTER: ${{ github.event.inputs.roster || 'both' }}
+          CHUNK_TYPE: ${{ matrix.chunk.type }}
+          CHUNK_NAMES: ${{ toJson(matrix.chunk.names) }}
         run: |
           node <<'NODE'
           const fs=require('fs');
@@ -47,11 +104,9 @@ jobs:
           };
           const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
-          // worldathletics.nimarion.de is dead outright now (not just rate-limited or
-          // down-for-extended-periods as before) - confirmed, so this no longer touches it at
-          // all, not even for its small GraphQL key-discovery routes. The public, server-rendered
-          // athlete profile page embeds its data as plain JSON in a <script id="__NEXT_DATA__">
-          // tag - no API key, no nimarion dependency at all - and is now the sole source.
+          // worldathletics.nimarion.de is dead outright (confirmed), so this never touches it.
+          // The public, server-rendered athlete profile page embeds its data as plain JSON in a
+          // <script id="__NEXT_DATA__"> tag - no API key, no nimarion dependency at all.
           async function fetchCompetitorFromHtml(id){
             const r=await fetch(`https://worldathletics.org/athletes/-/${id}`,{headers:{'User-Agent':'Mozilla/5.0 Mangekampanalyse-Pro/1.0'}});
             if(!r.ok) throw new Error(`worldathletics.org ${r.status}`);
@@ -69,10 +124,6 @@ jobs:
           // Defensive: this page's exact personal-bests field name isn't confirmed anywhere in
           // Rankingstevner's codebase (it only ever reads basicData/worldRankings from this same
           // page), so try every plausible shape rather than assuming one.
-          // Confirmed via a throwaway diagnostic run: personalBests.results rows carry a ready
-          // venue string and an eventName (the meet name), same shape family as resultsByYear's
-          // rows used elsewhere in this pipeline - venue/competition were previously dropped here
-          // entirely, leaving "Personlig beste pr. øvelse"'s Sted (venue) column always blank.
           function extractPbRowsFromCompetitor(c){
             const candidates=[c?.personalBests,c?.personalbests,c?.seasonsBests?.personalBests,c?.honours?.personalBests];
             for(const cand of candidates){
@@ -136,121 +187,132 @@ jobs:
           }
 
           (async()=>{
-            const audit={generatedAt:new Date().toISOString(),source:'worldathletics.org profile HTML (direct, no key, no nimarion)',athletes:{},missing:[]};
+            const chunkType=process.env.CHUNK_TYPE;
+            const chunkNames=new Set(JSON.parse(process.env.CHUNK_NAMES||'[]'));
+
+            let prevAudit={athletes:{},missing:[]};
+            try{ prevAudit=JSON.parse(fs.readFileSync('app/data/decastar_pb_audit.json','utf8')); }catch(_e){}
+            const audit={
+              generatedAt:new Date().toISOString(),
+              source:"worldathletics.org profile HTML (direct, no key, no nimarion), fetched in batches to stay under WA's per-run request cap",
+              athletes:{...(prevAudit.athletes||{})},
+              missing:(prevAudit.missing||[]).filter(m=>!(m.type===chunkType&&chunkNames.has(m.athlete)))
+            };
+
+            // decastar_pb_verified.js is fully regenerated each batch, so anyone not fetched
+            // THIS run (every other type, plus earlier/later batches of the same type) must be
+            // carried forward from whatever's already on this run's shared branch - either the
+            // originally-committed file, or an earlier batch's contribution in this same run.
             const verified={men:{},women:{}};
-
-            const rosterFilter=(process.env.ROSTER||'both').trim();
-            const typesToFetch=rosterFilter==='men'||rosterFilter==='women'?[rosterFilter]:['men','women'];
-
-            // World Athletics seems to cap successful HTML fetches at ~20-21 per run,
-            // regardless of pause length or gaps between runs (confirmed: 17 men + 16 women in
-            // one run consistently loses the tail; splitting into separate men-only/women-only
-            // dispatches keeps each run under that cap). decastar_pb_verified.js is fully
-            // regenerated each run though, so a partial (men-only or women-only) run must carry
-            // forward the other type's data from the file already committed on main, or that
-            // type's bests/theoretical/utilization/wr would silently reset to empty on deploy.
+            let prevV={men:{},women:{}};
+            try{
+              const prevJs=fs.readFileSync('app/data/decastar_pb_verified.js','utf8');
+              const m=prevJs.match(/const V=(\{[\s\S]*?\});\n\s*for/);
+              if(m) prevV=JSON.parse(m[1]);
+            }catch(_e){ /* no previous file yet */ }
             for(const type of ['men','women']){
-              if(typesToFetch.includes(type))continue;
-              try{
-                const prevJs=fs.readFileSync('app/data/decastar_pb_verified.js','utf8');
-                const m=prevJs.match(/const V=(\{[\s\S]*?\});\n\s*for/);
-                if(m){ const prevV=JSON.parse(m[1]); if(prevV[type]) verified[type]=prevV[type]; }
-              }catch(_e){ /* no previous file yet - leave empty */ }
+              for(const athlete of roster[type]){
+                const isThisBatch=type===chunkType&&chunkNames.has(athlete.name);
+                if(!isThisBatch&&prevV[type]?.[athlete.name]) verified[type][athlete.name]=prevV[type][athlete.name];
+              }
             }
 
-            for(const type of typesToFetch){
-              for(const athlete of roster[type]){
-                const name=athlete.name;
-                const id=athlete.waId;
-                audit.athletes[name]={type,waId:id,events:{}};
-                let birth='',pbRows=null,source=null,competitorObj=null;
+            for(const athlete of roster[chunkType]){
+              if(!chunkNames.has(athlete.name)) continue;
+              const type=chunkType;
+              const name=athlete.name;
+              const id=athlete.waId;
+              audit.athletes[name]={type,waId:id,events:{}};
+              let birth='',pbRows=null,source=null,competitorObj=null;
 
-                if(!id){ audit.missing.push({athlete:name,type,error:'no waId in roster file'}); continue; }
+              if(!id){ audit.missing.push({athlete:name,type,error:'no waId in roster file'}); continue; }
 
-                // Public profile page HTML - no key, no nimarion, sole source now.
-                try{
-                  const competitor=await fetchCompetitorFromHtml(id);
-                  competitorObj=competitor;
-                  birth=birthYear(competitor?.basicData||{});
-                  const rows=extractPbRowsFromCompetitor(competitor);
-                  if(rows&&rows.length){ pbRows=rows; source='wa-html-direct'; }
-                  else audit.athletes[name].htmlFieldsSeen=Object.keys(competitor||{});
-                }catch(e){ audit.athletes[name].htmlError=String(e.message||e); }
+              // Public profile page HTML - no key, no nimarion, sole source now.
+              try{
+                const competitor=await fetchCompetitorFromHtml(id);
+                competitorObj=competitor;
+                birth=birthYear(competitor?.basicData||{});
+                const rows=extractPbRowsFromCompetitor(competitor);
+                if(rows&&rows.length){ pbRows=rows; source='wa-html-direct'; }
+                else audit.athletes[name].htmlFieldsSeen=Object.keys(competitor||{});
+              }catch(e){ audit.athletes[name].htmlError=String(e.message||e); }
 
-                // WR column (app.js's own header tooltip: "utøverens plassering på World
-                // Athletics verdensranking") - the athlete's current combined-events world
-                // ranking place, from the same competitor object already fetched above.
-                const wrEventGroup=type==='men'?"Men's Decathlon":"Women's Heptathlon";
-                const wrEntry=(competitorObj?.worldRankings?.current||[]).find(x=>x.eventGroup===wrEventGroup);
-                const wr=wrEntry&&Number.isFinite(Number(wrEntry.place))?Number(wrEntry.place):null;
+              // WR column (app.js's own header tooltip: "utøverens plassering på World
+              // Athletics verdensranking") - the athlete's current combined-events world
+              // ranking place, from the same competitor object already fetched above.
+              const wrEventGroup=type==='men'?"Men's Decathlon":"Women's Heptathlon";
+              const wrEntry=(competitorObj?.worldRankings?.current||[]).find(x=>x.eventGroup===wrEventGroup);
+              const wr=wrEntry&&Number.isFinite(Number(wrEntry.place))?Number(wrEntry.place):null;
 
-                audit.athletes[name].source=source||'none';
-                if(!pbRows||!pbRows.length){ audit.missing.push({athlete:name,type,error:'no results from any source'}); continue; }
+              audit.athletes[name].source=source||'none';
+              if(!pbRows||!pbRows.length){ audit.missing.push({athlete:name,type,error:'no results from any source'}); continue; }
 
-                verified[type][name]={birth,wr};
-                for(const [event,discipline] of Object.entries(eventMap[type])){
-                  let candidates=pbRows.filter(r=>r.discipline===discipline && r.legal!==false && windApproved(event,r));
-                  // Theoretical PB sums each event's best-ever mark, so a MISSING event silently
-                  // drops out of that sum instead of contributing 0 - if the athlete's actual
-                  // combined PB includes a wind-aided mark in this event (legitimate: combined-
-                  // events scoring counts the mark regardless of wind, unlike standalone-event
-                  // records/rankings), theoretical PB comes out lower than their real combined
-                  // PB, producing >100% utilization and negative "unused potential". Confirmed
-                  // for Devon Williams / Tristan Marcy (Lengde/Long Jump, both wind-aided-only).
-                  // Fall back to the best available mark regardless of wind only when no
-                  // wind-legal candidate exists at all.
-                  let windAidedFallback=false;
-                  if(!candidates.length){
-                    const anyLegal=pbRows.filter(r=>r.discipline===discipline && r.legal!==false);
-                    if(anyLegal.length){ candidates=anyLegal; windAidedFallback=true; }
-                  }
-                  let row=candidates[0]||null;
-                  if(candidates.length>1){
-                    const lower=['100m','400m','110mh','1500m','100mh','200m','800m'].includes(event);
-                    row=[...candidates].sort((a,b)=>lower?value(event,a.mark)-value(event,b.mark):value(event,b.mark)-value(event,a.mark))[0];
-                  }
-                  if(!row){ audit.athletes[name].events[event]='MISSING'; continue; }
-                  const wa=value(event,row.mark);
-                  verified[type][name][event]={display:String(row.mark),mark:wa,points:score(type,event,wa),venue:venue(row),date:isoDate(row)};
-                  audit.athletes[name].events[event]=windAidedFallback?'OK (wind-aided fallback)':'OK';
+              verified[type][name]={birth,wr};
+              for(const [event,discipline] of Object.entries(eventMap[type])){
+                let candidates=pbRows.filter(r=>r.discipline===discipline && r.legal!==false && windApproved(event,r));
+                // Theoretical PB sums each event's best-ever mark, so a MISSING event silently
+                // drops out of that sum instead of contributing 0 - if the athlete's actual
+                // combined PB includes a wind-aided mark in this event (legitimate: combined-
+                // events scoring counts the mark regardless of wind, unlike standalone-event
+                // records/rankings), theoretical PB comes out lower than their real combined
+                // PB, producing >100% utilization and negative "unused potential". Confirmed
+                // for Devon Williams / Tristan Marcy (Lengde/Long Jump, both wind-aided-only).
+                // Fall back to the best available mark regardless of wind only when no
+                // wind-legal candidate exists at all.
+                let windAidedFallback=false;
+                if(!candidates.length){
+                  const anyLegal=pbRows.filter(r=>r.discipline===discipline && r.legal!==false);
+                  if(anyLegal.length){ candidates=anyLegal; windAidedFallback=true; }
                 }
-                // 80ms was too aggressive - the last ~4-12 athletes processed each run
-                // (always the tail of the men+women loop, never a fixed set of names)
-                // consistently got "__NEXT_DATA__ not found" from worldathletics.org, despite
-                // confirmed-valid IDs. Points to a per-run request budget on WA's side rather
-                // than per-athlete problems - see the ROSTER split above for the actual fix.
-                await sleep(600);
+                let row=candidates[0]||null;
+                if(candidates.length>1){
+                  const lower=['100m','400m','110mh','1500m','100mh','200m','800m'].includes(event);
+                  row=[...candidates].sort((a,b)=>lower?value(event,a.mark)-value(event,b.mark):value(event,b.mark)-value(event,a.mark))[0];
+                }
+                if(!row){ audit.athletes[name].events[event]='MISSING'; continue; }
+                const wa=value(event,row.mark);
+                verified[type][name][event]={display:String(row.mark),mark:wa,points:score(type,event,wa),venue:venue(row),date:isoDate(row)};
+                audit.athletes[name].events[event]=windAidedFallback?'OK (wind-aided fallback)':'OK';
               }
+              // World Athletics seems to cap successful HTML fetches at ~20-21 per job
+              // execution regardless of pause length - this pause just avoids hammering it
+              // needlessly within the batch, not the actual fix (batching itself is the fix).
+              await sleep(600);
             }
 
             let js=`// AUTO-GENERATED by .github/workflows/decastar-pb-bulk.yml\n// Exact senior disciplines only. Wind-dependent outdoor PBs are wind-approved.\n(function(){\n const R=window.MANGEKAMP_DATA; if(!R)return;\n const V=${JSON.stringify(verified)};\n for(const type of ['men','women']){\n  const list=R[type]?.decastar; if(!list)continue;\n  for(const a of list){\n   const v=V[type][a.name]; if(!v)continue;\n   if(v.birth) a.birth=v.birth;\n   if(v.wr!=null) a.wr=v.wr;\n   let theoretical=0,count=0;\n   for(const [e,p] of Object.entries(v)){ if(e==='birth'||e==='wr')continue; if(a.bests) a.bests[e]=p; theoretical+=Number(p.points)||0; count++; }\n   if(count>0){ a.theoretical=theoretical; a.theoreticalPB=theoretical; a.potential=theoretical-(Number(a.pb)||0); a.utilization=Number(a.pb)?Math.round((Number(a.pb)/theoretical)*1000)/10:0; }\n  }\n }\n})();\n`;
             fs.writeFileSync('app/data/decastar_pb_audit.json',JSON.stringify(audit,null,2));
             fs.writeFileSync('app/data/decastar_pb_verified.js',js);
-            console.log('DONE men='+roster.men.length+' women='+roster.women.length+' missing='+audit.missing.length);
+            console.log('BATCH DONE type='+chunkType+' size='+chunkNames.size+' missingThisRun='+audit.missing.filter(m=>m.type===chunkType&&chunkNames.has(m.athlete)).length+' totalMissing='+audit.missing.length);
             if(audit.missing.length) console.log('MISSING '+JSON.stringify(audit.missing));
           })().catch(e=>{console.error(e);process.exit(1)});
           NODE
-      - name: Commit verified Décastar data to a branch
-        if: always()
+      - name: Commit this batch's verified data
         run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           # decastar_pb_verified.js's <script> tag has no cache-busting query string of its own
           # otherwise, so a browser/CDN can keep serving a stale copy after this file changes
           # (confirmed live: a user saw pre-fix utilization numbers well after the fix had merged).
           sed -i -E "s#(data/decastar_pb_verified\.js\?v=)[^\"]*#\1$(date +%Y%m%d%H%M%S)#" app/index.html
           git add app/data/decastar_pb_audit.json app/data/decastar_pb_verified.js app/index.html
           git diff --cached --quiet && exit 0
-          BRANCH="decastar-pb-audit-$(date +%Y%m%d-%H%M%S)"
-          git checkout -b "$BRANCH"
-          git commit -m 'Audit Décastar Talence 2026 senior wind-legal PBs from WA profiles'
+          git commit -m "Audit Décastar ${{ matrix.chunk.type }} batch (${{ strategy.job-index }} of ${{ strategy.job-total }} total)"
           git push -u origin "$BRANCH"
-          echo "BRANCH=$BRANCH" >> "$GITHUB_ENV"
-      - name: Open pull request
-        if: always() && env.BRANCH != ''
+
+  open-pr:
+    needs: audit
+    if: always() && needs.audit.result != 'skipped'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Open pull request for the accumulated branch
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh pr create --base main --head "$BRANCH" \
-            --title 'Audit Décastar Talence 2026 senior wind-legal PBs' \
-            --body 'Auto-generated by decastar-pb-bulk.yml. Review app/data/decastar_pb_audit.json for any MISSING entries before merging.'
+          BRANCH="decastar-pb-audit-${{ github.run_id }}"
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+            gh pr create --base main --head "$BRANCH" \
+              --title 'Audit Décastar Talence 2026 senior wind-legal PBs' \
+              --body 'Auto-generated by decastar-pb-bulk.yml, fetched in batches (see the "plan" and "audit" job logs for the batch breakdown). Review app/data/decastar_pb_audit.json for any MISSING entries before merging.'
+          else
+            echo "No branch was pushed by the audit job - nothing changed, nothing to open a PR for."
+          fi
