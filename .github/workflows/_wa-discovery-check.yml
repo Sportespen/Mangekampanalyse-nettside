@@ -5,7 +5,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - name: Inspect worldRankings.current shape
+      - name: Confirm women's eventGroup naming
         run: |
           node <<'NODE'
           async function fetchCompetitor(id){
@@ -20,10 +20,7 @@ jobs:
             return nextData?.props?.pageProps?.competitor;
           }
           (async()=>{
-            for(const [name,id] of [['Damian Warner',14173337],['Tristan Marcy',14757313]]){
-              const c=await fetchCompetitor(id);
-              console.log('---',name,'---');
-              console.log('worldRankings:', JSON.stringify(c?.worldRankings, null, 1));
-            }
+            const c=await fetchCompetitor(14428253);
+            console.log('Nafissatou Thiam current:', JSON.stringify(c?.worldRankings?.current?.map(x=>({eventGroup:x.eventGroup,place:x.place}))));
           })();
           NODE
