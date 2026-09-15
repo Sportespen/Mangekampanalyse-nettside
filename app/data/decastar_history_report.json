@@ -1,0 +1,260 @@
+{
+  "generatedAt": "2026-09-15T11:52:00.942Z",
+  "athletes": {
+    "Damian Warner": {
+      "events": [
+        "100m",
+        "Lengde",
+        "Kule",
+        "Høyde",
+        "400m",
+        "110mh",
+        "Diskos",
+        "Stav",
+        "Spyd",
+        "1500m"
+      ]
+    },
+    "Pierce LePage": {
+      "events": [
+        "100m",
+        "Lengde",
+        "Kule",
+        "Høyde",
+        "400m",
+        "110mh",
+        "Diskos",
+        "Stav",
+        "Spyd",
+        "1500m"
+      ]
+    },
+    "Karel Tilga": {
+      "skipped": "already has history"
+    },
+    "Harrison Williams": {
+      "events": [
+        "100m",
+        "Lengde",
+        "Kule",
+        "Høyde",
+        "400m",
+        "110mh",
+        "Diskos",
+        "Stav",
+        "Spyd",
+        "1500m"
+      ]
+    },
+    "Sven Roosen": {
+      "skipped": "already has history"
+    },
+    "Makenson Gletty": {
+      "skipped": "already has history"
+    },
+    "Hakim McMorris": {
+      "events": [
+        "100m",
+        "Lengde",
+        "Kule",
+        "Høyde",
+        "400m",
+        "110mh",
+        "Diskos",
+        "Stav",
+        "Spyd",
+        "1500m"
+      ]
+    },
+    "Devon Williams": {
+      "events": [
+        "100m",
+        "Lengde",
+        "Kule",
+        "Høyde",
+        "400m",
+        "110mh",
+        "Diskos",
+        "Stav",
+        "Spyd",
+        "1500m"
+      ]
+    },
+    "Amadeus Gräber": {
+      "skipped": "already has history"
+    },
+    "Antoine Ferranti": {
+      "skipped": "already has history"
+    },
+    "Andrin Huber": {
+      "skipped": "already has history"
+    },
+    "Sammy Ball": {
+      "events": [
+        "100m",
+        "Lengde",
+        "Kule",
+        "Høyde",
+        "400m",
+        "110mh",
+        "Diskos",
+        "Stav",
+        "Spyd",
+        "1500m"
+      ]
+    },
+    "Jami Schlueter": {
+      "events": [
+        "100m",
+        "Lengde",
+        "Kule",
+        "Høyde",
+        "400m",
+        "110mh",
+        "Diskos",
+        "Stav",
+        "Spyd",
+        "1500m"
+      ]
+    },
+    "Tristan Marcy": {
+      "events": [
+        "100m",
+        "Lengde",
+        "Kule",
+        "Høyde",
+        "400m",
+        "110mh",
+        "Diskos",
+        "Stav",
+        "Spyd",
+        "1500m"
+      ]
+    },
+    "Nafissatou Thiam": {
+      "events": [
+        "100mh",
+        "Høyde",
+        "Kule",
+        "200m",
+        "Lengde"
+      ]
+    },
+    "Beatričė Juškevičiūtė": {
+      "skipped": "already has history"
+    },
+    "Lovisa Karlsson": {
+      "skipped": "already has history"
+    },
+    "Anna-Elisabeth Ehlers": {
+      "events": [
+        "100mh",
+        "Høyde",
+        "Kule",
+        "200m",
+        "Lengde",
+        "Spyd",
+        "800m"
+      ]
+    },
+    "Niamh Emerson": {
+      "events": [
+        "100mh",
+        "Høyde",
+        "Kule",
+        "200m",
+        "Lengde",
+        "Spyd",
+        "800m"
+      ]
+    },
+    "Léonie Cambours": {
+      "events": [
+        "100mh",
+        "Høyde",
+        "Kule",
+        "200m",
+        "Lengde",
+        "Spyd",
+        "800m"
+      ]
+    },
+    "Marie Dehning": {
+      "events": [
+        "100mh",
+        "Høyde",
+        "Kule",
+        "200m",
+        "Lengde",
+        "Spyd",
+        "800m"
+      ]
+    },
+    "Ellen Barber": {
+      "events": [
+        "100mh",
+        "Høyde",
+        "Kule",
+        "200m",
+        "Lengde",
+        "Spyd",
+        "800m"
+      ]
+    },
+    "Célia Perron": {
+      "events": [
+        "100mh",
+        "Høyde",
+        "Kule",
+        "200m",
+        "Lengde",
+        "Spyd",
+        "800m"
+      ]
+    },
+    "Ysée Le Philippe": {
+      "events": [
+        "100mh",
+        "Høyde",
+        "Kule",
+        "200m",
+        "Lengde",
+        "Spyd",
+        "800m"
+      ]
+    },
+    "Maddie Wilson": {
+      "events": [
+        "100mh",
+        "Høyde",
+        "Kule",
+        "200m",
+        "Lengde",
+        "Spyd",
+        "800m"
+      ]
+    },
+    "Liana Trümpi": {
+      "events": [
+        "100mh",
+        "Høyde",
+        "Kule",
+        "200m",
+        "Lengde",
+        "Spyd",
+        "800m"
+      ]
+    },
+    "Elisa Pineau": {
+      "events": [
+        "100mh",
+        "Høyde",
+        "Kule",
+        "200m",
+        "Lengde",
+        "Spyd"
+      ]
+    }
+  },
+  "missing": []
+}
