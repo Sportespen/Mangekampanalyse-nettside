@@ -5,7 +5,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - name: Confirm women's eventGroup naming
+      - name: Confirm women's eventGroup naming (try an active heptathlete)
         run: |
           node <<'NODE'
           async function fetchCompetitor(id){
@@ -20,7 +20,9 @@ jobs:
             return nextData?.props?.pageProps?.competitor;
           }
           (async()=>{
-            const c=await fetchCompetitor(14428253);
-            console.log('Nafissatou Thiam current:', JSON.stringify(c?.worldRankings?.current?.map(x=>({eventGroup:x.eventGroup,place:x.place}))));
+            for(const [name,id] of [['Elisa Pineau',14624254],['Beatricke Juskeviciute',14632718],['Marie Dehning',14810666]]){
+              const c=await fetchCompetitor(id);
+              console.log(name, JSON.stringify(c?.worldRankings?.current?.map(x=>({eventGroup:x.eventGroup,place:x.place}))));
+            }
           })();
           NODE
