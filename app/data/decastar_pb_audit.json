@@ -1,0 +1,428 @@
+{
+  "generatedAt": "2026-09-15T09:03:23.014Z",
+  "source": "1) worldathletics.org profile HTML (direct, no key) 2) WA GraphQL direct (nimarion for key discovery only) 3) nimarion REST as last resort",
+  "athletes": {
+    "Damian Warner": {
+      "type": "men",
+      "waId": 14173337,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Pierce LePage": {
+      "type": "men",
+      "waId": 14541853,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Karel Tilga": {
+      "type": "men",
+      "waId": 14665173,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Harrison Williams": {
+      "type": "men",
+      "waId": 14563272,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Sven Roosen": {
+      "type": "men",
+      "waId": 14758769,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Makenson Gletty": {
+      "type": "men",
+      "waId": 14676383,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Hakim McMorris": {
+      "type": "men",
+      "waId": 14883424,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Devon Williams": {
+      "type": "men",
+      "waId": 14436228,
+      "events": {
+        "100m": "OK",
+        "Lengde": "MISSING",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Amadeus Gräber": {
+      "type": "men",
+      "waId": 14971456,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Antoine Ferranti": {
+      "type": "men",
+      "waId": 14882253,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Andrin Huber": {
+      "type": "men",
+      "waId": 14930124,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Sammy Ball": {
+      "type": "men",
+      "waId": 14985934,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Jami Schlueter": {
+      "type": "men",
+      "waId": 14851276,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Tristan Marcy": {
+      "type": "men",
+      "waId": 14757313,
+      "events": {
+        "100m": "OK",
+        "Lengde": "MISSING",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Nafissatou Thiam": {
+      "type": "women",
+      "waId": 14428253,
+      "events": {
+        "100mh": "OK",
+        "Høyde": "OK",
+        "Kule": "OK",
+        "200m": "OK",
+        "Lengde": "OK",
+        "Spyd": "OK",
+        "800m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Beatričė Juškevičiūtė": {
+      "type": "women",
+      "waId": 14632718,
+      "events": {
+        "100mh": "OK",
+        "Høyde": "OK",
+        "Kule": "OK",
+        "200m": "OK",
+        "Lengde": "OK",
+        "Spyd": "OK",
+        "800m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Lovisa Karlsson": {
+      "type": "women",
+      "waId": 14593982,
+      "events": {
+        "100mh": "OK",
+        "Høyde": "OK",
+        "Kule": "OK",
+        "200m": "OK",
+        "Lengde": "OK",
+        "Spyd": "OK",
+        "800m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Anna-Elisabeth Ehlers": {
+      "type": "women",
+      "waId": 14926486,
+      "events": {
+        "100mh": "OK",
+        "Høyde": "OK",
+        "Kule": "OK",
+        "200m": "OK",
+        "Lengde": "OK",
+        "Spyd": "OK",
+        "800m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Niamh Emerson": {
+      "type": "women",
+      "waId": 14530181,
+      "events": {
+        "100mh": "OK",
+        "Høyde": "OK",
+        "Kule": "OK",
+        "200m": "OK",
+        "Lengde": "OK",
+        "Spyd": "OK",
+        "800m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Léonie Cambours": {
+      "type": "women",
+      "waId": 14734285,
+      "events": {
+        "100mh": "OK",
+        "Høyde": "OK",
+        "Kule": "OK",
+        "200m": "OK",
+        "Lengde": "OK",
+        "Spyd": "OK",
+        "800m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Marie Dehning": {
+      "type": "women",
+      "waId": 14810666,
+      "events": {
+        "100mh": "OK",
+        "Høyde": "OK",
+        "Kule": "OK",
+        "200m": "OK",
+        "Lengde": "OK",
+        "Spyd": "OK",
+        "800m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Ellen Barber": {
+      "type": "women",
+      "waId": 14642887,
+      "events": {
+        "100mh": "OK",
+        "Høyde": "OK",
+        "Kule": "OK",
+        "200m": "OK",
+        "Lengde": "OK",
+        "Spyd": "OK",
+        "800m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Célia Perron": {
+      "type": "women",
+      "waId": 14516958,
+      "events": {
+        "100mh": "OK",
+        "Høyde": "OK",
+        "Kule": "OK",
+        "200m": "OK",
+        "Lengde": "OK",
+        "Spyd": "OK",
+        "800m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Ysée Le Philippe": {
+      "type": "women",
+      "waId": 14826183,
+      "events": {
+        "100mh": "OK",
+        "Høyde": "OK",
+        "Kule": "OK",
+        "200m": "OK",
+        "Lengde": "OK",
+        "Spyd": "OK",
+        "800m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Maddie Wilson": {
+      "type": "women",
+      "waId": 14733354,
+      "events": {
+        "100mh": "OK",
+        "Høyde": "OK",
+        "Kule": "OK",
+        "200m": "OK",
+        "Lengde": "OK",
+        "Spyd": "OK",
+        "800m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Liana Trümpi": {
+      "type": "women",
+      "waId": 14944600,
+      "events": {
+        "100mh": "OK",
+        "Høyde": "OK",
+        "Kule": "OK",
+        "200m": "OK",
+        "Lengde": "OK",
+        "Spyd": "OK",
+        "800m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Elisa Pineau": {
+      "type": "women",
+      "waId": 14624254,
+      "events": {
+        "100mh": "OK",
+        "Høyde": "OK",
+        "Kule": "OK",
+        "200m": "OK",
+        "Lengde": "OK",
+        "Spyd": "OK",
+        "800m": "OK"
+      },
+      "source": "wa-html-direct"
+    }
+  },
+  "missing": [],
+  "graphqlDiscovery": "failed: WA GraphQL discovery failed"
+}
