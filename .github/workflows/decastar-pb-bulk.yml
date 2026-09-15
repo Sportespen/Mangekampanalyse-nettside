@@ -208,7 +208,21 @@ jobs:
 
                 verified[type][name]={birth};
                 for(const [event,discipline] of Object.entries(eventMap[type])){
-                  const candidates=pbRows.filter(r=>r.discipline===discipline && r.legal!==false && windApproved(event,r));
+                  let candidates=pbRows.filter(r=>r.discipline===discipline && r.legal!==false && windApproved(event,r));
+                  // Theoretical PB sums each event's best-ever mark, so a MISSING event silently
+                  // drops out of that sum instead of contributing 0 - if the athlete's actual
+                  // combined PB includes a wind-aided mark in this event (legitimate: combined-
+                  // events scoring counts the mark regardless of wind, unlike standalone-event
+                  // records/rankings), theoretical PB comes out lower than their real combined
+                  // PB, producing >100% utilization and negative "unused potential". Confirmed
+                  // for Devon Williams / Tristan Marcy (Lengde/Long Jump, both wind-aided-only).
+                  // Fall back to the best available mark regardless of wind only when no
+                  // wind-legal candidate exists at all.
+                  let windAidedFallback=false;
+                  if(!candidates.length){
+                    const anyLegal=pbRows.filter(r=>r.discipline===discipline && r.legal!==false);
+                    if(anyLegal.length){ candidates=anyLegal; windAidedFallback=true; }
+                  }
                   let row=candidates[0]||null;
                   if(candidates.length>1){
                     const lower=['100m','400m','110mh','1500m','100mh','200m','800m'].includes(event);
@@ -217,7 +231,7 @@ jobs:
                   if(!row){ audit.athletes[name].events[event]='MISSING'; continue; }
                   const wa=value(event,row.mark);
                   verified[type][name][event]={display:String(row.mark),mark:wa,points:score(type,event,wa),venue:venue(row),date:isoDate(row)};
-                  audit.athletes[name].events[event]='OK';
+                  audit.athletes[name].events[event]=windAidedFallback?'OK (wind-aided fallback)':'OK';
                 }
                 await sleep(80);
               }
