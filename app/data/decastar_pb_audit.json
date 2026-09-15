@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-15T09:03:23.014Z",
+  "generatedAt": "2026-09-15T11:52:02.835Z",
   "source": "1) worldathletics.org profile HTML (direct, no key) 2) WA GraphQL direct (nimarion for key discovery only) 3) nimarion REST as last resort",
   "athletes": {
     "Damian Warner": {
@@ -126,7 +126,7 @@
       "waId": 14436228,
       "events": {
         "100m": "OK",
-        "Lengde": "MISSING",
+        "Lengde": "OK (wind-aided fallback)",
         "Kule": "OK",
         "Høyde": "OK",
         "400m": "OK",
@@ -228,7 +228,7 @@
       "waId": 14757313,
       "events": {
         "100m": "OK",
-        "Lengde": "MISSING",
+        "Lengde": "OK (wind-aided fallback)",
         "Kule": "OK",
         "Høyde": "OK",
         "400m": "OK",
