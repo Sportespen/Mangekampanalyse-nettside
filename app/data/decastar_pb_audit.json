@@ -1,0 +1,142 @@
+{
+  "generatedAt": "2026-09-15T08:38:18.905Z",
+  "source": "World Athletics profile data via structured proxy",
+  "athletes": {},
+  "missing": [
+    {
+      "athlete": "Damian Warner",
+      "type": "men",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Damian%20Warner {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Pierce LePage",
+      "type": "men",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Pierce%20LePage {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Karel Tilga",
+      "type": "men",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Karel%20Tilga {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Harrison Williams",
+      "type": "men",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Harrison%20Williams {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Sven Roosen",
+      "type": "men",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Sven%20Roosen {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Makenson Gletty",
+      "type": "men",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Makenson%20Gletty {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Hakim McMorris",
+      "type": "men",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Hakim%20McMorris {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Devon Williams",
+      "type": "men",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Devon%20Williams {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Amadeus Gräber",
+      "type": "men",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Amadeus%20Gr%C3%A4ber {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Antoine Ferranti",
+      "type": "men",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Antoine%20Ferranti {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Andrin Huber",
+      "type": "men",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Andrin%20Huber {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Sammy Ball",
+      "type": "men",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Sammy%20Ball {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Jami Schlueter",
+      "type": "men",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Jami%20Schlueter {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Tristan Marcy",
+      "type": "men",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Tristan%20Marcy {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Nafissatou Thiam",
+      "type": "women",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Nafissatou%20Thiam {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Beatričė Juškevičiūtė",
+      "type": "women",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Beatri%C4%8D%C4%97%20Ju%C5%A1kevi%C4%8Di%C5%ABt%C4%97 {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Lovisa Karlsson",
+      "type": "women",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Lovisa%20Karlsson {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Anna-Elisabeth Ehlers",
+      "type": "women",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Anna-Elisabeth%20Ehlers {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Niamh Emerson",
+      "type": "women",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Niamh%20Emerson {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Léonie Cambours",
+      "type": "women",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=L%C3%A9onie%20Cambours {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Marie Dehning",
+      "type": "women",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Marie%20Dehning {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Ellen Barber",
+      "type": "women",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Ellen%20Barber {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Célia Perron",
+      "type": "women",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=C%C3%A9lia%20Perron {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Ysée Le Philippe",
+      "type": "women",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Ys%C3%A9e%20Le%20Philippe {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Maddie Wilson",
+      "type": "women",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Maddie%20Wilson {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Liana Trümpi",
+      "type": "women",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Liana%20Tr%C3%BCmpi {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "athlete": "Elisa Pineau",
+      "type": "women",
+      "error": "500 https://worldathletics.nimarion.de/athletes/search?name=Elisa%20Pineau {\"message\":\"Internal Server Error\",\"statusCode\":500}"
+    }
+  ]
+}
