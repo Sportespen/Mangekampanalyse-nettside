@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-15T19:14:55.463Z",
+  "generatedAt": "2026-09-15T19:15:12.741Z",
   "athletes": {
     "Damian Warner": {
       "events": [
@@ -251,10 +251,26 @@
       ]
     },
     "Vanessa Grimm": {
-      "skipped": "already has history"
+      "events": [
+        "100mh",
+        "Høyde",
+        "Kule",
+        "200m",
+        "Lengde",
+        "Spyd",
+        "800m"
+      ]
     },
     "Beatričė Juškevičiūtė": {
-      "skipped": "already has history"
+      "events": [
+        "100mh",
+        "Høyde",
+        "Kule",
+        "200m",
+        "Lengde",
+        "Spyd",
+        "800m"
+      ]
     },
     "Niamh Emerson": {
       "events": [
@@ -268,7 +284,15 @@
       ]
     },
     "Lovisa Karlsson": {
-      "skipped": "already has history"
+      "events": [
+        "100mh",
+        "Høyde",
+        "Kule",
+        "200m",
+        "Lengde",
+        "Spyd",
+        "800m"
+      ]
     },
     "Anna-Elisabeth Ehlers": {
       "events": [
