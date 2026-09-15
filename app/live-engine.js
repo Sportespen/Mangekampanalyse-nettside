@@ -26,7 +26,7 @@
   function tx(k){return L[lang()]?.[k]??L.nb[k]??k;}
   function eventLabel(e){return EVENT_LABELS[lang()]?.[e]||window.MKA_LANG?.eventLabel?.(e)||e;}
   function help(k){return HEADER_HELP[lang()]?.[k]||HEADER_HELP.nb[k]||tx('sort');}
-  function liveForType(){const live=window.MANGEKAMP_LIVE||{};return currentType==='women'?(live.women||{}):(live.men||{});}
+  function liveForType(){if(typeof currentComp!=='undefined'&&currentComp!=='birmingham')return{};const live=window.MANGEKAMP_LIVE||{};return currentType==='women'?(live.women||{}):(live.men||{});}
   function statusBox(){return document.querySelector('.status');}
   function normalizeName(value){return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9]+/g,' ').trim().toLowerCase();}
   function sameAthleteName(a,b){const aa=normalizeName(a),bb=normalizeName(b);if(!aa||!bb)return false;if(aa===bb||aa.includes(bb)||bb.includes(aa))return true;const at=aa.split(' ').filter(Boolean),bt=bb.split(' ').filter(Boolean);if(!at.length||!bt.length||at[0]!==bt[0])return false;return at.slice(1).some(t=>t.length>=4&&bt.includes(t));}
