@@ -10,34 +10,81 @@ on:
     paths:
       - '.github/workflows/decastar-history-bulk.yml'
   workflow_dispatch:
+  # Runs daily so the forecast basis keeps picking up new results (e.g. a championship
+  # decathlon happening mid-week) automatically right up until Décastar Talence 2026 starts,
+  # without needing a manual dispatch each time. Still lands as a PR that needs merging (GitHub
+  # Actions can't create/approve PRs in this repo), not a direct push to main.
+  schedule:
+    - cron: '0 5 * * *'
 
 jobs:
+  # World Athletics seems to cap successful HTML fetches at ~20-21 per single job execution,
+  # regardless of pause length between requests (confirmed today via decastar-pb-bulk.yml).
+  # A fresh job/runner resets that budget, so this plans a matrix of small batches - one job
+  # per batch, run sequentially - across all 33 Décastar athletes.
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      chunks: ${{ steps.plan.outputs.chunks }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Compute fetch batches
+        id: plan
+        run: |
+          node <<'NODE' > /tmp/chunks.json
+          global.window={};
+          for(const p of ['./app/data/00_base.js','./app/data/decastar_men.js','./app/data/decastar_women.js']) require(p);
+          const roster={men:window.MANGEKAMP_DATA.men.decastar,women:window.MANGEKAMP_DATA.women.decastar};
+          const BATCH_SIZE=16;
+          const chunks=[];
+          for(const type of ['men','women']){
+            const names=roster[type].map(a=>a.name);
+            for(let i=0;i<names.length;i+=BATCH_SIZE) chunks.push({type,names:names.slice(i,i+BATCH_SIZE)});
+          }
+          process.stdout.write(JSON.stringify(chunks));
+          NODE
+          echo "chunks=$(cat /tmp/chunks.json)" >> "$GITHUB_OUTPUT"
+          echo "Planned batches:"; cat /tmp/chunks.json
+
   history:
+    needs: plan
+    if: needs.plan.outputs.chunks != '[]'
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        chunk: ${{ fromJson(needs.plan.outputs.chunks) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Fetch recent 2026-season results for Décastar-only athletes
+      - name: Check out this run's shared history branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          BRANCH="decastar-history-${{ github.run_id }}"
+          if git fetch origin "$BRANCH" 2>/dev/null && git checkout "$BRANCH"; then
+            echo "Reusing existing branch $BRANCH (earlier batch in this run already created it)"
+          else
+            git checkout -b "$BRANCH"
+          fi
+          echo "BRANCH=$BRANCH" >> "$GITHUB_ENV"
+      - name: Fetch this batch's recent 2026-season results
+        env:
+          CHUNK_TYPE: ${{ matrix.chunk.type }}
+          CHUNK_NAMES: ${{ toJson(matrix.chunk.names) }}
         run: |
           node <<'NODE'
           const fs=require('fs');
           global.window={};
-          for(const p of ['./app/data/00_base.js','./app/data/decastar_men.js','./app/data/decastar_women.js','./app/data/men_b_01.js','./app/data/men_b_02.js','./app/data/men_b_03.js','./app/data/men_rest.js','./app/data/men_g.js','./app/data/jip_de_greef.js','./app/data/women_b_a.js','./app/data/women_b_b.js','./app/data/women_g.js','./app/data/history_web.js','./app/data/history_sulek_2025_2026.js']) require(p);
+          for(const p of ['./app/data/00_base.js','./app/data/decastar_men.js','./app/data/decastar_women.js']) require(p);
 
           const roster={men:window.MANGEKAMP_DATA.men.decastar,women:window.MANGEKAMP_DATA.women.decastar};
-          const existingHistory=window.MANGEKAMP_HISTORY||{};
-
-          // Same name-matching heuristic as live-engine.js's sameAthleteName, so we skip
-          // athletes who already have recent-results history from the Birmingham data files
-          // (avoids ever overwriting/duplicating data for athletes in both competitions).
-          function normName(v){return String(v||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]+/g,' ').trim().toLowerCase();}
-          const histKeys=Object.keys(existingHistory).map(k=>({raw:k,norm:normName(k)}));
-          function hasHistory(name){
-            const n=normName(name);
-            return histKeys.some(h=>h.norm===n||h.norm.includes(n)||n.includes(h.norm));
-          }
 
           const eventMap={
             men:{'100m':'100 Metres','Lengde':'Long Jump','Kule':'Shot Put','Høyde':'High Jump','400m':'400 Metres','110mh':'110 Metres Hurdles','Diskos':'Discus Throw','Stav':'Pole Vault','Spyd':'Javelin Throw','1500m':'1500 Metres'},
@@ -66,14 +113,10 @@ jobs:
           }
 
           // The current season (resultsByYear defaults to it with no way to request another
-          // year via URL - confirmed via a throwaway diagnostic run: the page's own recognized
-          // query params are only country+competitorId, and WA's real per-year filter is a
-          // separate live GraphQL call needing a captured API key, same as Rankingstevner's
-          // wa-key-refresh.mjs Playwright setup) sometimes has nothing usable for a discipline:
-          // no competition in it at all, or only a DNS/DNF. Fall back to progressionOfSeasonsBests
-          // (season's-best per year back to 2010, already present in the same fetched competitor
-          // object - no extra request) so a real gap becomes "last known result" instead of a
-          // bare dash, consistent with the app's own "results from 2025-2026" forecast text.
+          // year via URL - confirmed via a throwaway diagnostic run) sometimes has nothing
+          // usable for a discipline. Fall back to progressionOfSeasonsBests (season's-best per
+          // year back to 2010, already present in the same fetched competitor object - no
+          // extra request) so a real gap becomes "last known result" instead of a bare dash.
           function fallbackFromProgression(discipline,progression){
             const p=(progression||[]).find(x=>x.discipline===discipline);
             if(!p||!Array.isArray(p.results)||!p.results.length) return [];
@@ -88,17 +131,7 @@ jobs:
             return rows.slice(0,4).map(r=>[r.numeric,r.display,r.venue,r.year,r.iso,r.meet]);
           }
 
-          // Same technique as functions/_shared/wa-html.js in Rankingstevner and as
-          // decastar-pb-bulk.yml: the public profile page embeds its data as plain JSON in a
-          // <script id="__NEXT_DATA__"> tag - no API key, no nimarion dependency at all.
-          // Unlike the PB audit (which only needs personalBests), this page's competitor JSON
-          // also carries resultsByYear.resultsByEvent - full per-competition results (mark,
-          // venue, date, competition name) for the current season - which is exactly the
-          // recent-results basis the forecast engine (window.MANGEKAMP_HISTORY) needs. A
-          // ?resultsByYear=YYYY query param does not change which year is returned (confirmed
-          // via a throwaway diagnostic run), so this only gets the current season; that is
-          // consistent with the app's own "Gul/Oransje/Rød" quality indicator for athletes with
-          // fewer than 4 recent results.
+          // worldathletics.nimarion.de is dead outright (confirmed), so this never touches it.
           async function fetchCompetitor(id){
             const r=await fetch(`https://worldathletics.org/athletes/-/${id}`,{headers:{'User-Agent':'Mozilla/5.0 Mangekampanalyse-Pro/1.0'}});
             if(!r.ok) throw new Error(`worldathletics.org ${r.status}`);
@@ -117,72 +150,100 @@ jobs:
           const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
           (async()=>{
-            const H={};
-            const report={generatedAt:new Date().toISOString(),athletes:{},missing:[]};
-            for(const type of ['men','women']){
-              for(const athlete of roster[type]){
-                const name=athlete.name;
-                if(hasHistory(name)){ report.athletes[name]={skipped:'already has history'}; continue; }
-                const id=athlete.waId;
-                if(!id){ report.missing.push({athlete:name,error:'no waId in roster file'}); continue; }
-                try{
-                  const competitor=await fetchCompetitor(id);
-                  const events=competitor?.resultsByYear?.resultsByEvent||[];
-                  const byEvent={};
-                  for(const [ourEvent,discipline] of Object.entries(eventMap[type])){
-                    const ev=events.find(e=>e.discipline===discipline);
-                    let top4=[];
-                    if(ev&&Array.isArray(ev.results)&&ev.results.length){
-                      const rows=[];
-                      for(const row of ev.results){
-                        const parsed=parseWaDate(row.date);
-                        const numeric=toNumericMark(row.mark);
-                        if(!parsed||numeric==null) continue;
-                        rows.push({numeric,display:String(row.mark),venue:row.venue||'',year:parsed.year,iso:parsed.iso});
-                        rows[rows.length-1].meet=meetName(row.competition);
-                      }
-                      rows.sort((a,b)=>b.iso.localeCompare(a.iso));
-                      top4=rows.slice(0,4).map(r=>[r.numeric,r.display,r.venue,r.year,r.iso,r.meet]);
+            const chunkType=process.env.CHUNK_TYPE;
+            const chunkNames=new Set(JSON.parse(process.env.CHUNK_NAMES||'[]'));
+
+            // decastar_history.js is fully regenerated each batch. Start from everything
+            // already on this run's shared branch (either the originally-committed file, or an
+            // earlier batch's contribution this run) so nobody else's data is lost - this batch
+            // only ever touches its own chunk's names below.
+            let H={};
+            try{
+              const prevJs=fs.readFileSync('app/data/decastar_history.js','utf8');
+              const m=prevJs.match(/const H=(\{[\s\S]*?\});\n\s*for/);
+              if(m) H=JSON.parse(m[1]);
+            }catch(_e){ /* no previous file yet */ }
+
+            let prevReport={athletes:{},missing:[]};
+            try{ prevReport=JSON.parse(fs.readFileSync('app/data/decastar_history_report.json','utf8')); }catch(_e){}
+            const report={
+              generatedAt:new Date().toISOString(),
+              athletes:{...(prevReport.athletes||{})},
+              missing:(prevReport.missing||[]).filter(m=>!chunkNames.has(m.athlete))
+            };
+
+            for(const athlete of roster[chunkType]){
+              if(!chunkNames.has(athlete.name)) continue;
+              const type=chunkType;
+              const name=athlete.name;
+              const id=athlete.waId;
+              if(!id){ report.missing.push({athlete:name,error:'no waId in roster file'}); continue; }
+              try{
+                const competitor=await fetchCompetitor(id);
+                const events=competitor?.resultsByYear?.resultsByEvent||[];
+                const byEvent={};
+                for(const [ourEvent,discipline] of Object.entries(eventMap[type])){
+                  const ev=events.find(e=>e.discipline===discipline);
+                  let top4=[];
+                  if(ev&&Array.isArray(ev.results)&&ev.results.length){
+                    const rows=[];
+                    for(const row of ev.results){
+                      const parsed=parseWaDate(row.date);
+                      const numeric=toNumericMark(row.mark);
+                      if(!parsed||numeric==null) continue;
+                      rows.push({numeric,display:String(row.mark),venue:row.venue||'',year:parsed.year,iso:parsed.iso});
+                      rows[rows.length-1].meet=meetName(row.competition);
                     }
-                    if(!top4.length) top4=fallbackFromProgression(discipline,competitor?.progressionOfSeasonsBests);
-                    if(top4.length) byEvent[ourEvent]=top4;
+                    rows.sort((a,b)=>b.iso.localeCompare(a.iso));
+                    top4=rows.slice(0,4).map(r=>[r.numeric,r.display,r.venue,r.year,r.iso,r.meet]);
                   }
-                  if(Object.keys(byEvent).length){ H[name]=byEvent; report.athletes[name]={events:Object.keys(byEvent)}; }
-                  else report.athletes[name]={events:[],note:'no events with usable results'};
-                }catch(e){
-                  report.athletes[name]={error:String(e.message||e)};
-                  report.missing.push({athlete:name,error:String(e.message||e)});
+                  if(!top4.length) top4=fallbackFromProgression(discipline,competitor?.progressionOfSeasonsBests);
+                  if(top4.length) byEvent[ourEvent]=top4;
                 }
-                await sleep(150);
+                // Only overwrite this athlete's entry when the fresh fetch actually yielded
+                // usable data - a transient fetch failure or an empty response should never
+                // wipe out perfectly good data already on the branch.
+                if(Object.keys(byEvent).length){ H[name]=byEvent; report.athletes[name]={events:Object.keys(byEvent)}; }
+                else report.athletes[name]={events:[],note:'no events with usable results this run - kept previous data if any'};
+              }catch(e){
+                report.athletes[name]={error:String(e.message||e),note:'kept previous data if any'};
+                report.missing.push({athlete:name,error:String(e.message||e)});
               }
+              await sleep(600);
             }
-            const js=`// AUTO-GENERATED by .github/workflows/decastar-history-bulk.yml\n// Recent 2026-season per-event results for Décastar-only athletes, fetched from WA profile\n// pages. Only fills names not already present in window.MANGEKAMP_HISTORY (never overwrites\n// existing Birmingham-sourced history for athletes in both competitions).\nwindow.MANGEKAMP_HISTORY=window.MANGEKAMP_HISTORY||{};\n(function(){\n const H=${JSON.stringify(H,null,1)};\n for(const [name,byEvent] of Object.entries(H)){ if(!window.MANGEKAMP_HISTORY[name]) window.MANGEKAMP_HISTORY[name]=byEvent; }\n})();\n`;
+
+            const js=`// AUTO-GENERATED by .github/workflows/decastar-history-bulk.yml\n// Recent 2026-season per-event results for every Décastar roster athlete, fetched fresh from\n// WA profile pages each run and always overwritten - no longer skips athletes who already had\n// Birmingham-sourced history, since that data can go stale mid-championship (e.g. missed a\n// completed EM Birmingham decathlon) and never got refreshed.\nwindow.MANGEKAMP_HISTORY=window.MANGEKAMP_HISTORY||{};\n(function(){\n const H=${JSON.stringify(H)};\n for(const [name,byEvent] of Object.entries(H)){ window.MANGEKAMP_HISTORY[name]=byEvent; }\n})();\n`;
             fs.writeFileSync('app/data/decastar_history.js',js);
             fs.writeFileSync('app/data/decastar_history_report.json',JSON.stringify(report,null,2));
-            console.log('DONE fetched='+Object.keys(H).length+' missing='+report.missing.length);
+            console.log('BATCH DONE type='+chunkType+' size='+chunkNames.size+' totalFetched='+Object.keys(H).length+' totalMissing='+report.missing.length);
             if(report.missing.length) console.log('MISSING '+JSON.stringify(report.missing));
           })().catch(e=>{console.error(e);process.exit(1)});
           NODE
-      - name: Commit history data to a branch
-        if: always()
+      - name: Commit this batch's history data
         run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           # decastar_history.js's <script> tag has no cache-busting query string of its own
           # otherwise, so a browser/CDN can keep serving a stale copy after this file changes.
           sed -i -E "s#(data/decastar_history\.js\?v=)[^\"]*#\1$(date +%Y%m%d%H%M%S)#" app/index.html
           git add app/data/decastar_history.js app/data/decastar_history_report.json app/index.html
           git diff --cached --quiet && exit 0
-          BRANCH="decastar-history-$(date +%Y%m%d-%H%M%S)"
-          git checkout -b "$BRANCH"
-          git commit -m 'Fetch recent 2026-season results for Décastar-only athletes'
+          git commit -m "Fetch recent Décastar ${{ matrix.chunk.type }} results (batch ${{ strategy.job-index }} of ${{ strategy.job-total }})"
           git push -u origin "$BRANCH"
-          echo "BRANCH=$BRANCH" >> "$GITHUB_ENV"
-      - name: Open pull request
-        if: always() && env.BRANCH != ''
+
+  open-pr:
+    needs: history
+    if: always() && needs.history.result != 'skipped'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Open pull request for the accumulated branch
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh pr create --base main --head "$BRANCH" \
-            --title 'Fetch recent Décastar results for forecast basis' \
-            --body 'Auto-generated by decastar-history-bulk.yml. Review app/data/decastar_history_report.json for any missing/errored athletes before merging.'
+          BRANCH="decastar-history-${{ github.run_id }}"
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+            gh pr create --base main --head "$BRANCH" \
+              --title 'Fetch recent Décastar results for forecast basis' \
+              --body 'Auto-generated by decastar-history-bulk.yml, fetched in batches (see the "plan" and "history" job logs for the batch breakdown). Review app/data/decastar_history_report.json for any missing/errored athletes before merging.'
+          else
+            echo "No branch was pushed - nothing changed, nothing to open a PR for."
+          fi
