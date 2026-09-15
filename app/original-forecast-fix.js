@@ -6,7 +6,11 @@
   function entry(raw){if(raw==null)return null;if(Array.isArray(raw)){const mark=Number(raw[0]);if(!Number.isFinite(mark))return null;return{mark,year:String(raw[3]||''),date:String(raw[4]||''),venue:String(raw[2]||''),competition:String(raw[5]||'')};}const mark=Number(raw.mark??raw.value??raw.result??raw.result_mark);if(!Number.isFinite(mark))return null;const date=String(raw.result_date??raw.date??'');return{mark,year:String(raw.year??(date.match(/\b(19|20)\d{2}\b/)?.[0]||'')),date,venue:String(raw.venue??raw.place??raw.location??''),competition:String(raw.competition??raw.meeting??'')};}
   function currentMeet(r){const c=(r.competition+' '+r.venue).toLowerCase();const d=Date.parse(r.date||'');return (Number.isFinite(d)&&d>=Date.parse('2026-08-12T00:00:00Z'))&&(c.includes('birmingham')||c.includes('european athletics championships'));
   }
-  function predictedMark(a,i){const eventName=D.events[i],src=historyFor(a.name)?.[eventName]||[],rows=[];for(const raw of src){const r=entry(raw);if(!r||!['2025','2026'].includes(r.year)||currentMeet(r))continue;rows.push(r);if(rows.length===4)break;}if(!rows.length)return null;rows.sort((x,y)=>isTimeEvent(eventName)?x.mark-y.mark:y.mark-x.mark);const used=rows.length>=4?rows.slice(0,3):rows;return used.reduce((s,r)=>s+r.mark,0)/used.length;
+  // Falls back to older seasons when nothing from 2025-2026 exists (same emergency-basis
+  // policy as forecast-recent-fix.js/forecast-enhancements.js), so this dropdown's "original
+  // forecast" total doesn't disagree with what the main table actually shows.
+  function collectRows(src,allowAnyYear){const rows=[];for(const raw of src){const r=entry(raw);if(!r||(!allowAnyYear&&!['2025','2026'].includes(r.year))||currentMeet(r))continue;rows.push(r);if(rows.length===4)break;}return rows;}
+  function predictedMark(a,i){const eventName=D.events[i],src=historyFor(a.name)?.[eventName]||[];let rows=collectRows(src,false);if(!rows.length)rows=collectRows(src,true);if(!rows.length)return null;rows.sort((x,y)=>isTimeEvent(eventName)?x.mark-y.mark:y.mark-x.mark);const used=rows.length>=4?rows.slice(0,3):rows;return used.reduce((s,r)=>s+r.mark,0)/used.length;
   }
   function originalTotal(a){let sum=0;for(let i=0;i<D.events.length;i++){let mark=predictedMark(a,i);if(!Number.isFinite(mark)){const fallback=Number(a?.predicted?.[i]??a?.forecast?.[i]??a?.expected?.[i]);if(Number.isFinite(fallback))mark=fallback;}if(!Number.isFinite(mark))return null;const pts=Number(scoreEvent(i,mark));if(!Number.isFinite(pts))return null;sum+=pts;}return sum;
   }

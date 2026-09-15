@@ -19,18 +19,26 @@
     }
     return null;
   }
-  function recentForecastValues(athlete,eventIndex){
-    const eventName=D.events[eventIndex];
-    const source=historyForAthlete(athlete?.name)?.[eventName]||[];
+  // Falls back to older seasons when the athlete has nothing from 2025-2026 in this event
+  // (e.g. hasn't competed in it recently) rather than leaving the forecast at "-" - an
+  // emergency basis is better than none, per the entries already in window.MANGEKAMP_HISTORY
+  // (sorted most-recent-first) such as decastar-history-bulk.yml's own prior-season fallback.
+  function collectForecastValues(source,allowAnyYear){
     const seen=new Set(),vals=[];
     for(const raw of (Array.isArray(source)?source:[])){
       const r=normalizeEntry(raw);if(!r)continue;
-      if(r.year!=='2026'&&r.year!=='2025')continue;
+      if(!allowAnyYear&&r.year!=='2026'&&r.year!=='2025')continue;
       const key=[r.mark,r.venue,r.year].join('|');
       if(seen.has(key))continue;
       seen.add(key);vals.push(r.mark);if(vals.length===4)break;
     }
     return vals;
+  }
+  function recentForecastValues(athlete,eventIndex){
+    const eventName=D.events[eventIndex];
+    const source=historyForAthlete(athlete?.name)?.[eventName]||[];
+    const recent=collectForecastValues(source,false);
+    return recent.length?recent:collectForecastValues(source,true);
   }
   predictionInputs=function(athlete,eventIndex){
     const vals=recentForecastValues(athlete,eventIndex);if(!vals.length)return[];
