@@ -30,7 +30,7 @@
   function statusBox(){return document.querySelector('.status');}
   function normalizeName(value){return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9]+/g,' ').trim().toLowerCase();}
   function sameAthleteName(a,b){const aa=normalizeName(a),bb=normalizeName(b);if(!aa||!bb)return false;if(aa===bb||aa.includes(bb)||bb.includes(aa))return true;const at=aa.split(' ').filter(Boolean),bt=bb.split(' ').filter(Boolean);if(!at.length||!bt.length||at[0]!==bt[0])return false;return at.slice(1).some(t=>t.length>=4&&bt.includes(t));}
-  function competitionLabel(){const live=window.MANGEKAMP_LIVE||{};const selected=document.querySelector('#competitionSelect');return live.competition||selected?.options?.[selected.selectedIndex]?.textContent?.trim()||tx('selectedCompetition');}
+  function competitionLabel(){const selected=document.querySelector('#competitionSelect');const live=(typeof currentComp==='undefined'||currentComp==='birmingham')?(window.MANGEKAMP_LIVE||{}):{};return live.competition||selected?.options?.[selected.selectedIndex]?.textContent?.trim()||tx('selectedCompetition');}
   function liveEntries(){const results=liveForType().results||{};return Object.entries(results).map(([name,value])=>({name,value:value||{}}));}
   function liveListAvailable(){return liveEntries().length>0;}
   function findLiveEntry(name){return liveEntries().find(entry=>sameAthleteName(name,entry.name))||null;}
