@@ -10,32 +10,26 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Broad search of matsport.com app.js for API call patterns
+      - name: Try the discovered matsport API base against known page paths
         run: |
           node <<'NODE'
-          const UA = {'User-Agent':'Mozilla/5.0 Mangekampanalyse-Pro/1.0'};
-          async function fetchText(url){
-            const r = await fetch(url, { headers: UA });
-            return await r.text();
-          }
-          function contexts(text, needle, radius, max) {
-            const out = [];
-            let from = 0;
-            for (let i = 0; i < max; i++) {
-              const idx = text.indexOf(needle, from);
-              if (idx === -1) break;
-              out.push(text.slice(Math.max(0, idx - radius), idx + needle.length + radius));
-              from = idx + needle.length;
+          const UA = {'User-Agent':'Mozilla/5.0 Mangekampanalyse-Pro/1.0', 'Accept':'application/json'};
+          const COMP = '65e4f577-c90c-4008-9955-dfa3563d7a86';
+          async function tryUrl(url) {
+            try {
+              const r = await fetch(url, { headers: UA });
+              const text = await r.text();
+              console.log('\n===', url, '===');
+              console.log('status:', r.status, 'content-type:', r.headers.get('content-type'), '| length:', text.length);
+              console.log('body (first 800 chars):', text.slice(0, 800));
+            } catch (e) {
+              console.log('\n===', url, '=== ERROR:', e.message);
             }
-            return out;
           }
           (async () => {
-            const app = await fetchText('https://athle.matsport.com/js/app.2b846e41.js');
-            console.log('app.js length:', app.length);
-            for (const needle of ['/api', 'axios', 'matsport.com', 'baseURL', 'VUE_APP', 'process.env', 'wss://', 'socket.io', 'graphql']) {
-              const found = contexts(app, needle, 60, 5);
-              console.log(`\n--- "${needle}": ${found.length} occurrence(s) shown ---`);
-              for (const c of found) console.log('  ', JSON.stringify(c));
-            }
+            await tryUrl(`https://api.athle.matsport.com/events/${COMP}_ATSTAM900A01/classement`);
+            await tryUrl(`https://api.athle.matsport.com/competitions/${COMP}`);
+            await tryUrl(`https://api.athle.matsport.com/competitions/${COMP}/${COMP}_SCH_20260918`);
+            await tryUrl(`https://api.athle.matsport.com/events/${COMP}_ATSTAM900A01`);
           })();
           NODE
