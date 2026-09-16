@@ -10,17 +10,59 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Verify /api/live-decastar finds all disciplines after schedules-field fix
+      - name: Discover matsport history API host and result field names for a finished event
         run: |
-          curl -s "https://mangekampanalyse.no/api/live-decastar" | node -e "
-            let data='';
-            process.stdin.on('data',c=>data+=c);
-            process.stdin.on('end',()=>{
-              const d=JSON.parse(data);
-              console.log('status:', d.status, '| error:', d.error||'(none)');
-              console.log('men.eventHasMarks:', JSON.stringify(d.men?.eventHasMarks));
-              console.log('women.eventHasMarks:', JSON.stringify(d.women?.eventHasMarks));
-              console.log('men result count:', Object.keys(d.men?.results||{}).length);
-              console.log('women result count:', Object.keys(d.women?.results||{}).length);
-            });
-          "
+          set +e
+          echo "=== Fetch history frontend HTML to find its JS bundle / API config ==="
+          curl -s "https://athle-history.matsport.com/events/e0c02ff7-1fa5-4d8f-bda9-dae5888883cd_ATSTAM900A01/results" -o /tmp/page.html
+          echo "HTML length: $(wc -c < /tmp/page.html)"
+          grep -oE '(src|href)="[^"]*\.js[^"]*"' /tmp/page.html | sort -u
+
+          echo ""
+          echo "=== Try candidate API hosts for the event ==="
+          for base in \
+            "https://api.athle-history.matsport.com" \
+            "https://api-history.athle.matsport.com" \
+            "https://api.athle.matsport.com" \
+            "https://history-api.athle.matsport.com"
+          do
+            echo "--- $base/events/e0c02ff7-1fa5-4d8f-bda9-dae5888883cd_ATSTAM900A01 ---"
+            code=$(curl -s -o /tmp/resp.json -w "%{http_code}" "$base/events/e0c02ff7-1fa5-4d8f-bda9-dae5888883cd_ATSTAM900A01" -H "Accept: application/json")
+            echo "HTTP $code"
+            if [ "$code" = "200" ]; then
+              head -c 3000 /tmp/resp.json
+              echo ""
+            fi
+          done
+
+          echo ""
+          echo "=== Try /results and /classement suffixes on same hosts ==="
+          for base in \
+            "https://api.athle-history.matsport.com" \
+            "https://api.athle.matsport.com"
+          do
+            for suffix in "results" "classement"; do
+              echo "--- $base/events/e0c02ff7-1fa5-4d8f-bda9-dae5888883cd_ATSTAM900A01/$suffix ---"
+              code=$(curl -s -o /tmp/resp2.json -w "%{http_code}" "$base/events/e0c02ff7-1fa5-4d8f-bda9-dae5888883cd_ATSTAM900A01/$suffix" -H "Accept: application/json")
+              echo "HTTP $code"
+              if [ "$code" = "200" ]; then
+                head -c 3000 /tmp/resp2.json
+                echo ""
+              fi
+            done
+          done
+
+          echo ""
+          echo "=== Try competition endpoint on candidate hosts (to confirm schedules field + find more event ids) ==="
+          for base in \
+            "https://api.athle-history.matsport.com" \
+            "https://api.athle.matsport.com"
+          do
+            echo "--- $base/competitions/e0c02ff7-1fa5-4d8f-bda9-dae5888883cd ---"
+            code=$(curl -s -o /tmp/resp3.json -w "%{http_code}" "$base/competitions/e0c02ff7-1fa5-4d8f-bda9-dae5888883cd" -H "Accept: application/json")
+            echo "HTTP $code"
+            if [ "$code" = "200" ]; then
+              head -c 1500 /tmp/resp3.json
+              echo ""
+            fi
+          done
