@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-16T07:14:15.437Z",
+  "generatedAt": "2026-09-16T08:16:36.643Z",
   "athletes": {
     "Damian Warner": {
       "events": [
@@ -13,7 +13,8 @@
         "Stav",
         "Spyd",
         "1500m"
-      ]
+      ],
+      "yearsFetched": 3
     },
     "Pierce LePage": {
       "events": [
@@ -27,7 +28,8 @@
         "Stav",
         "Spyd",
         "1500m"
-      ]
+      ],
+      "yearsFetched": 4
     },
     "Sander Skotheim": {
       "events": [
@@ -41,7 +43,8 @@
         "Stav",
         "Spyd",
         "1500m"
-      ]
+      ],
+      "yearsFetched": 3
     },
     "Karel Tilga": {
       "events": [
@@ -55,7 +58,8 @@
         "Stav",
         "Spyd",
         "1500m"
-      ]
+      ],
+      "yearsFetched": 3
     },
     "Harrison Williams": {
       "events": [
@@ -69,7 +73,8 @@
         "Stav",
         "Spyd",
         "1500m"
-      ]
+      ],
+      "yearsFetched": 2
     },
     "Sven Roosen": {
       "events": [
@@ -83,7 +88,8 @@
         "Stav",
         "Spyd",
         "1500m"
-      ]
+      ],
+      "yearsFetched": 3
     },
     "Makenson Gletty": {
       "events": [
@@ -97,7 +103,8 @@
         "Stav",
         "Spyd",
         "1500m"
-      ]
+      ],
+      "yearsFetched": 2
     },
     "Hakim McMorris": {
       "events": [
@@ -111,7 +118,8 @@
         "Stav",
         "Spyd",
         "1500m"
-      ]
+      ],
+      "yearsFetched": 2
     },
     "Devon Williams": {
       "events": [
@@ -125,7 +133,8 @@
         "Stav",
         "Spyd",
         "1500m"
-      ]
+      ],
+      "yearsFetched": 3
     },
     "Jeff Tesselaar": {
       "events": [
@@ -139,7 +148,8 @@
         "Stav",
         "Spyd",
         "1500m"
-      ]
+      ],
+      "yearsFetched": 2
     },
     "Amadeus Gräber": {
       "events": [
@@ -153,7 +163,8 @@
         "Stav",
         "Spyd",
         "1500m"
-      ]
+      ],
+      "yearsFetched": 4
     },
     "Dario Dester": {
       "events": [
@@ -167,7 +178,8 @@
         "Stav",
         "Spyd",
         "1500m"
-      ]
+      ],
+      "yearsFetched": 4
     },
     "Antoine Ferranti": {
       "events": [
@@ -181,7 +193,8 @@
         "Stav",
         "Spyd",
         "1500m"
-      ]
+      ],
+      "yearsFetched": 2
     },
     "Andrin Huber": {
       "events": [
@@ -195,7 +208,8 @@
         "Stav",
         "Spyd",
         "1500m"
-      ]
+      ],
+      "yearsFetched": 2
     },
     "Jami Schlueter": {
       "events": [
@@ -427,7 +441,8 @@
         "Stav",
         "Spyd",
         "1500m"
-      ]
+      ],
+      "yearsFetched": 4
     },
     "Vilem Strasky": {
       "events": [
@@ -441,7 +456,8 @@
         "Stav",
         "Spyd",
         "1500m"
-      ]
+      ],
+      "yearsFetched": 2
     },
     "Sammy Ball": {
       "events": [
