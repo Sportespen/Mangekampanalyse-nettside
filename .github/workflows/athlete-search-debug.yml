@@ -10,14 +10,22 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Verify Jonathan 400m now includes all 5 results, incl. PB
+      - name: Verify indoor Høyde/Kule/Stav results now count equally
         run: |
-          curl -s "https://mangekampanalyse.no/api/athlete-search-v2?action=analyse&type=men&id=14989292&name=Jonathan%20Hertwig-Odegaard" | node -e "
-            let data='';
-            process.stdin.on('data',c=>data+=c);
-            process.stdin.on('end',()=>{
-              const d=JSON.parse(data);
-              console.log('400m rows:', JSON.stringify(d.events?.['400m'], null, 2));
-              console.log('400m PB:', JSON.stringify(d.pbs?.['400m']));
-            });
-          "
+          for id_name in "14989292:Jonathan Hertwig-Odegaard" "14783534:Markus Rooth"; do
+            id="${id_name%%:*}"
+            name="${id_name#*:}"
+            echo "=== $name ($id) ==="
+            curl -s "https://mangekampanalyse.no/api/athlete-search-v2?action=analyse&type=men&id=${id}&name=$(python3 -c "import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1]))" "$name")" | node -e "
+              let data='';
+              process.stdin.on('data',c=>data+=c);
+              process.stdin.on('end',()=>{
+                const d=JSON.parse(data);
+                for (const ev of ['Høyde','Kule','Stav']) {
+                  const rows = d.events?.[ev] || [];
+                  console.log(ev + ':', rows.map(r => r.display + (r.indoor ? ' (innendørs)' : '') + ' ' + r.date).join(', ') || '(ingen)');
+                }
+              });
+            "
+            echo
+          done
