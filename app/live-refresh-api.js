@@ -116,12 +116,57 @@
     }
     finally{inFlight=false;}
   }
+  // Décastar Talence 2026 gets its own independent live source (window.MANGEKAMP_LIVE_DECASTAR)
+  // fetched from a separate matsport-backed endpoint, kept warm in the background alongside
+  // Birmingham's regardless of which competition is currently selected in the dropdown - so
+  // switching competitions never has to wait on a fresh fetch. live-engine.js's activeLiveData()
+  // picks whichever of the two globals is relevant to what's currently selected.
+  const DECASTAR_STORAGE_KEY='mka-live-decastar-last-known-good-v1';
+  let decastarInFlight=false;
+  let decastarGuardedLive=window.MANGEKAMP_LIVE_DECASTAR||{};
+  try{Object.defineProperty(window,'MANGEKAMP_LIVE_DECASTAR',{configurable:true,get(){return decastarGuardedLive;},set(next){decastarGuardedLive=mergeLive(decastarGuardedLive,next||{});}});}catch(_err){}
+  function saveDecastarLastKnownGood(data){try{localStorage.setItem(DECASTAR_STORAGE_KEY,JSON.stringify({savedAt:new Date().toISOString(),data}));}catch(_err){}}
+  function loadDecastarLastKnownGood(){try{const raw=localStorage.getItem(DECASTAR_STORAGE_KEY);if(!raw)return null;const parsed=JSON.parse(raw);if(!parsed?.data||!looksValid(parsed.data))return null;return parsed;}catch(_err){return null;}}
+  async function fetchFreshDecastarLive(){
+    const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),25000);
+    try{
+      const data=await fetchJson('/api/live-decastar?t='+Date.now(),controller.signal);
+      if(!looksValid(data))throw new Error('Ugyldige live-data');
+      return data;
+    }finally{clearTimeout(timer);}
+  }
+  function applyDecastar(data){
+    const merged=mergeLive(window.MANGEKAMP_LIVE_DECASTAR||{},data);
+    if(!looksValid(merged))throw new Error('Ugyldige live-data etter sammenslåing');
+    window.MANGEKAMP_LIVE_DECASTAR=merged;saveDecastarLastKnownGood(merged);
+    if(typeof syncLive==='function'&&typeof currentComp!=='undefined'&&currentComp==='decastar'){try{syncLive();}catch(_err){}}
+  }
+  function restoreDecastarPersisted(){
+    const saved=loadDecastarLastKnownGood();if(!saved)return false;
+    window.MANGEKAMP_LIVE_DECASTAR=mergeLive(window.MANGEKAMP_LIVE_DECASTAR||{},saved.data);
+    if(typeof syncLive==='function'&&typeof currentComp!=='undefined'&&currentComp==='decastar'){try{syncLive();}catch(_err){}}
+    return true;
+  }
+  async function refreshDecastar(){
+    if(decastarInFlight)return;decastarInFlight=true;
+    try{const data=await fetchFreshDecastarLive();applyDecastar(data);}
+    catch(err){
+      console.warn('Décastar live-oppdatering feilet:',err);
+      const saved=loadDecastarLastKnownGood();
+      if(saved)window.MANGEKAMP_LIVE_DECASTAR=mergeLive(window.MANGEKAMP_LIVE_DECASTAR||{},saved.data);
+    }
+    finally{decastarInFlight=false;}
+  }
   function install(){
-    const b=button();if(b)b.onclick=function(e){e.preventDefault();refresh(true);};
+    const b=button();if(b)b.onclick=function(e){e.preventDefault();refresh(true);refreshDecastar();};
     window.refreshMangekampLiveNow=refresh;
+    window.refreshMangekampLiveDecastarNow=refreshDecastar;
     restorePersisted();
+    restoreDecastarPersisted();
     refresh(false);
+    refreshDecastar();
     window.setInterval(()=>refresh(false),60000);
+    window.setInterval(refreshDecastar,60000);
   }
   document.addEventListener('mka:languagechange',()=>{if(loadLastKnownGood()&&lastSuccessful)showFallbackStatus('restored',lastSuccessful);});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
