@@ -13,7 +13,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Inspect the WA athletes-home search page structure
+      - name: Inspect initialSearchResults inside __NEXT_DATA__
         run: |
           node <<'NODE'
           const UA = {'User-Agent':'Mozilla/5.0 Mangekampanalyse-Pro/1.0'};
@@ -22,31 +22,24 @@ jobs:
             const text = await r.text();
             return {status:r.status, text};
           }
+          function extractNextData(html){
+            const marker='id="__NEXT_DATA__"';
+            const idx=html.indexOf(marker);
+            if(idx===-1) return null;
+            const openEnd=html.indexOf('>',idx)+1;
+            const closeIdx=html.indexOf('</script>',openEnd);
+            try{ return JSON.parse(html.slice(openEnd,closeIdx)); }catch(e){ return null; }
+          }
           (async () => {
-            for (const q of ['Jonathan Hertwig', 'Hertwig', 'jonathan']) {
+            for (const q of ['Jonathan Hertwig', 'Hertwig', 'Karsten Warholm']) {
               const url = `https://worldathletics.org/athletes-home?query=${encodeURIComponent(q)}`;
-              console.log('\n=== ' + url + ' ===');
+              console.log('\n\n=== ' + url + ' ===');
               const { status, text } = await fetchText(url);
               console.log('HTTP status:', status, '| HTML length:', text.length);
-              const rx = /href=["'](?:https:\/\/worldathletics\.org)?\/athletes\/([^\/"']+)\/([^"']+?)-(\d{7,})["']/gi;
-              const matches = [...text.matchAll(rx)].slice(0, 10);
-              console.log('regex athlete-link matches found:', matches.length);
-              for (const m of matches) console.log('  ', m[0]);
-              console.log('contains "14989292" (Jonathan\'s id) anywhere:', text.includes('14989292'));
-              console.log('contains "Hertwig" anywhere:', text.includes('Hertwig') || text.includes('HERTWIG'));
-              const nextDataIdx = text.indexOf('id="__NEXT_DATA__"');
-              console.log('has __NEXT_DATA__:', nextDataIdx !== -1);
-              if (nextDataIdx !== -1) {
-                const openEnd = text.indexOf('>', nextDataIdx) + 1;
-                const closeIdx = text.indexOf('</script>', openEnd);
-                try {
-                  const nextData = JSON.parse(text.slice(openEnd, closeIdx));
-                  console.log('nextData.props.pageProps keys:', Object.keys(nextData?.props?.pageProps || {}));
-                  console.log('nextData.page:', nextData?.page, '| query:', JSON.stringify(nextData?.query));
-                } catch (e) {
-                  console.log('failed to parse __NEXT_DATA__:', e.message);
-                }
-              }
+              const nextData = extractNextData(text);
+              const results = nextData?.props?.pageProps?.initialSearchResults;
+              console.log('typeof initialSearchResults:', typeof results, Array.isArray(results) ? `(array len ${results.length})` : '');
+              console.log('initialSearchResults raw (first 4000 chars):', JSON.stringify(results, null, 2)?.slice(0, 4000));
             }
           })();
           NODE
