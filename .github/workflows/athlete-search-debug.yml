@@ -10,29 +10,14 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Check the disciplines field from searchCompetitors for Markus Rooth
+      - name: Final verification - Jonathan Hertwig and Markus Rooth on production
         run: |
-          node <<'NODE'
-          const ENDPOINT = 'https://graphql-prod-4894.edge.aws.worldathletics.org/graphql';
-          const API_KEY = 'da2-o6pmci4cb5denlbnvn5u3kfexq';
-          async function gql(query, variables) {
-            const res = await fetch(ENDPOINT, {
-              method: 'POST',
-              headers: { 'content-type': 'application/json', 'x-api-key': API_KEY, 'x-graphql-client-name': 'worldathletics' },
-              body: JSON.stringify({ query, variables }),
-            });
-            return res.json().catch(() => null);
-          }
-          const SEARCH = `query SearchCompetitors($query: String) { searchCompetitors(query: $query) { aaAthleteId familyName givenName country gender disciplines } }`;
-          (async () => {
-            const payload = await gql(SEARCH, { query: 'Markus Rooth' });
-            const list = payload?.data?.searchCompetitors || [];
-            const rooth = list.find(a => a.aaAthleteId === '14783534');
-            console.log('Markus Rooth searchCompetitors entry:', JSON.stringify(rooth, null, 2));
-
-            const payload2 = await gql(SEARCH, { query: 'Jonathan Hertwig' });
-            const list2 = payload2?.data?.searchCompetitors || [];
-            const jonathan = list2.find(a => a.aaAthleteId === '14989292');
-            console.log('\nJonathan Hertwig-Odegaard searchCompetitors entry:', JSON.stringify(jonathan, null, 2));
-          })();
-          NODE
+          set -x
+          echo "=== Jonathan Hertwig ==="
+          curl -s -w "\nHTTP status: %{http_code}\n" "https://mangekampanalyse.no/api/athlete-search?action=search&type=men&q=Jonathan%20Hertwig"
+          echo
+          echo "=== Markus Rooth ==="
+          curl -s -w "\nHTTP status: %{http_code}\n" "https://mangekampanalyse.no/api/athlete-search?action=search&type=men&q=Markus%20Rooth"
+          echo
+          echo "=== Markus Rooth analyse by id ==="
+          curl -s -w "\nHTTP status: %{http_code}\n" "https://mangekampanalyse.no/api/athlete-search?action=analyse&type=men&id=14783534&name=Markus%20Rooth" | head -c 2000
