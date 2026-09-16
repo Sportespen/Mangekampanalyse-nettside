@@ -10,42 +10,31 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Probe matsport.com Décastar Talence 2026 live-results structure
+      - name: Inspect matsport.com app bundle for its API base URL
         run: |
           node <<'NODE'
           const UA = {'User-Agent':'Mozilla/5.0 Mangekampanalyse-Pro/1.0'};
-          const COMP = '65e4f577-c90c-4008-9955-dfa3563d7a86';
-
           async function fetchText(url){
             const r = await fetch(url, { headers: UA });
             const text = await r.text();
             return { status: r.status, text };
           }
-
           (async () => {
-            const schUrl = `https://athle.matsport.com/competitions/${COMP}/${COMP}_SCH_20260918`;
-            console.log('=== schedule page ===', schUrl);
-            const sch = await fetchText(schUrl);
-            console.log('status:', sch.status, '| length:', sch.text.length);
-            // look for __NEXT_DATA__ or embedded JSON / API base URL hints
-            const nextIdx = sch.text.indexOf('__NEXT_DATA__');
-            console.log('has __NEXT_DATA__:', nextIdx !== -1);
-            const apiHints = [...sch.text.matchAll(/https?:\/\/[a-z0-9.-]*matsport[a-z0-9.\/_-]*/gi)].map(m => m[0]);
-            console.log('matsport URL fragments found in HTML:', JSON.stringify([...new Set(apiHints)].slice(0, 20), null, 2));
-            const scriptSrcs = [...sch.text.matchAll(/<script[^>]+src=["']([^"']+\.js)["']/gi)].map(m => m[1]);
-            console.log('script tags:', JSON.stringify([...new Set(scriptSrcs)].slice(0, 20), null, 2));
-
-            const classementUrl = 'https://athle.matsport.com/events/65e4f577-c90c-4008-9955-dfa3563d7a86_ATSTAM900A01/classement';
-            console.log('\n=== classement page ===', classementUrl);
-            const cls = await fetchText(classementUrl);
-            console.log('status:', cls.status, '| length:', cls.text.length);
-            const apiHints2 = [...cls.text.matchAll(/https?:\/\/[a-z0-9.-]*matsport[a-z0-9.\/_-]*/gi)].map(m => m[0]);
-            console.log('matsport URL fragments found in HTML:', JSON.stringify([...new Set(apiHints2)].slice(0, 20), null, 2));
-
-            // dump raw start of both pages for manual inspection
-            console.log('\n=== schedule page raw (first 1500 chars) ===');
-            console.log(sch.text.slice(0, 1500));
-            console.log('\n=== classement page raw (first 1500 chars) ===');
-            console.log(cls.text.slice(0, 1500));
+            for (const path of ['/js/app.2b846e41.js', '/js/chunk-vendors.618dd592.js', '/js/runtime.e0760ed2.js']) {
+              const url = 'https://athle.matsport.com' + path;
+              console.log('\n=== ' + url + ' ===');
+              const { status, text } = await fetchText(url);
+              console.log('status:', status, '| length:', text.length);
+              // look for API base URLs, "baseURL", "axios", env-style config
+              const patterns = [
+                /https?:\/\/[a-z0-9.-]*api[a-z0-9.-]*\/[a-z0-9\/_-]*/gi,
+                /baseURL["':\s]{1,5}["']([^"']+)["']/gi,
+                /VUE_APP_[A-Z_]+["':\s]{1,5}["']([^"']+)["']/gi,
+              ];
+              for (const rx of patterns) {
+                const matches = [...text.matchAll(rx)].map(m => m[0]);
+                if (matches.length) console.log('matches for', rx.source.slice(0,40), ':', JSON.stringify([...new Set(matches)].slice(0, 15), null, 2));
+              }
+            }
           })();
           NODE
