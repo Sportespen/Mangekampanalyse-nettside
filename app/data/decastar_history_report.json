@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-15T19:15:12.741Z",
+  "generatedAt": "2026-09-16T07:07:09.651Z",
   "athletes": {
     "Damian Warner": {
       "events": [
@@ -413,6 +413,34 @@
         "Lengde",
         "Spyd",
         "800m"
+      ]
+    },
+    "Markus Rooth": {
+      "events": [
+        "100m",
+        "Lengde",
+        "Kule",
+        "Høyde",
+        "400m",
+        "110mh",
+        "Diskos",
+        "Stav",
+        "Spyd",
+        "1500m"
+      ]
+    },
+    "Vilem Strasky": {
+      "events": [
+        "100m",
+        "Lengde",
+        "Kule",
+        "Høyde",
+        "400m",
+        "110mh",
+        "Diskos",
+        "Stav",
+        "Spyd",
+        "1500m"
       ]
     }
   },
