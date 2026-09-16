@@ -10,11 +10,44 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Verify v2 analyse now returns pbs/combinedPB for Jonathan
+      - name: Inspect all 400m rows for Jonathan across 2025 and 2026
         run: |
-          set -x
-          curl -s "https://mangekampanalyse.no/api/athlete-search-v2?action=analyse&type=men&id=14989292&name=Jonathan%20Hertwig-Odegaard" | head -c 3000
-          echo
-          echo
-          echo "=== Markus Rooth (v2), sanity check ==="
-          curl -s "https://mangekampanalyse.no/api/athlete-search-v2?action=analyse&type=men&id=14783534&name=Markus%20Rooth" | head -c 2000
+          node <<'NODE'
+          const ENDPOINT = 'https://graphql-prod-4894.edge.aws.worldathletics.org/graphql';
+          const API_KEY = 'da2-o6pmci4cb5denlbnvn5u3kfexq';
+          const UA = {'User-Agent':'Mozilla/5.0 Mangekampanalyse-Pro/1.0'};
+          const ID = 14989292;
+
+          async function fetchYearResults(year){
+            const query = `query GetSingleCompetitorResultsDiscipline($id: Int, $resultsByYearOrderBy: String, $resultsByYear: Int) { getSingleCompetitorResultsDiscipline(id: $id, resultsByYear: $resultsByYear, resultsByYearOrderBy: $resultsByYearOrderBy) { resultsByEvent { discipline results { date competition venue place mark wind notLegal resultScore category competitionId eventId } } } }`;
+            const res = await fetch(ENDPOINT, { method: 'POST', headers: { 'content-type': 'application/json', 'x-api-key': API_KEY, 'x-graphql-client-name': 'worldathletics' }, body: JSON.stringify({ query, variables: { id: ID, resultsByYear: year, resultsByYearOrderBy: 'discipline' } }) });
+            const payload = await res.json();
+            return payload?.data?.getSingleCompetitorResultsDiscipline?.resultsByEvent || [];
+          }
+          async function fetchProfileEvents(){
+            const r = await fetch(`https://worldathletics.org/athletes/-/${ID}`, { headers: UA });
+            const html = await r.text();
+            const idx = html.indexOf('id="__NEXT_DATA__"');
+            const openEnd = html.indexOf('>', idx) + 1;
+            const closeIdx = html.indexOf('</script>', openEnd);
+            const nextData = JSON.parse(html.slice(openEnd, closeIdx));
+            return nextData?.props?.pageProps?.competitor?.resultsByYear?.resultsByEvent || [];
+          }
+
+          (async () => {
+            const events2026 = await fetchProfileEvents();
+            const events2025 = await fetchYearResults(2025);
+            console.log('=== 2026 (profile embed) - all disciplines matching /400/ ===');
+            for (const ev of events2026) {
+              if (!/400/i.test(ev.discipline || '')) continue;
+              console.log('discipline:', JSON.stringify(ev.discipline));
+              for (const r of (ev.results || [])) console.log('  ', JSON.stringify(r));
+            }
+            console.log('\n=== 2025 (graphql) - all disciplines matching /400/ ===');
+            for (const ev of events2025) {
+              if (!/400/i.test(ev.discipline || '')) continue;
+              console.log('discipline:', JSON.stringify(ev.discipline));
+              for (const r of (ev.results || [])) console.log('  ', JSON.stringify(r));
+            }
+          })();
+          NODE
