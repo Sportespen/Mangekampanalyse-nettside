@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-16T07:07:09.651Z",
+  "generatedAt": "2026-09-16T07:07:52.743Z",
   "athletes": {
     "Damian Warner": {
       "events": [
@@ -430,6 +430,20 @@
       ]
     },
     "Vilem Strasky": {
+      "events": [
+        "100m",
+        "Lengde",
+        "Kule",
+        "Høyde",
+        "400m",
+        "110mh",
+        "Diskos",
+        "Stav",
+        "Spyd",
+        "1500m"
+      ]
+    },
+    "Sammy Ball": {
       "events": [
         "100m",
         "Lengde",
