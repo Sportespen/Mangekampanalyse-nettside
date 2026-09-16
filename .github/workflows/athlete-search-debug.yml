@@ -10,11 +10,44 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Verify the live production athlete-search API for Jonathan Hertwig-Ødegaard
+      - name: Investigate why Markus Rooth returns zero results
         run: |
-          set -x
-          echo "=== search (type=men) ==="
-          curl -s "https://mangekampanalyse.no/api/athlete-search?action=search&type=men&q=Jonathan%20Hertwig" | tee /tmp/search.json
-          echo
-          echo "=== search (type=men, q=Markus Rooth, sanity check known-good athlete) ==="
-          curl -s "https://mangekampanalyse.no/api/athlete-search?action=search&type=men&q=Markus%20Rooth" | tee /tmp/search2.json
+          node <<'NODE'
+          const ENDPOINT = 'https://graphql-prod-4894.edge.aws.worldathletics.org/graphql';
+          const API_KEY = 'da2-o6pmci4cb5denlbnvn5u3kfexq';
+          async function gql(query, variables) {
+            const res = await fetch(ENDPOINT, {
+              method: 'POST',
+              headers: { 'content-type': 'application/json', 'x-api-key': API_KEY, 'x-graphql-client-name': 'worldathletics' },
+              body: JSON.stringify({ query, variables }),
+            });
+            const text = await res.text();
+            let payload = null;
+            try { payload = JSON.parse(text); } catch (_) {}
+            return { status: res.status, payload, rawSnippet: text.slice(0, 300) };
+          }
+          const SEARCH = `query SearchCompetitors($query: String) { searchCompetitors(query: $query) { aaAthleteId familyName givenName country gender } }`;
+          (async () => {
+            for (const q of ['Markus Rooth', 'Rooth', 'Markus', 'markus rooth']) {
+              console.log('\n=== query:', JSON.stringify(q), '===');
+              const { status, payload, rawSnippet } = await gql(SEARCH, { query: q });
+              console.log('status:', status);
+              if (payload?.errors) console.log('errors:', JSON.stringify(payload.errors));
+              const list = payload?.data?.searchCompetitors;
+              console.log('result count:', Array.isArray(list) ? list.length : 'n/a', '| raw:', rawSnippet.slice(0,200));
+              if (Array.isArray(list)) {
+                const hit = list.find(a => /rooth/i.test(a.familyName || ''));
+                console.log('contains Rooth:', !!hit, hit ? JSON.stringify(hit) : '(first 3: ' + JSON.stringify(list.slice(0,3)) + ')');
+              }
+            }
+            // Also fetch his profile directly to confirm his WA id and that he's a real, live athlete
+            const r = await fetch('https://worldathletics.org/athletes-home?query=Markus%20Rooth', {headers:{'User-Agent':'Mozilla/5.0 Mangekampanalyse-Pro/1.0'}});
+            const html = await r.text();
+            const idx = html.indexOf('id="__NEXT_DATA__"');
+            const openEnd = html.indexOf('>', idx) + 1;
+            const closeIdx = html.indexOf('</script>', openEnd);
+            const nextData = JSON.parse(html.slice(openEnd, closeIdx));
+            console.log('\n=== SSR initialSearchResults (top 3) for reference ===');
+            console.log(JSON.stringify(nextData?.props?.pageProps?.initialSearchResults?.slice(0,3), null, 2));
+          })();
+          NODE
