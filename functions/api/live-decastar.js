@@ -29,7 +29,7 @@ async function getJson(path){
 }
 async function getSchedule(){
   const comp=await getJson(`/competitions/${COMPETITION_ID}`);
-  return Array.isArray(comp?.schedule)?comp.schedule:[];
+  return Array.isArray(comp?.schedules)?comp.schedules:[];
 }
 // Groups every heat/group id for a discipline together (e.g. "400m Heat 1/2/3", "High Jump Group
 // A/B") so collectDiscipline() can merge whichever of them actually carries an athlete's result.
