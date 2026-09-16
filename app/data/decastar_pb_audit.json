@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-16T07:12:30.239Z",
+  "generatedAt": "2026-09-16T07:13:05.154Z",
   "source": "worldathletics.org profile HTML (direct, no key, no nimarion), fetched in batches to stay under WA's per-run request cap",
   "athletes": {
     "Nafissatou Thiam": {
@@ -597,6 +597,20 @@
     "Sarah Lagger": {
       "type": "women",
       "waId": 14544322,
+      "events": {
+        "100mh": "OK",
+        "Høyde": "OK",
+        "Kule": "OK",
+        "200m": "OK",
+        "Lengde": "OK",
+        "Spyd": "OK",
+        "800m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Linda Bichsel": {
+      "type": "women",
+      "waId": 14852177,
       "events": {
         "100mh": "OK",
         "Høyde": "OK",
