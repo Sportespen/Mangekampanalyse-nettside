@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-15T19:07:45.624Z",
+  "generatedAt": "2026-09-16T07:07:52.682Z",
   "source": "worldathletics.org profile HTML (direct, no key, no nimarion), fetched in batches to stay under WA's per-run request cap",
   "athletes": {
     "Nafissatou Thiam": {
@@ -501,6 +501,57 @@
     "Tristan Marcy": {
       "type": "men",
       "waId": 14757313,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Markus Rooth": {
+      "type": "men",
+      "waId": 14783534,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Vilem Strasky": {
+      "type": "men",
+      "waId": 14666851,
+      "events": {
+        "100m": "OK",
+        "Lengde": "OK",
+        "Kule": "OK",
+        "Høyde": "OK",
+        "400m": "OK",
+        "110mh": "OK",
+        "Diskos": "OK",
+        "Stav": "OK",
+        "Spyd": "OK",
+        "1500m": "OK"
+      },
+      "source": "wa-html-direct"
+    },
+    "Sammy Ball": {
+      "type": "men",
+      "waId": 14985934,
       "events": {
         "100m": "OK",
         "Lengde": "OK",
