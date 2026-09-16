@@ -20,7 +20,8 @@ function venueText(v){if(v==null)return'';if(typeof v==='string'||typeof v==='nu
 function venueOf(r){return venueText(r?.location)||venueText(r?.venue)||venueText(r?.competitionVenue)||'';}
 function indoorOf(r){const text=[r?.competition,r?.meeting,venueOf(r),r?.category,r?.venueName,r?.stadium].filter(Boolean).join(' ').toLowerCase();if(/indoor|indoors|short track|\(i\)/.test(text))return true;const explicit=[r?.indoor,r?.isIndoor,r?.environment,r?.venueType,r?.competitionType,r?.stadiumType].filter(v=>v!==undefined&&v!==null).map(v=>String(v).toLowerCase()).join(' ');if(/(^|\b)(true|indoor|indoors|short track)(\b|$)/.test(explicit))return true;if(/(^|\b)(false|outdoor|outdoors)(\b|$)/.test(explicit))return false;return false;}
 function windLegal(r,event){if(!WIND_EVENTS.has(event)||indoorOf(r))return true;if(r?.legal===false)return false;const raw=String(r?.wind??r?.windReading??r?.resultWind??'').trim().replace(',','.');if(!raw)return r?.legal===true;const w=Number(raw.replace(/[^0-9.+-]/g,''));return Number.isFinite(w)&&w<=2.0;}
-async function text(url){const r=await fetch(url,{headers:{Accept:'text/html,application/xhtml+xml','User-Agent':'Mozilla/5.0 Mangekampanalyse/2.0'},cf:{cacheTtl:60,cacheEverything:true}});if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.text();}
+const WA_GRAPHQL_ENDPOINT='https://graphql-prod-4894.edge.aws.worldathletics.org/graphql';
+const WA_GRAPHQL_KEY='da2-o6pmci4cb5denlbnvn5u3kfexq';
 const MONTHS={JAN:1,FEB:2,MAR:3,APR:4,MAY:5,JUN:6,JUL:7,AUG:8,SEP:9,OCT:10,NOV:11,DEC:12};
 function toIsoDate(s){const m=String(s||'').trim().match(/^(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})$/);if(!m)return String(s||'');const month=MONTHS[m[2].toUpperCase()];if(!month)return String(s||'');return `${m[3]}-${String(month).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`;}
 // Same technique as functions/_shared/wa-html.js in Sportespen/Rankingstevner and as
@@ -64,11 +65,28 @@ function finalize(grouped){const out={};for(const[e,rows]of Object.entries(group
 function applyVerifiedCorrections(data){if(!data?.events)return data;const isJonathan=String(data.id||'')==='14989292'||/jonathan\s+hertwig/i.test(String(data.name||''));if(!isJonathan)return data;const verified={mark:7.21,display:'7.21',venue:'Randal Tyson Indoor Center, Fayetteville, AR',year:2026,date:'2026-01-30',competition:'Razorback Invitational',wind:'',legal:true,indoor:true};const rows=Array.isArray(data.events.Lengde)?data.events.Lengde:[];const outdoor=rows.filter(r=>!r?.indoor&&String(r?.date)!=='2026-01-30').sort((a,b)=>dateValue(b.date)-dateValue(a.date));data.events.Lengde=[...outdoor.slice(0,3),verified].sort((a,b)=>dateValue(b.date)-dateValue(a.date));return data;}
 async function resultsFor(id){try{const competitor=await fetchCompetitorFromHtml(id);return {rows:rowsFromCompetitor(competitor),competitor};}catch(_e){return {rows:[],competitor:null};}}
 function addUnique(all,a){if(a?.id&&!all.some(x=>String(x.id)===String(a.id)))all.push(a);}
-function titleCaseSlug(s){return decodeURIComponent(String(s||'')).split('-').filter(Boolean).map(x=>x?x[0].toUpperCase()+x.slice(1):x).join(' ');}
-async function waSearch(q){const html=await text(`${WA}/athletes-home?query=${encodeURIComponent(q)}`).catch(()=> '');if(!html)return[];const out=[];const rx=/href=["'](?:https:\/\/worldathletics\.org)?\/athletes\/([^\/"']+)\/([^"']+?)-(\d{7,})["']/gi;let m;while((m=rx.exec(html))){addUnique(out,{id:String(m[3]),name:titleCaseSlug(m[2]),countryCode:String(m[1]||'').toUpperCase()});if(out.length>=250)break;}return out;}
-// worldathletics.nimarion.de is dead (not just rate-limited - confirmed down outright), so
-// this no longer touches it at all: worldathletics.org's own athletes-home search page is
-// the sole source now, same direct-WA approach used throughout this app and in Rankingstevner.
+// worldathletics.org's own /athletes-home?query= page is edge-cached and does NOT return
+// query-specific results server-side (confirmed live: identical HTML/initialSearchResults for
+// wildly different queries) - the real per-query search only happens client-side via WA's
+// internal GraphQL (searchCompetitors), same backend family as fetchCompetitorFromHtml's
+// __NEXT_DATA__ approach. The apiKey below is not a secret: it's a public AWS AppSync key
+// (da2- prefix) baked directly into WA's own publicly-shipped JS bundle config, used by every
+// visitor's browser - not a rotating per-session token, so no Playwright capture needed here.
+async function waSearch(q){
+  const query=`query SearchCompetitors($query: String) { searchCompetitors(query: $query) { aaAthleteId familyName givenName country gender } }`;
+  const res=await fetch(WA_GRAPHQL_ENDPOINT,{method:'POST',headers:{'content-type':'application/json','x-api-key':WA_GRAPHQL_KEY,'x-graphql-client-name':'worldathletics'},body:JSON.stringify({query,variables:{query:q}})}).catch(()=>null);
+  if(!res||!res.ok)return[];
+  const payload=await res.json().catch(()=>null);
+  const list=payload?.data?.searchCompetitors;
+  if(!Array.isArray(list))return[];
+  const out=[];
+  for(const a of list){
+    const id=a?.aaAthleteId;
+    if(!id)continue;
+    addUnique(out,{id:String(id),name:`${a.givenName||''} ${a.familyName||''}`.trim(),countryCode:String(a.country||'').toUpperCase()});
+  }
+  return out;
+}
 async function rawSearch(q){const all=[];const terms=[q,...tokens(q)];for(const term of [...new Set(terms.filter(x=>String(x).trim().length>=2))]){const wa=await waSearch(term);for(const a of wa)addUnique(all,a);}return all.filter(a=>matchesPartial(athleteName(a),q)).sort((a,b)=>matchScore(athleteName(a),q)-matchScore(athleteName(b),q)||athleteName(a).localeCompare(athleteName(b),'nb'));}
 async function searchAthletes(q,type){const found=await rawSearch(q);const candidates=found.filter(a=>a?.id&&(!athleteGender(a)||athleteGender(a)===type)).slice(0,200);const checked=[];for(let i=0;i<candidates.length;i+=25){const batch=await Promise.all(candidates.slice(i,i+25).map(async a=>{const {rows,competitor}=await resultsFor(a.id);if(!eligibleCombinedAthlete(a,rows,type,competitor))return null;return{id:a.id,name:athleteName(a),nation:athleteNation(a),birth:athleteBirth(a),discipline:type==='women'?'Sjukamp':'Tikamp',score:matchScore(athleteName(a),q)};}));checked.push(...batch.filter(Boolean));if(checked.length>=30)break;}return checked.sort((a,b)=>a.score-b.score||a.name.localeCompare(b.name,'nb')).slice(0,30).map(({score,...a})=>a);}
 async function analyseAthlete(id,type,nameHint){let competitor=null;try{competitor=await fetchCompetitorFromHtml(id);}catch(_e){competitor=null;}const rows=competitor?rowsFromCompetitor(competitor):[];const meta=competitor?metaFromCompetitor(competitor):{name:'',nation:'',birth:'',gender:''};if(!eligibleCombinedAthlete(meta,rows,type,competitor))throw new Error(type==='women'?'Utøveren er ikke en relevant kvinnelig sjukamputøver.':'Utøveren er ikke en relevant mannlig tikamputøver.');const grouped={};for(const r of rows){const event=appEvent(r?.discipline);if(!event||!EVENTS[type].includes(event)||!seniorOnly(r,event,type)||!windLegal(r,event))continue;const mark=parseMark(r?.mark,event),date=String(r?.date||''),t=dateValue(date),year=yearOf(date),range=VALID_RANGES[type]?.[event],indoor=indoorOf(r);if(mark==null||!t||t>=CUTOFF||!YEARS.has(year)||(range&&(mark<range[0]||mark>range[1])))continue;(grouped[event]||=[]).push({mark,display:String(r?.mark||''),venue:venueOf(r),year,date,competition:String(r?.competition||r?.meeting||''),wind:String(r?.wind??r?.windReading??r?.resultWind??''),legal:true,indoor});}const data={id:String(id),name:meta.name||nameHint||`Utøver ${id}`,nation:meta.nation||'',birth:meta.birth||'',type,events:finalize(grouped)};return applyVerifiedCorrections(data);}
