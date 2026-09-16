@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-16T08:17:44.629Z",
+  "generatedAt": "2026-09-16T08:18:28.929Z",
   "athletes": {
     "Damian Warner": {
       "events": [
@@ -265,7 +265,8 @@
         "Lengde",
         "Spyd",
         "800m"
-      ]
+      ],
+      "yearsFetched": 4
     },
     "Vanessa Grimm": {
       "events": [
@@ -276,7 +277,8 @@
         "Lengde",
         "Spyd",
         "800m"
-      ]
+      ],
+      "yearsFetched": 2
     },
     "Beatričė Juškevičiūtė": {
       "events": [
@@ -287,7 +289,8 @@
         "Lengde",
         "Spyd",
         "800m"
-      ]
+      ],
+      "yearsFetched": 2
     },
     "Niamh Emerson": {
       "events": [
@@ -298,7 +301,8 @@
         "Lengde",
         "Spyd",
         "800m"
-      ]
+      ],
+      "yearsFetched": 4
     },
     "Lovisa Karlsson": {
       "events": [
@@ -309,7 +313,8 @@
         "Lengde",
         "Spyd",
         "800m"
-      ]
+      ],
+      "yearsFetched": 2
     },
     "Anna-Elisabeth Ehlers": {
       "events": [
@@ -320,7 +325,8 @@
         "Lengde",
         "Spyd",
         "800m"
-      ]
+      ],
+      "yearsFetched": 2
     },
     "Léonie Cambours": {
       "events": [
@@ -331,7 +337,8 @@
         "Lengde",
         "Spyd",
         "800m"
-      ]
+      ],
+      "yearsFetched": 4
     },
     "Marie Dehning": {
       "events": [
@@ -342,7 +349,8 @@
         "Lengde",
         "Spyd",
         "800m"
-      ]
+      ],
+      "yearsFetched": 3
     },
     "Ellen Barber": {
       "events": [
@@ -353,7 +361,8 @@
         "Lengde",
         "Spyd",
         "800m"
-      ]
+      ],
+      "yearsFetched": 2
     },
     "Célia Perron": {
       "events": [
@@ -364,7 +373,8 @@
         "Lengde",
         "Spyd",
         "800m"
-      ]
+      ],
+      "yearsFetched": 3
     },
     "Mareike Rösing": {
       "events": [
@@ -375,7 +385,8 @@
         "Lengde",
         "Spyd",
         "800m"
-      ]
+      ],
+      "yearsFetched": 3
     },
     "Liana Trümpi": {
       "events": [
@@ -386,7 +397,8 @@
         "Lengde",
         "Spyd",
         "800m"
-      ]
+      ],
+      "yearsFetched": 2
     },
     "Maddie Wilson": {
       "events": [
@@ -397,7 +409,8 @@
         "Lengde",
         "Spyd",
         "800m"
-      ]
+      ],
+      "yearsFetched": 1
     },
     "Ysée Le Philippe": {
       "events": [
@@ -486,7 +499,8 @@
         "Lengde",
         "Spyd",
         "800m"
-      ]
+      ],
+      "yearsFetched": 3
     },
     "Erin Marsh": {
       "events": [
@@ -497,7 +511,8 @@
         "Lengde",
         "Spyd",
         "800m"
-      ]
+      ],
+      "yearsFetched": 2
     },
     "Sarah Lagger": {
       "events": [
@@ -508,7 +523,8 @@
         "Lengde",
         "Spyd",
         "800m"
-      ]
+      ],
+      "yearsFetched": 3
     },
     "Linda Bichsel": {
       "events": [
