@@ -1,0 +1,42 @@
+name: Athlete search debug (diagnostic)
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Query the live production athlete-search API for Jonathan Hertwig-Ødegaard
+        run: |
+          set -x
+          echo "=== search (type=men) ==="
+          curl -s "https://mangekampanalyse.no/api/athlete-search?action=search&type=men&q=Jonathan%20Hertwig" | tee /tmp/search.json
+          echo
+          echo "=== analyse (id=14989292, type=men) ==="
+          curl -s "https://mangekampanalyse.no/api/athlete-search?action=analyse&type=men&id=14989292&name=Jonathan%20Hertwig-Ødegaard" | tee /tmp/analyse.json
+          echo
+          echo "=== raw WA athletes-home search HTML (first 3000 chars) ==="
+          curl -s "https://worldathletics.org/athletes-home?query=Jonathan%20Hertwig" -H "User-Agent: Mozilla/5.0 Mangekampanalyse/2.0" | head -c 3000
+          echo
+          echo "=== WA profile page for id 14989292 - competitor.basicData + worldRankings.current (raw grep) ==="
+          curl -s "https://worldathletics.org/athletes/-/14989292" -H "User-Agent: Mozilla/5.0 Mangekampanalyse/2.0" -o /tmp/profile.html
+          node -e "
+          const fs=require('fs');
+          const html=fs.readFileSync('/tmp/profile.html','utf8');
+          const marker='id=\"__NEXT_DATA__\"';
+          const idx=html.indexOf(marker);
+          if(idx===-1){ console.log('NO __NEXT_DATA__ FOUND, html length', html.length); process.exit(0); }
+          const openEnd=html.indexOf('>',idx)+1;
+          const closeIdx=html.indexOf('</script>',openEnd);
+          const nextData=JSON.parse(html.slice(openEnd,closeIdx));
+          const competitor=nextData?.props?.pageProps?.competitor;
+          if(!competitor){ console.log('NO competitor in pageProps'); process.exit(0); }
+          console.log('basicData:', JSON.stringify(competitor.basicData, null, 2));
+          console.log('worldRankings.current:', JSON.stringify(competitor.worldRankings?.current, null, 2));
+          const events = competitor?.resultsByYear?.resultsByEvent || [];
+          console.log('resultsByYear disciplines:', events.map(e=>e.discipline));
+          "
