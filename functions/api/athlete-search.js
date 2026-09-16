@@ -45,9 +45,16 @@ function combinedFlags(rows){let hept=false,deca=false;for(const r of Array.isAr
 // season so far was individual-event-only) who searches turned up zero results for. Prefer the
 // athlete's World Rankings event group (present regardless of this season's meet calendar) and
 // only fall back to the current-season flag when no ranking data exists at all.
+// World Rankings alone still misses athletes who haven't done a combined event recently enough
+// for their ranking to still be active (e.g. an Olympic decathlon medallist who's only done
+// individual events since mid-2024 - confirmed live: worldRankings.current comes back empty for
+// him even though he's clearly still a decathlete). searchCompetitors' own `disciplines` field
+// is a career-wide top-disciplines summary, not season-scoped, so it catches these cases too.
 function eligibleCombinedAthlete(a,rows,type,competitor){
   const g=athleteGender(a);
   if(g&&g!==type)return false;
+  const wantGroup=type==='men'?/decathlon/i:/heptathlon/i;
+  if(wantGroup.test(String(a?.disciplines||'')))return true;
   const rankings=competitor?.worldRankings?.current;
   if(Array.isArray(rankings)&&rankings.length){
     const wantGroup=type==='men'?/decathlon/i:/heptathlon/i;
@@ -73,7 +80,7 @@ function addUnique(all,a){if(a?.id&&!all.some(x=>String(x.id)===String(a.id)))al
 // (da2- prefix) baked directly into WA's own publicly-shipped JS bundle config, used by every
 // visitor's browser - not a rotating per-session token, so no Playwright capture needed here.
 async function waSearch(q){
-  const query=`query SearchCompetitors($query: String) { searchCompetitors(query: $query) { aaAthleteId familyName givenName country gender } }`;
+  const query=`query SearchCompetitors($query: String) { searchCompetitors(query: $query) { aaAthleteId familyName givenName country gender disciplines } }`;
   const res=await fetch(WA_GRAPHQL_ENDPOINT,{method:'POST',headers:{'content-type':'application/json','x-api-key':WA_GRAPHQL_KEY,'x-graphql-client-name':'worldathletics'},body:JSON.stringify({query,variables:{query:q}})}).catch(()=>null);
   if(!res||!res.ok)return[];
   const payload=await res.json().catch(()=>null);
@@ -83,7 +90,7 @@ async function waSearch(q){
   for(const a of list){
     const id=a?.aaAthleteId;
     if(!id)continue;
-    addUnique(out,{id:String(id),name:`${a.givenName||''} ${a.familyName||''}`.trim(),countryCode:String(a.country||'').toUpperCase()});
+    addUnique(out,{id:String(id),name:`${a.givenName||''} ${a.familyName||''}`.trim(),countryCode:String(a.country||'').toUpperCase(),disciplines:String(a.disciplines||'')});
   }
   return out;
 }
