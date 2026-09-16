@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-16T07:13:16.794Z",
+  "generatedAt": "2026-09-16T07:13:37.808Z",
   "athletes": {
     "Damian Warner": {
       "events": [
@@ -455,6 +455,39 @@
         "Stav",
         "Spyd",
         "1500m"
+      ]
+    },
+    "Noor Vidts": {
+      "events": [
+        "100mh",
+        "Høyde",
+        "Kule",
+        "200m",
+        "Lengde",
+        "Spyd",
+        "800m"
+      ]
+    },
+    "Erin Marsh": {
+      "events": [
+        "100mh",
+        "Høyde",
+        "Kule",
+        "200m",
+        "Lengde",
+        "Spyd",
+        "800m"
+      ]
+    },
+    "Sarah Lagger": {
+      "events": [
+        "100mh",
+        "Høyde",
+        "Kule",
+        "200m",
+        "Lengde",
+        "Spyd",
+        "800m"
       ]
     }
   },
