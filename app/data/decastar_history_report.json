@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-16T08:21:33.859Z",
+  "generatedAt": "2026-09-16T08:22:33.916Z",
   "athletes": {
     "Damian Warner": {
       "events": [
@@ -223,7 +223,8 @@
         "Stav",
         "Spyd",
         "1500m"
-      ]
+      ],
+      "yearsFetched": 2
     },
     "Nino Portmann": {
       "events": [
@@ -237,7 +238,8 @@
         "Stav",
         "Spyd",
         "1500m"
-      ]
+      ],
+      "yearsFetched": 2
     },
     "Tristan Marcy": {
       "events": [
@@ -251,7 +253,8 @@
         "Stav",
         "Spyd",
         "1500m"
-      ]
+      ],
+      "yearsFetched": 2
     },
     "Nafissatou Thiam": {
       "events": [
@@ -471,7 +474,8 @@
         "Stav",
         "Spyd",
         "1500m"
-      ]
+      ],
+      "yearsFetched": 2
     },
     "Noor Vidts": {
       "events": [
