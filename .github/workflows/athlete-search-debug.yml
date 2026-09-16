@@ -10,59 +10,64 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Discover matsport history API host and result field names for a finished event
+      - name: Get competition schedule and a field-event result structure
         run: |
           set +e
-          echo "=== Fetch history frontend HTML to find its JS bundle / API config ==="
-          curl -s "https://athle-history.matsport.com/events/e0c02ff7-1fa5-4d8f-bda9-dae5888883cd_ATSTAM900A01/results" -o /tmp/page.html
-          echo "HTML length: $(wc -c < /tmp/page.html)"
-          grep -oE '(src|href)="[^"]*\.js[^"]*"' /tmp/page.html | sort -u
+          BASE="https://api-history.athle.matsport.com"
+          COMP="e0c02ff7-1fa5-4d8f-bda9-dae5888883cd"
+
+          echo "=== Competition schedules (find field-event ids: Long Jump, Shot Put, High Jump, Discus, Pole Vault, Javelin) ==="
+          curl -s "$BASE/competitions/$COMP" -H "Accept: application/json" -o /tmp/comp.json
+          node -e "
+            const d=JSON.parse(require('fs').readFileSync('/tmp/comp.json','utf8'));
+            console.log('top-level keys:', Object.keys(d));
+            const schedules = d.schedules || d.schedule || [];
+            console.log('schedules count:', schedules.length);
+            for (const day of schedules) {
+              for (const ev of (day.events||[])) {
+                if (ev.gender === 'M' && /Long Jump|Shot Put|High Jump|Discus|Pole Vault|Javelin/i.test(ev.event||ev.phase||'')) {
+                  console.log(JSON.stringify({id: ev.id, event: ev.event, phase: ev.phase, gender: ev.gender, status: ev.status}));
+                }
+              }
+            }
+          "
 
           echo ""
-          echo "=== Try candidate API hosts for the event ==="
-          for base in \
-            "https://api.athle-history.matsport.com" \
-            "https://api-history.athle.matsport.com" \
-            "https://api.athle.matsport.com" \
-            "https://history-api.athle.matsport.com"
-          do
-            echo "--- $base/events/e0c02ff7-1fa5-4d8f-bda9-dae5888883cd_ATSTAM900A01 ---"
-            code=$(curl -s -o /tmp/resp.json -w "%{http_code}" "$base/events/e0c02ff7-1fa5-4d8f-bda9-dae5888883cd_ATSTAM900A01" -H "Accept: application/json")
-            echo "HTTP $code"
-            if [ "$code" = "200" ]; then
-              head -c 3000 /tmp/resp.json
-              echo ""
-            fi
-          done
+          echo "=== Fetch first found field event in detail ==="
+          FIELD_ID=$(node -e "
+            const d=JSON.parse(require('fs').readFileSync('/tmp/comp.json','utf8'));
+            const schedules = d.schedules || d.schedule || [];
+            for (const day of schedules) {
+              for (const ev of (day.events||[])) {
+                if (ev.gender === 'M' && /Long Jump|Shot Put|High Jump|Discus|Pole Vault|Javelin/i.test(ev.event||ev.phase||'')) {
+                  console.log(ev.id); process.exit(0);
+                }
+              }
+            }
+          ")
+          echo "FIELD_ID=$FIELD_ID"
+          if [ -n "$FIELD_ID" ]; then
+            curl -s "$BASE/events/$FIELD_ID" -H "Accept: application/json" -o /tmp/field.json
+            echo "--- raw (first 4000 chars) ---"
+            head -c 4000 /tmp/field.json
+            echo ""
+            echo "--- top-level keys + horizontalResult shape ---"
+            node -e "
+              const d=JSON.parse(require('fs').readFileSync('/tmp/field.json','utf8'));
+              console.log('keys:', Object.keys(d));
+              console.log('engaged length:', (d.engaged||[]).length);
+              console.log('horizontalResult:', JSON.stringify(d.horizontalResult, null, 0)?.slice(0,2000));
+            "
+          fi
 
           echo ""
-          echo "=== Try /results and /classement suffixes on same hosts ==="
-          for base in \
-            "https://api.athle-history.matsport.com" \
-            "https://api.athle.matsport.com"
-          do
-            for suffix in "results" "classement"; do
-              echo "--- $base/events/e0c02ff7-1fa5-4d8f-bda9-dae5888883cd_ATSTAM900A01/$suffix ---"
-              code=$(curl -s -o /tmp/resp2.json -w "%{http_code}" "$base/events/e0c02ff7-1fa5-4d8f-bda9-dae5888883cd_ATSTAM900A01/$suffix" -H "Accept: application/json")
-              echo "HTTP $code"
-              if [ "$code" = "200" ]; then
-                head -c 3000 /tmp/resp2.json
-                echo ""
-              fi
-            done
-          done
-
-          echo ""
-          echo "=== Try competition endpoint on candidate hosts (to confirm schedules field + find more event ids) ==="
-          for base in \
-            "https://api.athle-history.matsport.com" \
-            "https://api.athle.matsport.com"
-          do
-            echo "--- $base/competitions/e0c02ff7-1fa5-4d8f-bda9-dae5888883cd ---"
-            code=$(curl -s -o /tmp/resp3.json -w "%{http_code}" "$base/competitions/e0c02ff7-1fa5-4d8f-bda9-dae5888883cd" -H "Accept: application/json")
-            echo "HTTP $code"
-            if [ "$code" = "200" ]; then
-              head -c 1500 /tmp/resp3.json
-              echo ""
-            fi
-          done
+          echo "=== Also fetch a running (non-heat) event like 1500m or a decathlon-final combined event, if present ==="
+          node -e "
+            const d=JSON.parse(require('fs').readFileSync('/tmp/comp.json','utf8'));
+            const schedules = d.schedules || d.schedule || [];
+            for (const day of schedules) {
+              for (const ev of (day.events||[])) {
+                if (ev.gender === 'M') console.log(JSON.stringify({id: ev.id, event: ev.event, phase: ev.phase}));
+              }
+            }
+          " | head -40
