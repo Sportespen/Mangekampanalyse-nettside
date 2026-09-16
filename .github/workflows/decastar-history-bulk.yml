@@ -21,7 +21,7 @@ jobs:
   # World Athletics seems to cap successful HTML fetches at ~20-21 per single job execution,
   # regardless of pause length between requests (confirmed today via decastar-pb-bulk.yml).
   # A fresh job/runner resets that budget, so this plans a matrix of small batches - one job
-  # per batch, run sequentially - across all 33 Décastar athletes.
+  # per batch, run sequentially - across all Décastar athletes.
   plan:
     runs-on: ubuntu-latest
     outputs:
@@ -74,7 +74,47 @@ jobs:
             git checkout -b "$BRANCH"
           fi
           echo "BRANCH=$BRANCH" >> "$GITHUB_ENV"
-      - name: Fetch this batch's recent 2026-season results
+      - name: Install Playwright
+        run: |
+          npm install playwright@1 --no-save >/dev/null 2>&1
+          npx playwright install --with-deps chromium
+      - name: Capture WA GraphQL key
+        # worldathletics.org has no public API. Its own frontend calls an internal GraphQL
+        # backend using a short-lived "x-api-key" header that only ever appears in real browser
+        # network traffic - watching a real page load reveals it. Same technique already proven
+        # live by rankingstevner.no's scripts/wa-key-refresh.mjs (confirmed working for this
+        # exact operation via .github/workflows/wa-graphql-key-test.yml's diagnostic run here).
+        # Captured fresh per batch (rather than shared across the whole matrix run) since the key
+        # rotates and later batches run much later, on separate runners, sequentially.
+        run: |
+          node <<'NODE'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+          const CAPTURE_TIMEOUT_MS = 30000;
+          (async () => {
+            const browser = await chromium.launch();
+            try {
+              const page = await browser.newPage();
+              let found = null;
+              page.on('request', (req) => {
+                if (found) return;
+                const apiKey = req.headers()['x-api-key'];
+                if (!apiKey) return;
+                if (!/\.edge\.aws\.worldathletics\.org$/.test(new URL(req.url()).hostname)) return;
+                found = { apiKey, endpoint: req.url() };
+              });
+              await page.goto('https://worldathletics.org/athletes/-/14834505', { waitUntil: 'load', timeout: CAPTURE_TIMEOUT_MS }).catch(() => {});
+              const deadline = Date.now() + CAPTURE_TIMEOUT_MS;
+              while (!found && Date.now() < deadline) await page.waitForTimeout(500);
+              if (!found) { console.error('Could not capture a WA GraphQL key within the timeout.'); process.exit(1); }
+              fs.writeFileSync('/tmp/wa-key.json', JSON.stringify(found));
+              console.log('Captured WA GraphQL endpoint:', found.endpoint);
+            } finally {
+              await browser.close();
+            }
+          })();
+          NODE
+      - name: Fetch this batch's recent results (nearest season first)
         env:
           CHUNK_TYPE: ${{ matrix.chunk.type }}
           CHUNK_NAMES: ${{ toJson(matrix.chunk.names) }}
@@ -111,47 +151,49 @@ jobs:
             const first=String(competition||'').split(',')[0].trim();
             return first||String(competition||'');
           }
-
-          // The current season (resultsByYear defaults to it with no way to request another
-          // year via URL - confirmed via a throwaway diagnostic run) sometimes has nothing
-          // usable for a discipline. Fall back to progressionOfSeasonsBests (season's-best per
-          // year back to 2010, already present in the same fetched competitor object - no
-          // extra request) so a real gap becomes "last known result" instead of a bare dash.
-          function fallbackFromProgression(discipline,progression){
-            const p=(progression||[]).find(x=>x.discipline===discipline);
-            if(!p||!Array.isArray(p.results)||!p.results.length) return [];
-            const rows=[];
-            for(const r of p.results){
-              const parsed=parseWaDate(r.date);
-              const numeric=Number.isFinite(r.numericResult)?r.numericResult:toNumericMark(r.mark);
-              if(!parsed||numeric==null) continue;
-              rows.push({numeric,display:String(r.mark),venue:r.venue||'',year:parsed.year,iso:parsed.iso,meet:meetName(r.competition),season:Number(r.season)||0});
-            }
-            rows.sort((a,b)=>b.season-a.season);
-            return rows.slice(0,4).map(r=>[r.numeric,r.display,r.venue,r.year,r.iso,r.meet]);
+          function venueFromCompetition(competition){
+            const parts=String(competition||'').split(',').map(s=>s.trim());
+            return parts[1]||parts[0]||'';
           }
 
-          // worldathletics.nimarion.de is dead outright (confirmed), so this never touches it.
-          async function fetchCompetitor(id){
-            const r=await fetch(`https://worldathletics.org/athletes/-/${id}`,{headers:{'User-Agent':'Mozilla/5.0 Mangekampanalyse-Pro/1.0'}});
-            if(!r.ok) throw new Error(`worldathletics.org ${r.status}`);
-            const html=await r.text();
-            const marker='id="__NEXT_DATA__"';
-            const idx=html.indexOf(marker);
-            if(idx===-1) throw new Error('__NEXT_DATA__ not found');
-            const openEnd=html.indexOf('>',idx)+1;
-            const closeIdx=html.indexOf('</script>',openEnd);
-            const nextData=JSON.parse(html.slice(openEnd,closeIdx));
-            const competitor=nextData?.props?.pageProps?.competitor;
-            if(!competitor) throw new Error('no competitor in page');
-            return competitor;
+          const waKey=JSON.parse(fs.readFileSync('/tmp/wa-key.json','utf8'));
+          // Confirmed live (see .github/workflows/wa-graphql-key-test.yml's diagnostic run) that,
+          // unlike the athlete profile page's own embedded resultsByYear (always current season,
+          // no URL override - confirmed via an earlier throwaway diagnostic run), this GraphQL
+          // operation is the exact one the real worldathletics.org frontend calls for its own
+          // "Results" tab season dropdown: it takes an explicit year and returns that whole
+          // season's full per-competition results, same technique rankingstevner.no's
+          // functions/api/wa-results.js already relies on.
+          const RESULTS_QUERY=`query GetSingleCompetitorResultsDiscipline($id: Int, $resultsByYearOrderBy: String, $resultsByYear: Int) {
+            getSingleCompetitorResultsDiscipline(id: $id, resultsByYear: $resultsByYear, resultsByYearOrderBy: $resultsByYearOrderBy) {
+              resultsByEvent { discipline results { date competition venue place mark wind notLegal resultScore category competitionId eventId } }
+            }
+          }`;
+          async function fetchYearResults(id,year){
+            const r=await fetch(waKey.endpoint,{
+              method:'POST',
+              headers:{'content-type':'application/json','x-graphql-client-name':'worldathletics','x-api-key':waKey.apiKey},
+              body:JSON.stringify({query:RESULTS_QUERY,variables:{id:Number(id),resultsByYear:year,resultsByYearOrderBy:'discipline'}})
+            });
+            const text=await r.text();
+            let payload=null;
+            try{ payload=JSON.parse(text); }catch(_e){}
+            if(!r.ok) throw new Error(`WA GraphQL ${r.status}: ${text.slice(0,200)}`);
+            if(Array.isArray(payload?.errors)&&payload.errors.length) throw new Error(payload.errors[0]?.message||'WA GraphQL error');
+            return payload?.data?.getSingleCompetitorResultsDiscipline?.resultsByEvent||[];
           }
 
           const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+          const MAX_BASIS=4;
+          // Each extra season back is one more GraphQL request covering ALL disciplines at once
+          // (not one request per discipline), so this bounds the per-athlete request count. The
+          // loop below already stops earlier than this the moment every discipline has enough.
+          const MAX_YEARS_BACK=4;
 
           (async()=>{
             const chunkType=process.env.CHUNK_TYPE;
             const chunkNames=new Set(JSON.parse(process.env.CHUNK_NAMES||'[]'));
+            const currentYear=new Date().getUTCFullYear();
 
             // decastar_history.js is fully regenerated each batch. Start from everything
             // already on this run's shared branch (either the originally-committed file, or an
@@ -179,40 +221,55 @@ jobs:
               const id=athlete.waId;
               if(!id){ report.missing.push({athlete:name,error:'no waId in roster file'}); continue; }
               try{
-                const competitor=await fetchCompetitor(id);
-                const events=competitor?.resultsByYear?.resultsByEvent||[];
-                const byEvent={};
-                for(const [ourEvent,discipline] of Object.entries(eventMap[type])){
-                  const ev=events.find(e=>e.discipline===discipline);
-                  let top4=[];
-                  if(ev&&Array.isArray(ev.results)&&ev.results.length){
-                    const rows=[];
+                const disciplines=Object.entries(eventMap[type]);
+                const rowsByOurEvent=new Map(disciplines.map(([ourEvent])=>[ourEvent,[]]));
+                const seenKey=new Set();
+                let yearsFetched=0;
+                let lastError=null;
+                for(let year=currentYear; year>currentYear-MAX_YEARS_BACK; year--){
+                  const stillShort=disciplines.some(([ourEvent])=>rowsByOurEvent.get(ourEvent).length<MAX_BASIS);
+                  if(!stillShort) break;
+                  let events;
+                  try{ events=await fetchYearResults(id,year); }
+                  catch(e){ lastError=e; yearsFetched++; await sleep(350); continue; }
+                  yearsFetched++;
+                  for(const [ourEvent,discipline] of disciplines){
+                    const bucket=rowsByOurEvent.get(ourEvent);
+                    if(bucket.length>=MAX_BASIS) continue;
+                    const ev=events.find(e=>e.discipline===discipline);
+                    if(!ev||!Array.isArray(ev.results)) continue;
                     for(const row of ev.results){
+                      if(bucket.length>=MAX_BASIS) break;
                       const parsed=parseWaDate(row.date);
                       const numeric=toNumericMark(row.mark);
                       if(!parsed||numeric==null) continue;
-                      rows.push({numeric,display:String(row.mark),venue:row.venue||'',year:parsed.year,iso:parsed.iso});
-                      rows[rows.length-1].meet=meetName(row.competition);
+                      const key=`${row.competitionId||''}|${parsed.iso}|${row.mark}`;
+                      if(seenKey.has(key)) continue;
+                      seenKey.add(key);
+                      bucket.push({numeric,display:String(row.mark),venue:row.venue||venueFromCompetition(row.competition),year:parsed.year,iso:parsed.iso,meet:meetName(row.competition)});
                     }
-                    rows.sort((a,b)=>b.iso.localeCompare(a.iso));
-                    top4=rows.slice(0,4).map(r=>[r.numeric,r.display,r.venue,r.year,r.iso,r.meet]);
                   }
-                  if(!top4.length) top4=fallbackFromProgression(discipline,competitor?.progressionOfSeasonsBests);
-                  if(top4.length) byEvent[ourEvent]=top4;
+                  await sleep(350);
+                }
+                const byEvent={};
+                for(const [ourEvent] of disciplines){
+                  const bucket=rowsByOurEvent.get(ourEvent);
+                  if(!bucket.length) continue;
+                  bucket.sort((a,b)=>b.iso.localeCompare(a.iso));
+                  byEvent[ourEvent]=bucket.slice(0,MAX_BASIS).map(r=>[r.numeric,r.display,r.venue,r.year,r.iso,r.meet]);
                 }
                 // Only overwrite this athlete's entry when the fresh fetch actually yielded
                 // usable data - a transient fetch failure or an empty response should never
                 // wipe out perfectly good data already on the branch.
-                if(Object.keys(byEvent).length){ H[name]=byEvent; report.athletes[name]={events:Object.keys(byEvent)}; }
-                else report.athletes[name]={events:[],note:'no events with usable results this run - kept previous data if any'};
+                if(Object.keys(byEvent).length){ H[name]=byEvent; report.athletes[name]={events:Object.keys(byEvent),yearsFetched}; }
+                else report.athletes[name]={events:[],yearsFetched,error:lastError?String(lastError.message||lastError):undefined,note:'no events with usable results this run - kept previous data if any'};
               }catch(e){
                 report.athletes[name]={error:String(e.message||e),note:'kept previous data if any'};
                 report.missing.push({athlete:name,error:String(e.message||e)});
               }
-              await sleep(600);
             }
 
-            const js=`// AUTO-GENERATED by .github/workflows/decastar-history-bulk.yml\n// Recent 2026-season per-event results for every Décastar roster athlete, fetched fresh from\n// WA profile pages each run and always overwritten - no longer skips athletes who already had\n// Birmingham-sourced history, since that data can go stale mid-championship (e.g. missed a\n// completed EM Birmingham decathlon) and never got refreshed.\nwindow.MANGEKAMP_HISTORY=window.MANGEKAMP_HISTORY||{};\n(function(){\n const H=${JSON.stringify(H)};\n for(const [name,byEvent] of Object.entries(H)){ window.MANGEKAMP_HISTORY[name]=byEvent; }\n})();\n`;
+            const js=`// AUTO-GENERATED by .github/workflows/decastar-history-bulk.yml\n// Recent per-event results for every Décastar roster athlete, fetched fresh from World\n// Athletics' internal GraphQL backend each run (nearest season first, only reaching further\n// back than the current+previous season when a discipline still has fewer than 4 valid\n// results) and always overwritten - no longer skips athletes who already had Birmingham-\n// sourced history, since that data can go stale mid-championship and never got refreshed.\nwindow.MANGEKAMP_HISTORY=window.MANGEKAMP_HISTORY||{};\n(function(){\n const H=${JSON.stringify(H)};\n for(const [name,byEvent] of Object.entries(H)){ window.MANGEKAMP_HISTORY[name]=byEvent; }\n})();\n`;
             fs.writeFileSync('app/data/decastar_history.js',js);
             fs.writeFileSync('app/data/decastar_history_report.json',JSON.stringify(report,null,2));
             console.log('BATCH DONE type='+chunkType+' size='+chunkNames.size+' totalFetched='+Object.keys(H).length+' totalMissing='+report.missing.length);
