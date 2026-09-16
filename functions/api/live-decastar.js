@@ -16,10 +16,18 @@ const EVENT_MAP=[
   [/^200\s*m/i,'200m'],
   [/^800\s*m/i,'800m']
 ];
-// The site's own promised event order (100m/Lengde/Kule/Høyde/400m/110mh/Diskos/Stav/Spyd/1500m
-// for men, 100mh/Høyde/Kule/200m/Lengde/Spyd/800m for women) decides which regex above wins for
-// an ambiguous phase name, so order matters: hurdles-specific patterns must be checked before the
-// bare "100m"/"long jump"-style ones they could otherwise also match.
+// Which of the event payload's three result blocks actually carries a finished/live mark for this
+// discipline - confirmed against a past matsport competition (see PR history): engaged[] is only
+// ever the pre-competition entry list (personalBest/seasonBest, no live result field at all), a
+// real mark shows up in trackResult (running events, field "time"), horizontalResult (jumps/throws,
+// field "result", meters) or verticalResult (High Jump/Pole Vault, field "result", meters) once the
+// event is under way or official.
+const RESULT_BLOCK={
+  '100m':'trackResult','400m':'trackResult','110mh':'trackResult','1500m':'trackResult',
+  '100mh':'trackResult','200m':'trackResult','800m':'trackResult',
+  'Lengde':'horizontalResult','Kule':'horizontalResult','Diskos':'horizontalResult','Spyd':'horizontalResult',
+  'Høyde':'verticalResult','Stav':'verticalResult'
+};
 function appDiscipline(text){const s=String(text||'');for(const[rx,name]of EVENT_MAP)if(rx.test(s))return name;return null;}
 function cleanName(v){return String(v||'').replace(/\s+/g,' ').trim();}
 async function getJson(path){
@@ -31,8 +39,10 @@ async function getSchedule(){
   const comp=await getJson(`/competitions/${COMPETITION_ID}`);
   return Array.isArray(comp?.schedules)?comp.schedules:[];
 }
-// Groups every heat/group id for a discipline together (e.g. "400m Heat 1/2/3", "High Jump Group
-// A/B") so collectDiscipline() can merge whichever of them actually carries an athlete's result.
+// The site's own promised event order (100m/Lengde/Kule/Høyde/400m/110mh/Diskos/Stav/Spyd/1500m
+// for men, 100mh/Høyde/Kule/200m/Lengde/Spyd/800m for women) decides which regex above wins for
+// an ambiguous phase name, so order matters: hurdles-specific patterns must be checked before the
+// bare "100m"/"long jump"-style ones they could otherwise also match.
 function eventIdsByDiscipline(schedule,gender){
   const out={};
   for(const day of schedule){
@@ -46,19 +56,10 @@ function eventIdsByDiscipline(schedule,gender){
   return Object.fromEntries(Object.entries(out).map(([k,v])=>[k,[...v]]));
 }
 function rawStatus(value){const t=String(value??'').trim().toUpperCase();return TERMINAL.has(t)?t:null;}
-// The live-result field name on an "engaged" row is unverified until the meet actually starts
-// (matsport only ever showed personalBest/seasonBest pre-competition when this was built, two
-// days before Décastar Talence 2026) - check every plausible key defensively rather than assume
-// one, mirroring the same resilience approach already used for Birmingham's live feed.
-function rawResult(row){
-  const direct=[row?.result,row?.mark,row?.performance,row?.resultValue,row?.bestResult,row?.bestMark,row?.time,row?.distance,row?.height,row?.value];
-  for(const v of direct){if(v!=null&&String(v).trim()!=='')return v;}
-  return null;
-}
 function parseMark(discipline,raw){
   if(raw==null)return null;
   let text=String(raw).trim().replace(',','.');
-  if(!text||TERMINAL.has(text.toUpperCase())||['—','-'].includes(text))return null;
+  if(!text||TERMINAL.has(text.toUpperCase())||['—','-','X'].includes(text))return null;
   if(text.includes(':')&&(discipline==='1500m'||discipline==='800m')){
     const p=text.split(':');const sec=Number(p[p.length-2])*60+Number(p[p.length-1]);
     return Number.isFinite(sec)?sec:null;
@@ -67,17 +68,20 @@ function parseMark(discipline,raw){
   return m?Number(m[0]):null;
 }
 async function collectDiscipline(ids,discipline,resultsByName){
+  const blockKey=RESULT_BLOCK[discipline];
+  const timeField=blockKey==='trackResult';
   const payloads=await Promise.all(ids.map(id=>getJson(`/events/${id}`).catch(()=>null)));
   for(const payload of payloads){
-    for(const row of (Array.isArray(payload?.engaged)?payload.engaged:[])){
+    const rows=Array.isArray(payload?.[blockKey]?.results)?payload[blockKey].results:[];
+    for(const row of rows){
       const athlete=row?.athlete||{};
       // athlete.longName is already "SURNAME Firstname" (e.g. "MARCY Tristan"); forename here is
       // actually the surname and name is the given name, so longName is the one clean full name.
       const name=cleanName(athlete.longName||`${athlete.forename||''} ${athlete.name||''}`);
       if(!name)continue;
-      const raw=rawResult(row);
+      const raw=timeField?row?.time:row?.result;
       const mark=parseMark(discipline,raw);
-      const terminal=rawStatus(raw)||rawStatus(row?.status);
+      const terminal=rawStatus(row?.status);
       if(mark==null&&!terminal)continue;
       const entry=resultsByName[name]??={};
       if(athlete.country)entry.nation=athlete.country;
