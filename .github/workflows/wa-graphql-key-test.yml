@@ -1,0 +1,107 @@
+name: WA GraphQL key capture test (diagnostic)
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Playwright
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1 >/dev/null 2>&1
+          npx playwright install --with-deps chromium
+      - name: Capture WA GraphQL key and query a specific past season
+        run: |
+          node <<'NODE'
+          const { chromium } = require('playwright');
+
+          const ATHLETE_URL = 'https://worldathletics.org/athletes/-/14834505'; // Sander Skotheim
+          const CAPTURE_TIMEOUT_MS = 30000;
+
+          async function captureCredentials() {
+            const browser = await chromium.launch();
+            try {
+              const page = await browser.newPage();
+              let found = null;
+              page.on('request', (req) => {
+                if (found) return;
+                const apiKey = req.headers()['x-api-key'];
+                if (!apiKey) return;
+                if (!/\.edge\.aws\.worldathletics\.org$/.test(new URL(req.url()).hostname)) return;
+                found = { apiKey, endpoint: req.url() };
+              });
+              await page.goto(ATHLETE_URL, { waitUntil: 'load', timeout: CAPTURE_TIMEOUT_MS }).catch(() => {});
+              const deadline = Date.now() + CAPTURE_TIMEOUT_MS;
+              while (!found && Date.now() < deadline) {
+                await page.waitForTimeout(500);
+              }
+              return found;
+            } finally {
+              await browser.close();
+            }
+          }
+
+          const RESULTS_QUERY = `query GetSingleCompetitorResultsDiscipline($id: Int, $resultsByYearOrderBy: String, $resultsByYear: Int) {
+            getSingleCompetitorResultsDiscipline(id: $id, resultsByYear: $resultsByYear, resultsByYearOrderBy: $resultsByYearOrderBy) {
+              resultsByEvent {
+                discipline
+                results { date competition place mark wind notLegal resultScore category competitionId eventId }
+              }
+            }
+          }`;
+
+          async function queryYear(config, id, year) {
+            const res = await fetch(config.endpoint, {
+              method: 'POST',
+              headers: {
+                'content-type': 'application/json',
+                'x-graphql-client-name': 'worldathletics',
+                'x-api-key': config.apiKey,
+              },
+              body: JSON.stringify({ query: RESULTS_QUERY, variables: { id: Number(id), resultsByYear: year, resultsByYearOrderBy: 'discipline' } }),
+            });
+            const text = await res.text();
+            let payload = null;
+            try { payload = JSON.parse(text); } catch (_) {}
+            return { status: res.status, payload, rawSnippet: text.slice(0, 300) };
+          }
+
+          (async () => {
+            console.log('Capturing WA GraphQL key via Playwright...');
+            const config = await captureCredentials();
+            if (!config) {
+              console.log('FAILED to capture x-api-key within timeout.');
+              process.exit(1);
+            }
+            console.log('Captured endpoint:', config.endpoint);
+            console.log('Captured apiKey (first 12 chars):', config.apiKey.slice(0, 12) + '...');
+
+            for (const year of [2024, 2023]) {
+              console.log(`\n=== Query resultsByYear=${year} for Sander Skotheim (14834505) ===`);
+              const { status, payload, rawSnippet } = await queryYear(config, 14834505, year);
+              console.log('HTTP status:', status);
+              if (payload?.errors) {
+                console.log('GraphQL errors:', JSON.stringify(payload.errors, null, 2));
+              }
+              const events = payload?.data?.getSingleCompetitorResultsDiscipline?.resultsByEvent;
+              if (Array.isArray(events)) {
+                console.log('event count:', events.length);
+                for (const ev of events) {
+                  console.log(`  ${ev.discipline}: ${ev.results?.length || 0} results`);
+                }
+                const sample = events[0];
+                if (sample) console.log('sample event full:', JSON.stringify(sample, null, 2));
+              } else {
+                console.log('no resultsByEvent in payload. raw snippet:', rawSnippet);
+              }
+            }
+          })();
+          NODE
