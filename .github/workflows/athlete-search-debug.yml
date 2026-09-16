@@ -10,31 +10,32 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Inspect matsport.com app bundle for its API base URL
+      - name: Broad search of matsport.com app.js for API call patterns
         run: |
           node <<'NODE'
           const UA = {'User-Agent':'Mozilla/5.0 Mangekampanalyse-Pro/1.0'};
           async function fetchText(url){
             const r = await fetch(url, { headers: UA });
-            const text = await r.text();
-            return { status: r.status, text };
+            return await r.text();
+          }
+          function contexts(text, needle, radius, max) {
+            const out = [];
+            let from = 0;
+            for (let i = 0; i < max; i++) {
+              const idx = text.indexOf(needle, from);
+              if (idx === -1) break;
+              out.push(text.slice(Math.max(0, idx - radius), idx + needle.length + radius));
+              from = idx + needle.length;
+            }
+            return out;
           }
           (async () => {
-            for (const path of ['/js/app.2b846e41.js', '/js/chunk-vendors.618dd592.js', '/js/runtime.e0760ed2.js']) {
-              const url = 'https://athle.matsport.com' + path;
-              console.log('\n=== ' + url + ' ===');
-              const { status, text } = await fetchText(url);
-              console.log('status:', status, '| length:', text.length);
-              // look for API base URLs, "baseURL", "axios", env-style config
-              const patterns = [
-                /https?:\/\/[a-z0-9.-]*api[a-z0-9.-]*\/[a-z0-9\/_-]*/gi,
-                /baseURL["':\s]{1,5}["']([^"']+)["']/gi,
-                /VUE_APP_[A-Z_]+["':\s]{1,5}["']([^"']+)["']/gi,
-              ];
-              for (const rx of patterns) {
-                const matches = [...text.matchAll(rx)].map(m => m[0]);
-                if (matches.length) console.log('matches for', rx.source.slice(0,40), ':', JSON.stringify([...new Set(matches)].slice(0, 15), null, 2));
-              }
+            const app = await fetchText('https://athle.matsport.com/js/app.2b846e41.js');
+            console.log('app.js length:', app.length);
+            for (const needle of ['/api', 'axios', 'matsport.com', 'baseURL', 'VUE_APP', 'process.env', 'wss://', 'socket.io', 'graphql']) {
+              const found = contexts(app, needle, 60, 5);
+              console.log(`\n--- "${needle}": ${found.length} occurrence(s) shown ---`);
+              for (const c of found) console.log('  ', JSON.stringify(c));
             }
           })();
           NODE
