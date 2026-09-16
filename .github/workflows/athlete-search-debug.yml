@@ -10,64 +10,22 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Get competition schedule and a field-event result structure
+      - name: Fetch Shot Put and Long Jump result structure
         run: |
           set +e
           BASE="https://api-history.athle.matsport.com"
-          COMP="e0c02ff7-1fa5-4d8f-bda9-dae5888883cd"
-
-          echo "=== Competition schedules (find field-event ids: Long Jump, Shot Put, High Jump, Discus, Pole Vault, Javelin) ==="
-          curl -s "$BASE/competitions/$COMP" -H "Accept: application/json" -o /tmp/comp.json
-          node -e "
-            const d=JSON.parse(require('fs').readFileSync('/tmp/comp.json','utf8'));
-            console.log('top-level keys:', Object.keys(d));
-            const schedules = d.schedules || d.schedule || [];
-            console.log('schedules count:', schedules.length);
-            for (const day of schedules) {
-              for (const ev of (day.events||[])) {
-                if (ev.gender === 'M' && /Long Jump|Shot Put|High Jump|Discus|Pole Vault|Javelin/i.test(ev.event||ev.phase||'')) {
-                  console.log(JSON.stringify({id: ev.id, event: ev.event, phase: ev.phase, gender: ev.gender, status: ev.status}));
-                }
-              }
-            }
-          "
-
-          echo ""
-          echo "=== Fetch first found field event in detail ==="
-          FIELD_ID=$(node -e "
-            const d=JSON.parse(require('fs').readFileSync('/tmp/comp.json','utf8'));
-            const schedules = d.schedules || d.schedule || [];
-            for (const day of schedules) {
-              for (const ev of (day.events||[])) {
-                if (ev.gender === 'M' && /Long Jump|Shot Put|High Jump|Discus|Pole Vault|Javelin/i.test(ev.event||ev.phase||'')) {
-                  console.log(ev.id); process.exit(0);
-                }
-              }
-            }
-          ")
-          echo "FIELD_ID=$FIELD_ID"
-          if [ -n "$FIELD_ID" ]; then
-            curl -s "$BASE/events/$FIELD_ID" -H "Accept: application/json" -o /tmp/field.json
-            echo "--- raw (first 4000 chars) ---"
-            head -c 4000 /tmp/field.json
-            echo ""
-            echo "--- top-level keys + horizontalResult shape ---"
+          for EID in \
+            "e0c02ff7-1fa5-4d8f-bda9-dae5888883cd_ATSTAM900C00" \
+            "e0c02ff7-1fa5-4d8f-bda9-dae5888883cd_ATSTAM900B01"
+          do
+            echo "=== $EID ==="
+            curl -s "$BASE/events/$EID" -H "Accept: application/json" -o /tmp/f.json
             node -e "
-              const d=JSON.parse(require('fs').readFileSync('/tmp/field.json','utf8'));
+              const d=JSON.parse(require('fs').readFileSync('/tmp/f.json','utf8'));
+              console.log('phase:', d.phase, '| status:', d.status);
               console.log('keys:', Object.keys(d));
               console.log('engaged length:', (d.engaged||[]).length);
-              console.log('horizontalResult:', JSON.stringify(d.horizontalResult, null, 0)?.slice(0,2000));
+              console.log('horizontalResult:', JSON.stringify(d.horizontalResult)?.slice(0,2500));
             "
-          fi
-
-          echo ""
-          echo "=== Also fetch a running (non-heat) event like 1500m or a decathlon-final combined event, if present ==="
-          node -e "
-            const d=JSON.parse(require('fs').readFileSync('/tmp/comp.json','utf8'));
-            const schedules = d.schedules || d.schedule || [];
-            for (const day of schedules) {
-              for (const ev of (day.events||[])) {
-                if (ev.gender === 'M') console.log(JSON.stringify({id: ev.id, event: ev.event, phase: ev.phase}));
-              }
-            }
-          " | head -40
+            echo ""
+          done
