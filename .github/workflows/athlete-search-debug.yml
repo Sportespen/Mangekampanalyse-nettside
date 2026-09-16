@@ -10,26 +10,17 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Confirm exact top-level field name holding the day-by-day schedule
+      - name: Verify /api/live-decastar finds all disciplines after schedules-field fix
         run: |
-          node <<'NODE'
-          const UA = {'User-Agent':'Mozilla/5.0 Mangekampanalyse-Pro/1.0', 'Accept':'application/json'};
-          const COMP = '65e4f577-c90c-4008-9955-dfa3563d7a86';
-          (async () => {
-            const r = await fetch(`https://api.athle.matsport.com/competitions/${COMP}`, { headers: UA });
-            const data = await r.json();
-            console.log('ALL top-level keys:', JSON.stringify(Object.keys(data)));
-            for (const key of Object.keys(data)) {
-              const v = data[key];
-              if (Array.isArray(v)) {
-                console.log(`\nkey "${key}": array, length ${v.length}`);
-                if (v.length && typeof v[0] === 'object') {
-                  console.log('  first item keys:', JSON.stringify(Object.keys(v[0])));
-                  console.log('  first item sample:', JSON.stringify(v[0]).slice(0, 500));
-                }
-              } else {
-                console.log(`\nkey "${key}": ${typeof v}`, typeof v !== 'object' ? JSON.stringify(v) : '');
-              }
-            }
-          })();
-          NODE
+          curl -s "https://mangekampanalyse.no/api/live-decastar" | node -e "
+            let data='';
+            process.stdin.on('data',c=>data+=c);
+            process.stdin.on('end',()=>{
+              const d=JSON.parse(data);
+              console.log('status:', d.status, '| error:', d.error||'(none)');
+              console.log('men.eventHasMarks:', JSON.stringify(d.men?.eventHasMarks));
+              console.log('women.eventHasMarks:', JSON.stringify(d.women?.eventHasMarks));
+              console.log('men result count:', Object.keys(d.men?.results||{}).length);
+              console.log('women result count:', Object.keys(d.women?.results||{}).length);
+            });
+          "
