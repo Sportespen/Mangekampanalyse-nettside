@@ -10,26 +10,43 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Try the discovered matsport API base against known page paths
+      - name: Dump full competition JSON and find individual event codes
         run: |
           node <<'NODE'
           const UA = {'User-Agent':'Mozilla/5.0 Mangekampanalyse-Pro/1.0', 'Accept':'application/json'};
           const COMP = '65e4f577-c90c-4008-9955-dfa3563d7a86';
-          async function tryUrl(url) {
-            try {
-              const r = await fetch(url, { headers: UA });
-              const text = await r.text();
-              console.log('\n===', url, '===');
-              console.log('status:', r.status, 'content-type:', r.headers.get('content-type'), '| length:', text.length);
-              console.log('body (first 800 chars):', text.slice(0, 800));
-            } catch (e) {
-              console.log('\n===', url, '=== ERROR:', e.message);
-            }
+
+          async function getJson(url) {
+            const r = await fetch(url, { headers: UA });
+            const text = await r.text();
+            try { return { status: r.status, json: JSON.parse(text) }; }
+            catch { return { status: r.status, text }; }
           }
+
           (async () => {
-            await tryUrl(`https://api.athle.matsport.com/events/${COMP}_ATSTAM900A01/classement`);
-            await tryUrl(`https://api.athle.matsport.com/competitions/${COMP}`);
-            await tryUrl(`https://api.athle.matsport.com/competitions/${COMP}/${COMP}_SCH_20260918`);
-            await tryUrl(`https://api.athle.matsport.com/events/${COMP}_ATSTAM900A01`);
+            const comp = await getJson(`https://api.athle.matsport.com/competitions/${COMP}`);
+            console.log('status:', comp.status);
+            const data = comp.json;
+            console.log('top-level keys:', Object.keys(data || {}));
+            console.log('\ncombineds:', JSON.stringify(data.combineds, null, 2));
+            // look for a schedule/events array with individual discipline codes
+            for (const key of Object.keys(data || {})) {
+              if (key === 'combineds') continue;
+              const v = data[key];
+              if (Array.isArray(v) && v.length && typeof v[0] === 'object') {
+                console.log(`\n=== array field "${key}" (length ${v.length}), sample first 3 ===`);
+                console.log(JSON.stringify(v.slice(0, 3), null, 2));
+              }
+            }
+            // try the schedule endpoint variants
+            for (const path of [
+              `/competitions/${COMP}/schedule`,
+              `/competitions/${COMP}/events`,
+              `/competitions/${COMP}/programme`,
+            ]) {
+              const r = await getJson(`https://api.athle.matsport.com${path}`);
+              console.log(`\n=== ${path} === status:`, r.status);
+              if (r.json) console.log('keys/sample:', JSON.stringify(r.json, null, 2).slice(0, 800));
+            }
           })();
           NODE
