@@ -13,47 +13,47 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Look for a static/public x-api-key embedded in WA's JS bundles
+      - name: Try athlete search via the static public WA GraphQL key
         run: |
           node <<'NODE'
-          const UA = {'User-Agent':'Mozilla/5.0 Mangekampanalyse-Pro/1.0'};
-          async function fetchText(url){
-            const r = await fetch(url, {headers: UA});
-            const text = await r.text();
-            return {status:r.status, text};
+          const ENDPOINT = 'https://graphql-prod-4894.edge.aws.worldathletics.org/graphql';
+          const API_KEY = 'da2-o6pmci4cb5denlbnvn5u3kfexq';
+
+          async function gql(query, variables) {
+            const res = await fetch(ENDPOINT, {
+              method: 'POST',
+              headers: {
+                'content-type': 'application/json',
+                'x-api-key': API_KEY,
+                'x-graphql-client-name': 'worldathletics',
+              },
+              body: JSON.stringify({ query, variables }),
+            });
+            const text = await res.text();
+            let payload = null;
+            try { payload = JSON.parse(text); } catch (_) {}
+            return { status: res.status, payload, rawSnippet: text.slice(0, 500) };
           }
+
           (async () => {
-            const { text: html } = await fetchText('https://worldathletics.org/athletes-home?query=test');
-            const scriptSrcs = [...html.matchAll(/<script[^>]+src=["']([^"']+\.js)["']/gi)].map(m => m[1]);
-            const nextStatic = [...new Set(scriptSrcs)].filter(s => s.includes('_next/static'));
-            console.log('found', nextStatic.length, '_next/static script tags');
-            for (const src of nextStatic) {
-              const full = src.startsWith('http') ? src : `https://worldathletics.org${src.startsWith('/') ? '' : '/'}${src}`;
-              console.log('\n=== fetching', full, '===');
-              try {
-                const { status, text: js } = await fetchText(full);
-                console.log('status:', status, '| length:', js.length);
-                // Look for any x-api-key header constant and nearby quoted value
-                const idxs = [];
-                let from = 0;
-                while (true) {
-                  const idx = js.indexOf('x-api-key', from);
-                  if (idx === -1) break;
-                  idxs.push(idx);
-                  from = idx + 9;
-                  if (idxs.length >= 5) break;
-                }
-                for (const idx of idxs) {
-                  console.log('  context:', js.slice(Math.max(0, idx - 150), idx + 250));
-                }
-                // Also look for edge.aws.worldathletics.org occurrences (the GraphQL host)
-                const hostIdx = js.indexOf('edge.aws.worldathletics.org');
-                if (hostIdx !== -1) {
-                  console.log('  edge.aws host context:', js.slice(Math.max(0, hostIdx - 200), hostIdx + 200));
-                }
-              } catch (e) {
-                console.log('  ERROR:', e.message || String(e));
-              }
+            console.log('=== Introspection: query type fields matching /search/i ===');
+            const introspect = `query IntrospectionQuery { __schema { queryType { fields { name args { name type { name kind ofType { name kind } } } } } } }`;
+            const { status, payload, rawSnippet } = await gql(introspect, {});
+            console.log('HTTP status:', status);
+            if (payload?.errors) console.log('errors:', JSON.stringify(payload.errors, null, 2));
+            const fields = payload?.data?.__schema?.queryType?.fields;
+            if (Array.isArray(fields)) {
+              console.log('total query fields:', fields.length);
+              const matches = fields.filter(f => /search/i.test(f.name));
+              console.log('fields matching /search/i:', JSON.stringify(matches, null, 2));
+            } else {
+              console.log('no fields; raw snippet:', rawSnippet);
             }
+
+            console.log('\n=== Try a plausible searchCompetitors-style query directly ===');
+            const guess = `query SearchCompetitors($query: String) { searchCompetitors(query: $query) { aaAthleteId familyName givenName country gender disciplines urlSlug } }`;
+            const r2 = await gql(guess, { query: 'Jonathan Hertwig' });
+            console.log('HTTP status:', r2.status);
+            console.log('payload:', JSON.stringify(r2.payload, null, 2)?.slice(0, 1500));
           })();
           NODE
