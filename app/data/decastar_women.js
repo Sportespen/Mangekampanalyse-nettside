@@ -5,9 +5,12 @@
 // bests are filled in by that workflow (fetches real WA per-event PBs).
 window.MANGEKAMP_DATA.women.decastar.push(...[
 {"qp":"","wr":"","waId":14428253,"name":"Nafissatou Thiam","nation":"BEL","birth":"","pb":7013,"theoretical":0,"utilization":0,"potential":0,"diff_top":0,"bests":{}},
+{"qp":"","wr":"","waId":14450530,"name":"Noor Vidts","nation":"BEL","birth":"","pb":6707,"theoretical":0,"utilization":0,"potential":0,"diff_top":-306,"bests":{}},
 {"qp":"","wr":"","waId":14497556,"name":"Vanessa Grimm","nation":"GER","birth":"","pb":6381,"theoretical":0,"utilization":0,"potential":0,"diff_top":-632,"bests":{}},
 {"qp":"","wr":"","waId":14632718,"name":"Beatričė Juškevičiūtė","nation":"LTU","birth":"","pb":6323,"theoretical":0,"utilization":0,"potential":0,"diff_top":-690,"bests":{}},
+{"qp":"","wr":"","waId":14662670,"name":"Erin Marsh","nation":"USA","birth":"","pb":6305,"theoretical":0,"utilization":0,"potential":0,"diff_top":-708,"bests":{}},
 {"qp":"","wr":"","waId":14530181,"name":"Niamh Emerson","nation":"GBR","birth":"","pb":6253,"theoretical":0,"utilization":0,"potential":0,"diff_top":-760,"bests":{}},
+{"qp":"","wr":"","waId":14544322,"name":"Sarah Lagger","nation":"AUT","birth":"","pb":6225,"theoretical":0,"utilization":0,"potential":0,"diff_top":-788,"bests":{}},
 {"qp":"","wr":"","waId":14593982,"name":"Lovisa Karlsson","nation":"SWE","birth":"","pb":6218,"theoretical":0,"utilization":0,"potential":0,"diff_top":-795,"bests":{}},
 {"qp":"","wr":"","waId":14926486,"name":"Anna-Elisabeth Ehlers","nation":"GER","birth":"","pb":6216,"theoretical":0,"utilization":0,"potential":0,"diff_top":-797,"bests":{}},
 {"qp":"","wr":"","waId":14734285,"name":"Léonie Cambours","nation":"FRA","birth":"","pb":6192,"theoretical":0,"utilization":0,"potential":0,"diff_top":-821,"bests":{}},
@@ -19,5 +22,6 @@ window.MANGEKAMP_DATA.women.decastar.push(...[
 {"qp":"","wr":"","waId":14733354,"name":"Maddie Wilson","nation":"NZL","birth":"","pb":6059,"theoretical":0,"utilization":0,"potential":0,"diff_top":-954,"bests":{}},
 {"qp":"","wr":"","waId":14826183,"name":"Ysée Le Philippe","nation":"FRA","birth":"","pb":6057,"theoretical":0,"utilization":0,"potential":0,"diff_top":-956,"bests":{}},
 {"qp":"","wr":"","waId":14624254,"name":"Elisa Pineau","nation":"FRA","birth":"","pb":6039,"theoretical":0,"utilization":0,"potential":0,"diff_top":-974,"bests":{}},
-{"qp":"","wr":"","waId":14604867,"name":"Myke Van De Wiel","nation":"NED","birth":"","pb":6029,"theoretical":0,"utilization":0,"potential":0,"diff_top":-984,"bests":{}}
+{"qp":"","wr":"","waId":14604867,"name":"Myke Van De Wiel","nation":"NED","birth":"","pb":6029,"theoretical":0,"utilization":0,"potential":0,"diff_top":-984,"bests":{}},
+{"qp":"","wr":"","waId":14852177,"name":"Linda Bichsel","nation":"SUI","birth":"","pb":6011,"theoretical":0,"utilization":0,"potential":0,"diff_top":-1002,"bests":{}}
 ]);
