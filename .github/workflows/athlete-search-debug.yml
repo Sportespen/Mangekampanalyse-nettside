@@ -10,14 +10,35 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Re-check production search for Markus Rooth, twice
+      - name: Check WA profile page size for Markus Rooth vs Jonathan Hertwig
         run: |
-          set -x
-          for i in 1 2; do
-            echo "=== attempt $i ==="
-            curl -s "https://mangekampanalyse.no/api/athlete-search?action=search&type=men&q=Markus%20Rooth"
-            echo
-            sleep 2
-          done
-          echo "=== analyse directly by id (bypasses search) ==="
-          curl -s "https://mangekampanalyse.no/api/athlete-search?action=analyse&type=men&id=14783534&name=Markus%20Rooth" | head -c 2000
+          node <<'NODE'
+          const UA = {'User-Agent':'Mozilla/5.0 Mangekampanalyse-Pro/1.0'};
+          async function check(id, label) {
+            const url = `https://worldathletics.org/athletes/-/${id}`;
+            const start = Date.now();
+            const r = await fetch(url, { headers: UA });
+            const html = await r.text();
+            const ms = Date.now() - start;
+            console.log(`${label} (id ${id}): status=${r.status} length=${html.length} time=${ms}ms`);
+            const marker = 'id="__NEXT_DATA__"';
+            const idx = html.indexOf(marker);
+            if (idx === -1) { console.log('  no __NEXT_DATA__'); return; }
+            const openEnd = html.indexOf('>', idx) + 1;
+            const closeIdx = html.indexOf('</script>', openEnd);
+            const jsonLen = closeIdx - openEnd;
+            console.log(`  __NEXT_DATA__ JSON length: ${jsonLen}`);
+            try {
+              const nextData = JSON.parse(html.slice(openEnd, closeIdx));
+              const events = nextData?.props?.pageProps?.competitor?.resultsByYear?.resultsByEvent || [];
+              const totalResults = events.reduce((s, e) => s + (e.results?.length || 0), 0);
+              console.log(`  disciplines: ${events.length}, total results rows: ${totalResults}`);
+            } catch (e) {
+              console.log('  JSON parse failed:', e.message);
+            }
+          }
+          (async () => {
+            await check('14989292', 'Jonathan Hertwig-Odegaard (search works)');
+            await check('14783534', 'Markus Rooth (search fails)');
+          })();
+          NODE
