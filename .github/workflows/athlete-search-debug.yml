@@ -10,50 +10,11 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - name: Try athlete search via the static public WA GraphQL key
+      - name: Verify the live production athlete-search API for Jonathan Hertwig-Ødegaard
         run: |
-          node <<'NODE'
-          const ENDPOINT = 'https://graphql-prod-4894.edge.aws.worldathletics.org/graphql';
-          const API_KEY = 'da2-o6pmci4cb5denlbnvn5u3kfexq';
-
-          async function gql(query, variables) {
-            const res = await fetch(ENDPOINT, {
-              method: 'POST',
-              headers: {
-                'content-type': 'application/json',
-                'x-api-key': API_KEY,
-                'x-graphql-client-name': 'worldathletics',
-              },
-              body: JSON.stringify({ query, variables }),
-            });
-            const text = await res.text();
-            let payload = null;
-            try { payload = JSON.parse(text); } catch (_) {}
-            return { status: res.status, payload, rawSnippet: text.slice(0, 500) };
-          }
-
-          (async () => {
-            console.log('=== Introspection: query type fields matching /search/i ===');
-            const introspect = `query IntrospectionQuery { __schema { queryType { fields { name args { name type { name kind ofType { name kind } } } } } } }`;
-            const { status, payload, rawSnippet } = await gql(introspect, {});
-            console.log('HTTP status:', status);
-            if (payload?.errors) console.log('errors:', JSON.stringify(payload.errors, null, 2));
-            const fields = payload?.data?.__schema?.queryType?.fields;
-            if (Array.isArray(fields)) {
-              console.log('total query fields:', fields.length);
-              const matches = fields.filter(f => /search/i.test(f.name));
-              console.log('fields matching /search/i:', JSON.stringify(matches, null, 2));
-            } else {
-              console.log('no fields; raw snippet:', rawSnippet);
-            }
-
-            console.log('\n=== Try a plausible searchCompetitors-style query directly ===');
-            const guess = `query SearchCompetitors($query: String) { searchCompetitors(query: $query) { aaAthleteId familyName givenName country gender disciplines urlSlug } }`;
-            const r2 = await gql(guess, { query: 'Jonathan Hertwig' });
-            console.log('HTTP status:', r2.status);
-            console.log('payload:', JSON.stringify(r2.payload, null, 2)?.slice(0, 1500));
-          })();
-          NODE
+          set -x
+          echo "=== search (type=men) ==="
+          curl -s "https://mangekampanalyse.no/api/athlete-search?action=search&type=men&q=Jonathan%20Hertwig" | tee /tmp/search.json
+          echo
+          echo "=== search (type=men, q=Markus Rooth, sanity check known-good athlete) ==="
+          curl -s "https://mangekampanalyse.no/api/athlete-search?action=search&type=men&q=Markus%20Rooth" | tee /tmp/search2.json
