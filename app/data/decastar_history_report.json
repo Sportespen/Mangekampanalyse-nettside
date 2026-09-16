@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-16T08:18:28.929Z",
+  "generatedAt": "2026-09-16T08:19:33.641Z",
   "athletes": {
     "Damian Warner": {
       "events": [
@@ -421,7 +421,8 @@
         "Lengde",
         "Spyd",
         "800m"
-      ]
+      ],
+      "yearsFetched": 2
     },
     "Elisa Pineau": {
       "events": [
@@ -432,7 +433,8 @@
         "Lengde",
         "Spyd",
         "800m"
-      ]
+      ],
+      "yearsFetched": 3
     },
     "Myke Van De Wiel": {
       "events": [
@@ -443,7 +445,8 @@
         "Lengde",
         "Spyd",
         "800m"
-      ]
+      ],
+      "yearsFetched": 2
     },
     "Markus Rooth": {
       "events": [
@@ -535,7 +538,8 @@
         "Lengde",
         "Spyd",
         "800m"
-      ]
+      ],
+      "yearsFetched": 2
     }
   },
   "missing": []
