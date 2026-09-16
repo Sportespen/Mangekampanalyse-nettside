@@ -13,12 +13,20 @@
   function historyForAthlete(name){const history=window.MANGEKAMP_HISTORY||{};if(history[name])return history[name];const target=normName(name);for(const [key,value] of Object.entries(history)){if(normName(key)===target)return value;}const tt=target.split(' ').filter(Boolean);for(const [key,value] of Object.entries(history)){const kk=normName(key),kt=kk.split(' ').filter(Boolean);if(kk.includes(target)||target.includes(kk))return value;if(tt.length>=2&&kt.length>=2&&tt[0]===kt[0]&&tt.some(t=>t.length>=4&&kt.includes(t)))return value;}return null;}
   function normalizeRecentEntry(entry){if(entry==null)return null;if(Array.isArray(entry)){const mark=Number(entry[0]);if(!Number.isFinite(mark))return null;return{mark,venue:String(entry[2]||''),year:String(entry[3]||''),date:String(entry[4]||''),competition:String(entry[5]||'')};}const mark=Number(entry.mark??entry.value??entry.result??entry.result_mark);if(!Number.isFinite(mark))return null;const date=String(entry.result_date??entry.date??'');const year=String(entry.year??(date.match(/\b(19|20)\d{2}\b/)?.[0]||''));return{mark,venue:String(entry.venue??entry.place??entry.location??''),year,date,competition:String(entry.competition??entry.meeting??'')};}
   function samePerformance(a,b){if(Number(a.mark).toFixed(3)!==Number(b.mark).toFixed(3))return false;if(a.date&&b.date)return String(a.date)===String(b.date);return a.year===b.year&&normVenue(a.venue)===normVenue(b.venue);}
-  // Only excludes Birmingham marks while Birmingham itself is the competition being forecast -
-  // there, an athlete's own already-completed events are tracked separately via liveActual, so
-  // pulling them into their *own* recent-history basis too would double up on the same data. For
-  // any other competition (e.g. Décastar), a since-finished Birmingham result is just a normal,
-  // highly relevant recent performance and must count like any other 2025-2026 result.
-  function isCurrentBirmingham(r){if(typeof currentComp==='undefined'||currentComp!=='birmingham')return false;const d=Date.parse(String(r?.date||''));const c=String(r?.competition||'').toLowerCase();const v=String(r?.venue||'').toLowerCase();return Number.isFinite(d)&&d>=Date.parse('2026-08-12T00:00:00Z')&&(c.includes('european athletics championships')||v.includes('birmingham')||v.includes('alexander stadium'));}
+  // Only excludes marks from whichever competition is currently selected and live - there, an
+  // athlete's own already-completed events are tracked separately via liveActual, so pulling them
+  // into their *own* recent-history basis too would double up on the same data. Once a different
+  // competition is selected (or the same one is over and a later one has started), a since-finished
+  // result from it is just a normal, highly relevant recent performance and must count like any
+  // other 2025-2026 result.
+  function isCurrentBirmingham(r){
+    if(typeof currentComp==='undefined')return false;
+    const d=Date.parse(String(r?.date||''));if(!Number.isFinite(d))return false;
+    const c=String(r?.competition||'').toLowerCase();const v=String(r?.venue||'').toLowerCase();
+    if(currentComp==='birmingham')return d>=Date.parse('2026-08-12T00:00:00Z')&&(c.includes('european athletics championships')||v.includes('birmingham')||v.includes('alexander stadium'));
+    if(currentComp==='decastar')return d>=Date.parse('2026-09-18T00:00:00Z')&&(c.includes('decastar')||c.includes('décastar')||v.includes('talence'));
+    return false;
+  }
   // Falls back to older seasons when nothing from 2025-2026 exists for this event (e.g. the
   // athlete hasn't competed in it recently) rather than leaving the basis empty - an emergency
   // basis beats none, per the entries already in window.MANGEKAMP_HISTORY (sorted most-recent-
