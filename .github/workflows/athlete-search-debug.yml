@@ -10,43 +10,22 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Dump full competition JSON and find individual event codes
+      - name: Verify /api/live-decastar structurally works on production
         run: |
-          node <<'NODE'
-          const UA = {'User-Agent':'Mozilla/5.0 Mangekampanalyse-Pro/1.0', 'Accept':'application/json'};
-          const COMP = '65e4f577-c90c-4008-9955-dfa3563d7a86';
-
-          async function getJson(url) {
-            const r = await fetch(url, { headers: UA });
-            const text = await r.text();
-            try { return { status: r.status, json: JSON.parse(text) }; }
-            catch { return { status: r.status, text }; }
-          }
-
-          (async () => {
-            const comp = await getJson(`https://api.athle.matsport.com/competitions/${COMP}`);
-            console.log('status:', comp.status);
-            const data = comp.json;
-            console.log('top-level keys:', Object.keys(data || {}));
-            console.log('\ncombineds:', JSON.stringify(data.combineds, null, 2));
-            // look for a schedule/events array with individual discipline codes
-            for (const key of Object.keys(data || {})) {
-              if (key === 'combineds') continue;
-              const v = data[key];
-              if (Array.isArray(v) && v.length && typeof v[0] === 'object') {
-                console.log(`\n=== array field "${key}" (length ${v.length}), sample first 3 ===`);
-                console.log(JSON.stringify(v.slice(0, 3), null, 2));
+          curl -s "https://mangekampanalyse.no/api/live-decastar" | node -e "
+            let data='';
+            process.stdin.on('data',c=>data+=c);
+            process.stdin.on('end',()=>{
+              try {
+                const d=JSON.parse(data);
+                console.log('competition:', d.competition, '| status:', d.status, '| updatedAt:', d.updatedAt);
+                console.log('men.completedEvents:', d.men?.completedEvents, '| men result count:', Object.keys(d.men?.results||{}).length);
+                console.log('women.completedEvents:', d.women?.completedEvents, '| women result count:', Object.keys(d.women?.results||{}).length);
+                console.log('men.eventHasMarks:', JSON.stringify(d.men?.eventHasMarks));
+                console.log('women.eventHasMarks:', JSON.stringify(d.women?.eventHasMarks));
+                if (d.error) console.log('ERROR:', d.error);
+              } catch (e) {
+                console.log('PARSE FAILED, raw body:', data.slice(0, 1000));
               }
-            }
-            // try the schedule endpoint variants
-            for (const path of [
-              `/competitions/${COMP}/schedule`,
-              `/competitions/${COMP}/events`,
-              `/competitions/${COMP}/programme`,
-            ]) {
-              const r = await getJson(`https://api.athle.matsport.com${path}`);
-              console.log(`\n=== ${path} === status:`, r.status);
-              if (r.json) console.log('keys/sample:', JSON.stringify(r.json, null, 2).slice(0, 800));
-            }
-          })();
-          NODE
+            });
+          "
