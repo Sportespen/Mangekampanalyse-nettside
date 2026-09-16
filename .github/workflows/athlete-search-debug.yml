@@ -10,14 +10,22 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Final verification - Jonathan Hertwig and Markus Rooth on production
+      - name: Compare analyse-by-id headers - working (Jonathan) vs failing (Rooth)
         run: |
           set -x
-          echo "=== Jonathan Hertwig ==="
-          curl -s -w "\nHTTP status: %{http_code}\n" "https://mangekampanalyse.no/api/athlete-search?action=search&type=men&q=Jonathan%20Hertwig"
+          echo "=== Jonathan Hertwig analyse (expected to work) ==="
+          curl -s -v -o /tmp/jonathan.json -w "\nHTTP status: %{http_code}\n" "https://mangekampanalyse.no/api/athlete-search?action=analyse&type=men&id=14989292&name=Jonathan%20Hertwig-Odegaard" 2>&1 | tail -40
+          echo "--- body ---"
+          head -c 1000 /tmp/jonathan.json
           echo
-          echo "=== Markus Rooth ==="
-          curl -s -w "\nHTTP status: %{http_code}\n" "https://mangekampanalyse.no/api/athlete-search?action=search&type=men&q=Markus%20Rooth"
           echo
-          echo "=== Markus Rooth analyse by id ==="
-          curl -s -w "\nHTTP status: %{http_code}\n" "https://mangekampanalyse.no/api/athlete-search?action=analyse&type=men&id=14783534&name=Markus%20Rooth" | head -c 2000
+          echo "=== Markus Rooth analyse (expected to fail) ==="
+          curl -s -v -o /tmp/rooth.json -w "\nHTTP status: %{http_code}\n" "https://mangekampanalyse.no/api/athlete-search?action=analyse&type=men&id=14783534&name=Markus%20Rooth" 2>&1 | tail -40
+          echo "--- body ---"
+          head -c 1000 /tmp/rooth.json
+          echo
+          echo
+          echo "=== Sander Skotheim analyse (another known roster decathlete, sanity check) ==="
+          curl -s -v -o /tmp/sander.json -w "\nHTTP status: %{http_code}\n" "https://mangekampanalyse.no/api/athlete-search?action=analyse&type=men&id=14834505&name=Sander%20Skotheim" 2>&1 | tail -40
+          echo "--- body ---"
+          head -c 1000 /tmp/sander.json
