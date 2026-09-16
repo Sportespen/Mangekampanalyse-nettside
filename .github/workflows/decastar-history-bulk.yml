@@ -185,9 +185,11 @@ jobs:
 
           const sleep=ms=>new Promise(r=>setTimeout(r,ms));
           const MAX_BASIS=4;
-          // Each extra season back is one more GraphQL request covering ALL disciplines at once
-          // (not one request per discipline), so this bounds the per-athlete request count. The
-          // loop below already stops earlier than this the moment every discipline has enough.
+          // Only bounds how far back a discipline with ZERO 2025-2026 results may reach (phase 2
+          // below) - the primary 2025-2026 window (phase 1) is always exactly those two seasons.
+          // Each extra season is one more GraphQL request covering ALL disciplines at once (not
+          // one request per discipline), and phase 2 already stops per-discipline the moment that
+          // discipline has anything, so this is a worst-case cap, not the common case.
           const MAX_YEARS_BACK=4;
 
           (async()=>{
@@ -226,14 +228,8 @@ jobs:
                 const seenKey=new Set();
                 let yearsFetched=0;
                 let lastError=null;
-                for(let year=currentYear; year>currentYear-MAX_YEARS_BACK; year--){
-                  const stillShort=disciplines.some(([ourEvent])=>rowsByOurEvent.get(ourEvent).length<MAX_BASIS);
-                  if(!stillShort) break;
-                  let events;
-                  try{ events=await fetchYearResults(id,year); }
-                  catch(e){ lastError=e; yearsFetched++; await sleep(350); continue; }
-                  yearsFetched++;
-                  for(const [ourEvent,discipline] of disciplines){
+                function absorbYear(events,list){
+                  for(const [ourEvent,discipline] of list){
                     const bucket=rowsByOurEvent.get(ourEvent);
                     if(bucket.length>=MAX_BASIS) continue;
                     const ev=events.find(e=>e.discipline===discipline);
@@ -249,6 +245,30 @@ jobs:
                       bucket.push({numeric,display:String(row.mark),venue:row.venue||venueFromCompetition(row.competition),year:parsed.year,iso:parsed.iso,meet:meetName(row.competition)});
                     }
                   }
+                }
+                // Phase 1: the current + previous season only - the site's own promised
+                // "2025-2026" window. Filled as freely as available (up to MAX_BASIS), same as
+                // any other year.
+                for(const year of [currentYear,currentYear-1]){
+                  let events;
+                  try{ events=await fetchYearResults(id,year); }
+                  catch(e){ lastError=e; yearsFetched++; await sleep(350); continue; }
+                  yearsFetched++;
+                  absorbYear(events,disciplines);
+                  await sleep(350);
+                }
+                // Phase 2: only for a discipline that got precisely ZERO results from
+                // 2025-2026 - never to merely "top up" a discipline that already has some -
+                // reach further back one season at a time, stopping for that discipline the
+                // moment it has anything at all.
+                let needsOlder=disciplines.filter(([ourEvent])=>rowsByOurEvent.get(ourEvent).length===0);
+                for(let year=currentYear-2; year>currentYear-MAX_YEARS_BACK && needsOlder.length; year--){
+                  let events;
+                  try{ events=await fetchYearResults(id,year); }
+                  catch(e){ lastError=e; yearsFetched++; await sleep(350); continue; }
+                  yearsFetched++;
+                  absorbYear(events,needsOlder);
+                  needsOlder=needsOlder.filter(([ourEvent])=>rowsByOurEvent.get(ourEvent).length===0);
                   await sleep(350);
                 }
                 const byEvent={};
