@@ -20,7 +20,7 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Verify Markus Rooth's original forecast in a real browser
         run: |
-          cat > /tmp/verify_markus.js <<'EOF'
+          cat > verify_markus.js <<'EOF'
           const { chromium } = require('playwright');
           (async () => {
             const browser = await chromium.launch();
@@ -47,7 +47,7 @@ jobs:
             await browser.close();
           })();
           EOF
-          node /tmp/verify_markus.js
+          node verify_markus.js
       - name: Check attempts for all field events (not just Lengde)
         run: |
           curl -s "https://mangekampanalyse.no/api/live-decastar?t=$(date +%s%N)" -o /tmp/live.json
