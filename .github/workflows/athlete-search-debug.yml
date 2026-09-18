@@ -44,6 +44,17 @@ jobs:
               console.log(dropdownText || '(dropdown not found)');
             }
             if (!found) console.log('Markus Rooth row not found in forecast table');
+            const perEvent = await page.evaluate(() => {
+              const athlete = (D.athletes || []).find(a => a.name && a.name.toLowerCase().includes('rooth'));
+              if (!athlete) return { error: 'athlete not found in D.athletes' };
+              return D.events.map((eventName, i) => {
+                let pred = null, err = null;
+                try { pred = window.forecastBasisPrediction(athlete, i); } catch (e) { err = String(e); }
+                return { eventName, pred, err };
+              });
+            });
+            console.log('=== PER-EVENT forecastBasisPrediction FOR MARKUS ===');
+            console.log(JSON.stringify(perEvent, null, 2));
             await browser.close();
           })();
           EOF
