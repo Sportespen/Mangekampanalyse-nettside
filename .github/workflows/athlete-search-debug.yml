@@ -61,6 +61,22 @@ jobs:
             });
             console.log('=== PER-EVENT forecastBasisPrediction + scoreEvent FOR MARKUS ===');
             console.log(JSON.stringify(perEvent, null, 2));
+            const scriptCheck = await page.evaluate(async () => {
+              const r = await fetch('forecast-enhancements-fix20260918.js', { cache: 'no-store' });
+              const text = await r.text();
+              const idx = text.indexOf('function originalTotal');
+              return {
+                status: r.status,
+                length: text.length,
+                originalTotalSnippet: idx >= 0 ? text.slice(idx, idx + 300) : '(originalTotal not found in served file!)',
+                hasForecastBasisPrediction: text.includes('window.forecastBasisPrediction'),
+              };
+            });
+            console.log('=== ACTUAL SERVED forecast-enhancements-fix20260918.js CONTENT (as fetched by the browser) ===');
+            console.log(JSON.stringify(scriptCheck, null, 2));
+            const scriptTags = await page.evaluate(() => [...document.querySelectorAll('script[src]')].map(s => s.src));
+            console.log('=== ALL SCRIPT TAGS LOADED ===');
+            console.log(JSON.stringify(scriptTags, null, 2));
             await browser.close();
           })();
           EOF
