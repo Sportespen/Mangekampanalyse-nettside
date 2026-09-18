@@ -18,7 +18,7 @@ jobs:
         run: |
           npm i -D playwright
           npx playwright install --with-deps chromium
-      - name: Trace every setType() call after switching to women
+      - name: Long trace of women->men flip (40s, polling every 1s)
         run: |
           cat > trace_settype.js <<'EOF'
           const { chromium } = require('playwright');
@@ -28,6 +28,7 @@ jobs:
             page.on('console', msg => console.log('[page]', msg.text()));
             await page.addInitScript(() => {
               window.__setTypeCalls = [];
+              window.__snapshots = [];
               let installed = false;
               const tryInstall = () => {
                 if (installed) return;
@@ -41,27 +42,54 @@ jobs:
                 traced.__traced = true;
                 window.setType = traced;
               };
-              // setType is defined synchronously by app-fix20260918.js, then re-wrapped by several
-              // later scripts (live-engine.js, athlete-compare.js, the settype-guard) - keep re-checking
-              // so we wrap whatever is CURRENTLY assigned as early as possible, then never touch it again.
               const poll = setInterval(tryInstall, 10);
               setTimeout(() => clearInterval(poll), 6000);
+              // Also wrap setupAnalyseHeaders and reloadLiveData once available, to see if either
+              // one fires again after initial load (which would rebuild the tab buttons / re-pull
+              // the men/women switch state from scratch).
+              window.__extraCalls = [];
+              let installed2 = false;
+              const tryInstall2 = () => {
+                if (installed2) return;
+                if (typeof window.setupAnalyseHeaders !== 'function') return;
+                installed2 = true;
+                const real2 = window.setupAnalyseHeaders;
+                window.setupAnalyseHeaders = function () {
+                  window.__extraCalls.push({ t: Date.now(), fn: 'setupAnalyseHeaders', stack: new Error().stack.split('\n').slice(0,4).join(' | ') });
+                  return real2.apply(this, arguments);
+                };
+              };
+              const poll2 = setInterval(tryInstall2, 10);
+              setTimeout(() => clearInterval(poll2), 6000);
+              // Snapshot currentType + active button every 1s so we can see exactly when (if ever)
+              // it flips, independent of whether setType itself was called.
+              const snap = setInterval(() => {
+                try {
+                  window.__snapshots.push({
+                    t: Date.now(),
+                    currentType: typeof currentType !== 'undefined' ? currentType : null,
+                    activeBtn: document.querySelector('.event-switch-btn.active')?.dataset?.type || null,
+                    firstName: document.querySelector('#liveForecastBody tr td.name')?.textContent || null
+                  });
+                } catch (_e) {}
+              }, 1000);
+              setTimeout(() => clearInterval(snap), 42000);
             });
             await page.goto('https://mangekampanalyse.no/?nocache=' + Date.now(), { waitUntil: 'networkidle' });
             await page.waitForTimeout(1000);
             await page.click('button.event-switch-btn[data-type="women"]');
-            console.log('CLICKED WOMEN AT', Date.now());
-            await page.waitForTimeout(8000);
+            const clickAt = Date.now();
+            console.log('CLICKED WOMEN AT', clickAt);
+            await page.waitForTimeout(40000);
             const calls = await page.evaluate(() => window.__setTypeCalls || []);
-            const currentTypeNow = await page.evaluate(() => typeof currentType !== 'undefined' ? currentType : 'undefined');
-            const activeBtn = await page.evaluate(() => document.querySelector('.event-switch-btn.active')?.dataset.type);
-            const firstNameInTable = await page.evaluate(() => document.querySelector('#liveForecastBody tr td.name')?.textContent);
-            console.log('=== setType() CALL LOG (relative ms since click) ===');
-            const clickTime = calls.length ? null : null;
-            calls.forEach(c => console.log(`type=${c.type}`));
-            console.log(JSON.stringify(calls.map(c => ({ t: c.t, type: c.type, stack: c.stack.split('\n').slice(0,6).join(' | ') })), null, 2));
-            console.log('=== FINAL STATE AFTER 8s ===');
-            console.log('currentType:', currentTypeNow, 'activeButton:', activeBtn, 'firstNameInTable:', firstNameInTable);
+            const extra = await page.evaluate(() => window.__extraCalls || []);
+            const snaps = await page.evaluate(() => window.__snapshots || []);
+            console.log('=== setType() CALL LOG ===');
+            console.log(JSON.stringify(calls.map(c => ({ dt: c.t - clickAt, type: c.type, stack: c.stack.split('\n').slice(0,6).join(' | ') })), null, 2));
+            console.log('=== setupAnalyseHeaders() CALL LOG ===');
+            console.log(JSON.stringify(extra.map(c => ({ dt: c.t - clickAt, fn: c.fn, stack: c.stack })), null, 2));
+            console.log('=== SNAPSHOTS (every 1s) ===');
+            snaps.forEach(s => console.log(`dt=${s.t - clickAt}ms currentType=${s.currentType} activeBtn=${s.activeBtn} firstName=${s.firstName}`));
             await browser.close();
           })();
           EOF
