@@ -19,7 +19,6 @@ jobs:
             const d=JSON.parse(require('fs').readFileSync('/tmp/f.json','utf8'));
             console.log('top-level keys:', Object.keys(d));
             console.log('trackResult keys:', Object.keys(d.trackResult||{}));
-            const rows = d.trackResult?.results||[];
-            console.log('row count:', rows.length);
-            if(rows[0]) console.log('first row full:', JSON.stringify(rows[0], null, 2));
+            console.log('trackResult.wind value:', JSON.stringify(d.trackResult?.wind));
+            console.log('trackResult.summary:', JSON.stringify(d.trackResult?.summary));
           "
