@@ -12,9 +12,9 @@ def check(condition, message):
 
 required = [
     APP / 'index.html',
-    APP / 'app.js',
-    APP / 'live-engine.js',
-    APP / 'live-attempt-details.js',
+    APP / 'app-fix20260918.js',
+    APP / 'live-engine-fix20260918.js',
+    APP / 'live-attempt-details-fix20260918.js',
     APP / 'athlete-compare-basis-modal.js',
     APP / 'i18n.js',
     APP / 'i18n-final-data.js',
@@ -31,7 +31,7 @@ check('data-tab="forecast"' in index, 'Forecast tab missing')
 check('data-type="men"' in index and 'data-type="women"' in index, 'Men/women event switch missing')
 check('Grønn = 4 resultater' in index and 'Gul = 3 resultater' in index and 'Oransje = 2 resultater' in index and 'Rød = 1 resultat' in index, 'Forecast colour legend is incomplete')
 check('athlete-compare-basis-modal.js' in index, 'Forecast-basis popup script not loaded')
-check('live-attempt-details.js' in index, 'Live-attempt script not loaded')
+check('live-attempt-details-fix20260918.js' in index, 'Live-attempt script not loaded')
 
 basis = (APP / 'athlete-compare-basis-modal.js').read_text(encoding='utf-8')
 check('basis-rank' in basis and '#f4f7fb' in basis, 'Forecast row numbers are not explicitly neutral/white')
@@ -40,7 +40,7 @@ check("n===3?'#ffd84d'" in basis, 'Three-result forecast colour is not yellow')
 check("n>=4?'#45d483'" in basis, 'Four-result forecast colour is not green')
 check("'#ff5b62'" in basis, 'One-result forecast colour is not red')
 
-live = (APP / 'live-attempt-details.js').read_text(encoding='utf-8')
+live = (APP / 'live-attempt-details-fix20260918.js').read_text(encoding='utf-8')
 check('window.MKA_LIVE_DETAILS={getSection}' in live, 'Combined live result/attempt API is missing')
 check('cell.onclick=' in live, 'Single-click live result handler is missing')
 check('ondblclick=null' in live, 'Double-click cleanup is missing')
@@ -53,9 +53,11 @@ for fname in ['i18n.js', 'i18n-final-data.js', 'i18n-final-runtime.js']:
     check(any(token in txt for token in ['de', "'de'", '"de"']), f'German language support missing in {fname}')
 
 # Verify the effective runtime contract rather than scanning every historical
-# compatibility file. live-attempt-details.js is loaded after live-engine.js and
-# is the authoritative layer for result-cell interaction.
-check('live-attempt-details.js' in index, 'Authoritative single-click runtime layer is not loaded')
+# compatibility file. live-attempt-details-fix20260918.js is loaded after
+# live-engine-fix20260918.js and is the authoritative layer for result-cell
+# interaction (renamed from live-attempt-details.js/live-engine.js so a fresh
+# fetch is guaranteed regardless of any CDN cache keyed on path alone).
+check('live-attempt-details-fix20260918.js' in index, 'Authoritative single-click runtime layer is not loaded')
 check('cell.ondblclick=null' in live, 'Authoritative runtime does not clear double-click handlers')
 check('cell.onclick=' in live, 'Authoritative runtime does not install single-click handlers')
 
