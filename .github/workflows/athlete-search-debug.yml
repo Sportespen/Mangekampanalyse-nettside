@@ -10,13 +10,63 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Direct curl check of app-fix20260918.js
+      - name: Check deployed fix + live high jump row for Jeff Tesselaar
         run: |
-          curl -sI "https://mangekampanalyse.no/app-fix20260918.js"
-          echo "---"
-          curl -s "https://mangekampanalyse.no/app-fix20260918.js" -o /tmp/a.js
-          echo "size: $(wc -c < /tmp/a.js)"
-          grep -o "function predict([^}]*}" /tmp/a.js
-          echo "---"
-          echo "checking response headers with cache bust:"
-          curl -sI "https://mangekampanalyse.no/app-fix20260918.js?x=$(date +%s%N)"
+          cat > probe3.py <<'EOF'
+          import json, time
+          import urllib.request
+
+          def get_text(url):
+              req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+              with urllib.request.urlopen(req, timeout=20) as r:
+                  return r.read().decode('utf-8')
+
+          def get_json(url):
+              req = urllib.request.Request(url, headers={'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0 Mangekampanalyse/2.0'})
+              with urllib.request.urlopen(req, timeout=20) as r:
+                  return json.loads(r.read().decode('utf-8'))
+
+          print('=== Checking deployed live-engine-fix20260918.js for our fix signature ===')
+          try:
+              src = get_text('https://mangekampanalyse.no/live-engine-fix20260918.js?nocache=' + str(time.time()))
+              print('has markRaw fix:', 'markRaw' in src)
+          except Exception as e:
+              print('ERROR fetching live-engine-fix20260918.js:', e)
+
+          print()
+          print('=== Checking deployed live-decastar.js function source (via the API response itself, indirectly) ===')
+          try:
+              live = get_json('https://mangekampanalyse.no/api/live-decastar?nocache=' + str(time.time()))
+              men = live.get('men', {}).get('results', {})
+              for name, entry in men.items():
+                  if 'tesselaar' in name.lower() or 'gräber' in name.lower() or 'graber' in name.lower():
+                      print(f'--- {name} ---')
+                      print(json.dumps(entry.get('Høyde'), ensure_ascii=False, indent=2))
+          except Exception as e:
+              print('ERROR fetching /api/live-decastar:', e)
+
+          print()
+          print('=== Raw matsport event data for men high jump ===')
+          API = 'https://api.athle.matsport.com'
+          COMP = '65e4f577-c90c-4008-9955-dfa3563d7a86'
+          def mget(path):
+              req = urllib.request.Request(API + path, headers={'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0 Mangekampanalyse/2.0'})
+              with urllib.request.urlopen(req, timeout=20) as r:
+                  return json.loads(r.read().decode('utf-8'))
+          comp = mget(f'/competitions/{COMP}')
+          hj_ids = []
+          for day in comp.get('schedules', []):
+              for ev in day.get('events', []):
+                  if str(ev.get('gender','')).upper()=='M' and 'high jump' in (str(ev.get('phase',''))+str(ev.get('event',''))).lower():
+                      hj_ids.append(ev.get('id'))
+          for eid in hj_ids:
+              payload = mget(f'/events/{eid}')
+              rows = (payload.get('verticalResult') or {}).get('results') or []
+              for row in rows:
+                  athlete = row.get('athlete') or {}
+                  name = (athlete.get('longName') or '').strip()
+                  if 'tesselaar' in name.lower() or 'gräber' in name.lower() or 'graber' in name.lower():
+                      print(f'--- RAW {name} (event {eid}) ---')
+                      print(json.dumps(row, ensure_ascii=False, indent=2))
+          EOF
+          python3 probe3.py
