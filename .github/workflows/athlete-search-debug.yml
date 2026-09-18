@@ -27,11 +27,20 @@ jobs:
 
           eid = "65e4f577-c90c-4008-9955-dfa3563d7a86_ATSTAW700B02"
           payload = get(f"/events/{eid}")
+          print("=== TOP-LEVEL PAYLOAD KEYS AND SCALAR VALUES ===")
+          for k, v in payload.items():
+              if not isinstance(v, (dict, list)):
+                  print(f"  {k!r}: {v!r}")
           block = payload.get("verticalResult") or {}
+          print("\n=== verticalResult TOP-LEVEL KEYS ===")
+          for k, v in block.items():
+              if k != "results":
+                  print(f"  {k!r}: {v!r}" if not isinstance(v, list) else f"  {k!r}: <list of {len(v)}>")
           results = block.get("results") or []
-          print("event status:", payload.get("status"))
-          print(f"{len(results)} athletes\n")
+          print(f"\n{len(results)} athletes - FULL ROW for Celia PERRON and Vanessa GRIMM:\n")
           for row in results:
               name = row.get("athlete", {}).get("longName")
-              print(f"{name!r}: current={row.get('current')!r} rank={row.get('rank')} displayRank={row.get('displayRank')} result={row.get('result')} status={row.get('status')!r}")
+              if name in ("Celia PERRON", "Vanessa GRIMM", "Noor VIDTS"):
+                  print(name, "->", json.dumps({k: v for k, v in row.items() if k != "attemptVertical"}, ensure_ascii=False))
+                  print("  attemptVertical:", json.dumps(row.get("attemptVertical"), ensure_ascii=False))
           EOF
