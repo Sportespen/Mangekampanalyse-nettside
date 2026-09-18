@@ -10,44 +10,17 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Install Playwright
-        run: npm i -D playwright && npx playwright install --with-deps chromium
-      - name: Compare direct-match athlete object vs row-resolved athlete object for Markus
+      - name: Dump the exact deployed originalTotal function source
         run: |
+          curl -s "https://mangekampanalyse.no/forecast-enhancements.js?bust=$(date +%s)" -o /tmp/fe.js
           node -e "
-          const { chromium } = require('playwright');
-          (async () => {
-            const browser = await chromium.launch();
-            const page = await browser.newPage();
-            await page.goto('https://mangekampanalyse.no/', { waitUntil: 'networkidle', timeout: 60000 });
-            await page.waitForTimeout(2500);
-            const result = await page.evaluate(() => {
-              const direct = (D.athletes || []).find(a => a.name === 'Markus Rooth');
-              const rows = [...document.querySelectorAll('#liveForecastBody tr')];
-              const row = rows.find(r => r.querySelector('td.name')?.textContent?.trim() === 'Markus Rooth');
-              function norm(v){return String(v||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]+/g,' ').trim().toLowerCase();}
-              const viaRow = row ? (D.athletes||[]).find(a=>norm(a.name)===norm(row.querySelector('td.name').textContent.trim())) : null;
-              const sameRef = direct === viaRow;
-              const directPreds = D.events.map((e,i)=>({e, p: window.forecastBasisPrediction(direct, i)}));
-              const rowPreds = viaRow ? D.events.map((e,i)=>({e, p: window.forecastBasisPrediction(viaRow, i)})) : null;
-              // replicate originalTotal's exact loop manually with logging
-              let sum=0, failedAt=null;
-              for (let i=0;i<D.events.length;i++){
-                const p = typeof window.forecastBasisPrediction==='function' ? window.forecastBasisPrediction(viaRow, i) : 'MISSING_FN';
-                if (!Number.isFinite(Number(p))) { failedAt = {i, event: D.events[i], p}; break; }
-                sum += (typeof scoreEvent === 'function' ? scoreEvent(i, Number(p)) : 'no scoreEvent');
-              }
-              // how many total D.athletes and any duplicate names?
-              const names = (D.athletes||[]).map(a=>a.name);
-              const dupes = names.filter((n,i)=>names.indexOf(n)!==i);
-              return {
-                directFound: !!direct, viaRowFound: !!viaRow, sameRef,
-                directPreds, rowPreds, manualLoop: { failedAt, sum },
-                totalAthletes: names.length, duplicateNames: dupes,
-                directName: direct?.name, viaRowName: viaRow?.name
-              };
-            });
-            console.log(JSON.stringify(result, null, 2));
-            await browser.close();
-          })();
+            const fs = require('fs');
+            const src = fs.readFileSync('/tmp/fe.js', 'utf8');
+            const idx = src.indexOf('function originalTotal');
+            console.log('originalTotal found at index:', idx);
+            console.log(src.slice(idx, idx + 400));
+            console.log('---');
+            const idx2 = src.indexOf('function show(cell,a)');
+            console.log('show found at index:', idx2);
+            console.log(src.slice(idx2, idx2 + 300));
           "
