@@ -10,13 +10,76 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Direct curl check of app-fix20260918.js
+      - name: Probe matsport API for a "who's up now" field
         run: |
-          curl -sI "https://mangekampanalyse.no/app-fix20260918.js"
-          echo "---"
-          curl -s "https://mangekampanalyse.no/app-fix20260918.js" -o /tmp/a.js
-          echo "size: $(wc -c < /tmp/a.js)"
-          grep -o "function predict([^}]*}" /tmp/a.js
-          echo "---"
-          echo "checking response headers with cache bust:"
-          curl -sI "https://mangekampanalyse.no/app-fix20260918.js?x=$(date +%s%N)"
+          python3 - <<'EOF'
+          import json, urllib.request
+
+          API = "https://api.athle.matsport.com"
+          COMP = "65e4f577-c90c-4008-9955-dfa3563d7a86"
+
+          def get(path):
+              req = urllib.request.Request(API + path, headers={
+                  "Accept": "application/json",
+                  "User-Agent": "Mozilla/5.0 Mangekampanalyse/2.0",
+              })
+              with urllib.request.urlopen(req, timeout=20) as r:
+                  return json.load(r)
+
+          comp = get(f"/competitions/{COMP}")
+          print("=== COMPETITION TOP-LEVEL KEYS ===")
+          print(list(comp.keys()))
+
+          schedules = comp.get("schedules", [])
+          events = []
+          for day in schedules:
+              for ev in day.get("events", []):
+                  events.append(ev)
+
+          print(f"\n=== {len(events)} EVENTS IN SCHEDULE ===")
+          for ev in events[:5]:
+              print(json.dumps(ev, ensure_ascii=False)[:500])
+
+          # Fetch full payload for every event, print a one-line summary, and dump full
+          # detail for whichever ones look "in progress" (some but not all results present).
+          summaries = []
+          in_progress = []
+          for ev in events:
+              eid = ev.get("id")
+              if not eid:
+                  continue
+              try:
+                  payload = get(f"/events/{eid}")
+              except Exception as e:
+                  summaries.append(f"{ev.get('phase') or ev.get('event')} ({ev.get('gender')}): ERROR {e}")
+                  continue
+              n_engaged = len((payload.get("engaged") or {}).get("results") or [])
+              counts = {}
+              for block_key in ["trackResult", "horizontalResult", "verticalResult"]:
+                  block = payload.get(block_key)
+                  if isinstance(block, dict):
+                      counts[block_key] = len(block.get("results") or [])
+              summaries.append(f"{ev.get('phase') or ev.get('event')} ({ev.get('gender')}) id={eid}: engaged={n_engaged} counts={counts}")
+              total_with_marks = sum(counts.values())
+              if 0 < total_with_marks < n_engaged:
+                  in_progress.append((ev, payload, counts))
+
+          print("\n=== ALL EVENTS SUMMARY ===")
+          for s in summaries:
+              print(s)
+
+          print(f"\n=== {len(in_progress)} EVENTS LOOK IN-PROGRESS ===")
+          for ev, payload, counts in in_progress[:2]:
+              print(f"\n--- {ev.get('phase') or ev.get('event')} ({ev.get('gender')}) ---")
+              print("top-level keys:", list(payload.keys()))
+              for block_key in ["trackResult", "horizontalResult", "verticalResult", "engaged"]:
+                  block = payload.get(block_key)
+                  if not isinstance(block, dict):
+                      continue
+                  print(f"  block '{block_key}' keys:", list(block.keys()))
+                  results = block.get("results")
+                  if isinstance(results, list) and results:
+                      print(f"    first result row keys:", list(results[0].keys()))
+                      print(f"    first result row:", json.dumps(results[0], ensure_ascii=False)[:1000])
+                      print(f"    last result row:", json.dumps(results[-1], ensure_ascii=False)[:1000])
+          EOF
