@@ -44,7 +44,12 @@
   function updateStatus(){const box=statusBox();if(!box)return;const live=activeLiveData(),section=liveForType(),completed=Number(section.completedEvents||0),updated=live.updatedAt?new Date(live.updatedAt):null,locale=lang()==='en'?'en-GB':lang()==='de'?'de-DE':'nb-NO',when=updated&&!Number.isNaN(updated.getTime())?updated.toLocaleTimeString(locale,{hour:'2-digit',minute:'2-digit'}):'';if(competitionStarted()){const unit=completed===1?tx('event'):tx('events'),sourceText=liveListAvailable()?tx('liveContinuous'):tx('liveWaiting');box.innerHTML=`<span class="dot"></span><div><b>LIVE${completed?' – '+completed+' '+unit+' '+tx('completed'):''}</b><small>${when?tx('updated')+' '+when+'. ':''}${sourceText}</small></div>`;box.classList.add('live-active');}else{box.innerHTML=`<span class="dot"></span><div><b>${tx('before')}</b><small>${tx('beforeSub')}</small></div>`;box.classList.remove('live-active');}}
   function terminalOf(raw){if(!raw||typeof raw!=='object')return null;const s=String(raw.resultStatus||raw.display||'').trim().toUpperCase();return TERMINAL.has(s)?s:null;}
   function applyLiveToAthletes(){(D.athletes||[]).forEach(a=>{const byName=findLiveEntry(a.name)?.value;a.liveActual=[];a.liveStatus=[];a.actual=a.actual||[];D.events.forEach((eventName,i)=>{const raw=byName?.[eventName];if(raw==null)return;const terminal=terminalOf(raw);if(terminal){a.liveStatus[i]=terminal;return;}const mark=typeof raw==='object'?Number(raw.mark):Number(raw);if(Number.isFinite(mark)){a.actual[i]=mark;a.liveActual[i]=mark;}});});}
-  function predictedMark(a,i){return predict(a,i);}
+  // Prefers the MANGEKAMP_HISTORY-driven basis (forecast-enhancements.js's basisFor(), exposed as
+  // window.forecastBasisPrediction - the same one powering the "Prognosegrunnlag" modal) over
+  // app.js's predict()/athlete.recent, which stays empty for every athlete in roster files like
+  // decastar_men.js that never populate an "expected" field - predict() silently returned null for
+  // every not-yet-completed event, understating "Forventet sluttpoeng nå" for the whole field.
+  function predictedMark(a,i){const v=typeof window.forecastBasisPrediction==='function'?window.forecastBasisPrediction(a,i):null;return v!=null?v:predict(a,i);}
   function originalExpectedTotal(a){let sum=0,found=0;D.events.forEach((e,i)=>{const v=predictedMark(a,i);if(Number.isFinite(Number(v))){sum+=scoreEvent(i,Number(v));found++;}});return found===D.events.length?sum:null;}
   function hasActual(a,i){return Number.isFinite(Number(a.liveActual?.[i]));}
   function actualMark(a,i){const v=Number(a.liveActual?.[i]);return Number.isFinite(v)?v:null;}
