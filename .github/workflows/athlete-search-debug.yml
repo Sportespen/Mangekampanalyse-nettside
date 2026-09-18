@@ -10,11 +10,39 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Confirm forecastBasisPrediction fix is deployed
+      - name: Install Playwright
+        run: npm i -D playwright && npx playwright install --with-deps chromium
+      - name: Load Décastar page and probe forecastBasisPrediction for Markus Rooth
         run: |
-          curl -s "https://mangekampanalyse.no/live-engine.js" -o /tmp/live-engine.js
-          curl -s "https://mangekampanalyse.no/forecast-enhancements.js" -o /tmp/forecast-enhancements.js
-          echo "live-engine.js contains forecastBasisPrediction:"
-          grep -c "forecastBasisPrediction" /tmp/live-engine.js || true
-          echo "forecast-enhancements.js exposes forecastBasisPrediction:"
-          grep -c "window.forecastBasisPrediction" /tmp/forecast-enhancements.js || true
+          node -e "
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch();
+            const page = await browser.newPage();
+            const errors = [];
+            page.on('pageerror', e => errors.push('pageerror: ' + e.message));
+            page.on('console', msg => { if (msg.type() === 'error') errors.push('console.error: ' + msg.text()); });
+            await page.goto('https://mangekampanalyse.no/', { waitUntil: 'networkidle', timeout: 60000 });
+            await page.waitForTimeout(2000);
+            const result = await page.evaluate(() => {
+              const athlete = (D?.athletes || []).find(a => a.name === 'Markus Rooth');
+              if (!athlete) return { error: 'athlete not found in D.athletes', currentComp: typeof currentComp !== 'undefined' ? currentComp : 'undefined', athleteNames: (D?.athletes||[]).map(a=>a.name) };
+              const events = D.events;
+              const perEvent = events.map((e, i) => {
+                let pred = null, err = null;
+                try { pred = typeof window.forecastBasisPrediction === 'function' ? window.forecastBasisPrediction(athlete, i) : 'fn missing'; }
+                catch (ex) { err = String(ex); }
+                return { event: e, pred, err };
+              });
+              return {
+                currentComp: typeof currentComp !== 'undefined' ? currentComp : 'undefined',
+                athleteFound: true,
+                perEvent,
+                hasForecastBasisPrediction: typeof window.forecastBasisPrediction === 'function'
+              };
+            });
+            console.log(JSON.stringify(result, null, 2));
+            console.log('PAGE ERRORS:', JSON.stringify(errors, null, 2));
+            await browser.close();
+          })();
+          "
