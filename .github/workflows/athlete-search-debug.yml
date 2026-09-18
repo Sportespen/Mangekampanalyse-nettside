@@ -10,13 +10,46 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Direct curl check of app-fix20260918.js
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install Playwright
         run: |
-          curl -sI "https://mangekampanalyse.no/app-fix20260918.js"
-          echo "---"
-          curl -s "https://mangekampanalyse.no/app-fix20260918.js" -o /tmp/a.js
-          echo "size: $(wc -c < /tmp/a.js)"
-          grep -o "function predict([^}]*}" /tmp/a.js
-          echo "---"
-          echo "checking response headers with cache bust:"
-          curl -sI "https://mangekampanalyse.no/app-fix20260918.js?x=$(date +%s%N)"
+          npm i -D playwright
+          npx playwright install --with-deps chromium
+      - name: Verify score dropdown highlights the total cell
+        run: |
+          cat > verify_highlight.js <<'EOF'
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch();
+            const page = await browser.newPage();
+            await page.goto('https://mangekampanalyse.no/?nocache=' + Date.now(), { waitUntil: 'networkidle' });
+            await page.click('button.tab.feature-card[data-tab="forecast"]');
+            await page.waitForTimeout(1500);
+            const cell = await page.$('.forecast-total-cell');
+            if (!cell) { console.log('No .forecast-total-cell found'); await browser.close(); return; }
+            await cell.click();
+            await page.waitForTimeout(600);
+            const info = await cell.evaluate(el => ({
+              inlineStyle: el.getAttribute('style'),
+              computedBg: getComputedStyle(el).backgroundColor,
+              computedColor: getComputedStyle(el).color,
+              computedBoxShadow: getComputedStyle(el).boxShadow,
+              html: el.outerHTML
+            }));
+            console.log('=== TOTAL CELL STATE AFTER CLICK ===');
+            console.log(JSON.stringify(info, null, 2));
+            const dropdown = await page.$('.forecast-score-dropdown');
+            console.log('=== DROPDOWN PRESENT ===');
+            console.log(dropdown ? 'YES' : 'NO');
+            if (dropdown) {
+              const nameHeader = await dropdown.evaluate(el => el.querySelector('b')?.textContent || null);
+              console.log('=== DROPDOWN NAME HEADER ===');
+              console.log(nameHeader);
+            }
+            await browser.close();
+          })();
+          EOF
+          node verify_highlight.js
