@@ -18,7 +18,7 @@ jobs:
         run: |
           npm i -D playwright
           npx playwright install --with-deps chromium
-      - name: Long trace of women->men flip (40s, polling every 1s)
+      - name: Capture global currentType visibility at the moment of the flip
         run: |
           cat > trace_settype.js <<'EOF'
           const { chromium } = require('playwright');
@@ -27,8 +27,7 @@ jobs:
             const page = await browser.newPage();
             page.on('console', msg => console.log('[page]', msg.text()));
             await page.addInitScript(() => {
-              window.__setTypeCalls = [];
-              window.__snapshots = [];
+              window.__log = [];
               let installed = false;
               const tryInstall = () => {
                 if (installed) return;
@@ -36,7 +35,18 @@ jobs:
                 installed = true;
                 const real = window.setType;
                 function traced(type) {
-                  window.__setTypeCalls.push({ t: Date.now(), type, stack: new Error().stack });
+                  let fromHere;
+                  try { fromHere = (typeof currentType !== 'undefined') ? currentType : 'MISSING-lexical'; }
+                  catch (e) { fromHere = 'ERR:' + e.message; }
+                  let onWindow;
+                  try { onWindow = ('currentType' in window) ? window.currentType : 'MISSING-onwindow'; }
+                  catch (e) { onWindow = 'ERR:' + e.message; }
+                  window.__log.push({
+                    t: Date.now(), event: 'setType-call', argType: type,
+                    lexicalCurrentTypeSeenByTracer: fromHere,
+                    windowCurrentType: onWindow,
+                    stack: new Error().stack.split('\n').slice(0,6).join(' | ')
+                  });
                   return real.apply(this, arguments);
                 }
                 traced.__traced = true;
@@ -44,52 +54,31 @@ jobs:
               };
               const poll = setInterval(tryInstall, 10);
               setTimeout(() => clearInterval(poll), 6000);
-              // Also wrap setupAnalyseHeaders and reloadLiveData once available, to see if either
-              // one fires again after initial load (which would rebuild the tab buttons / re-pull
-              // the men/women switch state from scratch).
-              window.__extraCalls = [];
-              let installed2 = false;
-              const tryInstall2 = () => {
-                if (installed2) return;
-                if (typeof window.setupAnalyseHeaders !== 'function') return;
-                installed2 = true;
-                const real2 = window.setupAnalyseHeaders;
-                window.setupAnalyseHeaders = function () {
-                  window.__extraCalls.push({ t: Date.now(), fn: 'setupAnalyseHeaders', stack: new Error().stack.split('\n').slice(0,4).join(' | ') });
-                  return real2.apply(this, arguments);
-                };
-              };
-              const poll2 = setInterval(tryInstall2, 10);
-              setTimeout(() => clearInterval(poll2), 6000);
-              // Snapshot currentType + active button every 1s so we can see exactly when (if ever)
-              // it flips, independent of whether setType itself was called.
+              // Independently poll currentType (lexical + window) every 300ms, but only log on
+              // an actual CHANGE (transition), to keep the log short enough to survive truncation
+              // even over a 60s window.
+              let lastLex = null, lastOnWin = null, lastBtn = null;
               const snap = setInterval(() => {
-                try {
-                  window.__snapshots.push({
-                    t: Date.now(),
-                    currentType: typeof currentType !== 'undefined' ? currentType : null,
-                    activeBtn: document.querySelector('.event-switch-btn.active')?.dataset?.type || null,
-                    firstName: document.querySelector('#liveForecastBody tr td.name')?.textContent || null
-                  });
-                } catch (_e) {}
-              }, 1000);
-              setTimeout(() => clearInterval(snap), 42000);
+                let lex, onWin;
+                try { lex = (typeof currentType !== 'undefined') ? currentType : 'MISSING'; } catch (e) { lex = 'ERR'; }
+                try { onWin = ('currentType' in window) ? window.currentType : 'MISSING'; } catch (e) { onWin = 'ERR'; }
+                const btn = document.querySelector('.event-switch-btn.active')?.dataset?.type || null;
+                if (lex !== lastLex || onWin !== lastOnWin || btn !== lastBtn) {
+                  window.__log.push({ t: Date.now(), event: 'TRANSITION', lex, onWin, btn });
+                  lastLex = lex; lastOnWin = onWin; lastBtn = btn;
+                }
+              }, 300);
+              setTimeout(() => clearInterval(snap), 60000);
             });
             await page.goto('https://mangekampanalyse.no/?nocache=' + Date.now(), { waitUntil: 'networkidle' });
             await page.waitForTimeout(1000);
             await page.click('button.event-switch-btn[data-type="women"]');
             const clickAt = Date.now();
             console.log('CLICKED WOMEN AT', clickAt);
-            await page.waitForTimeout(40000);
-            const calls = await page.evaluate(() => window.__setTypeCalls || []);
-            const extra = await page.evaluate(() => window.__extraCalls || []);
-            const snaps = await page.evaluate(() => window.__snapshots || []);
-            console.log('=== setType() CALL LOG ===');
-            console.log(JSON.stringify(calls.map(c => ({ dt: c.t - clickAt, type: c.type, stack: c.stack.split('\n').slice(0,6).join(' | ') })), null, 2));
-            console.log('=== setupAnalyseHeaders() CALL LOG ===');
-            console.log(JSON.stringify(extra.map(c => ({ dt: c.t - clickAt, fn: c.fn, stack: c.stack })), null, 2));
-            console.log('=== SNAPSHOTS (every 1s) ===');
-            snaps.forEach(s => console.log(`dt=${s.t - clickAt}ms currentType=${s.currentType} activeBtn=${s.activeBtn} firstName=${s.firstName}`));
+            await page.waitForTimeout(50000);
+            const log = await page.evaluate(() => window.__log || []);
+            console.log('=== FULL LOG (dt relative to click, ms) — only transitions + setType calls ===');
+            console.log(JSON.stringify(log.map(e => ({ dt: e.t - clickAt, ...e, t: undefined })), null, 1));
             await browser.close();
           })();
           EOF
