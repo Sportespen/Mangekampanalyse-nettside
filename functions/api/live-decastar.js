@@ -97,6 +97,10 @@ async function collectDiscipline(ids,discipline,resultsByName){
   const isTrack=blockKey==='trackResult',isVertical=blockKey==='verticalResult';
   const payloads=await Promise.all(ids.map(id=>getJson(`/events/${id}`).catch(()=>null)));
   for(const payload of payloads){
+    // Wind is per-heat (one reading for everyone in that start list), not per-athlete - confirmed
+    // live against Décastar Talence 2026's men's 100m Heat 1 ("+1.8"), so it's read once per payload
+    // and applied to every row from that same heat below.
+    const heatWind=isTrack?String(payload?.[blockKey]?.wind??'').trim():'';
     const rows=Array.isArray(payload?.[blockKey]?.results)?payload[blockKey].results:[];
     for(const row of rows){
       const athlete=row?.athlete||{};
@@ -116,7 +120,8 @@ async function collectDiscipline(ids,discipline,resultsByName){
         points:terminal?0:(row?.points!=null&&row.points!==''?Number(row.points):null),
         status:row?.status||'',athleteId:athlete.id_WA?String(athlete.id_WA):null,
         attempts:isTrack?[]:isVertical?attemptsFromVertical(row):attemptsFromHorizontal(row),
-        attemptMode:isTrack?null:isVertical?'vertical':'series'
+        attemptMode:isTrack?null:isVertical?'vertical':'series',
+        wind:heatWind
       };
     }
   }
