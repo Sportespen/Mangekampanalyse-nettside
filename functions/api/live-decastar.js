@@ -115,10 +115,18 @@ async function collectDiscipline(ids,discipline,resultsByName){
       // now (confirmed live: it briefly held the attempt outcome, e.g. "X", then cleared back to
       // "" once the attempt was judged and folded into attemptVertical/attemptHorizontal) - the
       // same flag the organiser's own site shows as a running-person icon next to that athlete.
-      // Keep the row even with no mark/terminal yet so the very first attempt of an event (before
-      // anyone has a result) still surfaces this flag.
       const active=Boolean(String(row?.current??'').trim());
-      if(mark==null&&!terminal&&!active)continue;
+      const attempts=isTrack?[]:isVertical?attemptsFromVertical(row):attemptsFromHorizontal(row);
+      // Keep the row once the athlete has been touched by this event at all - either mid-attempt
+      // right now, already has a mark/terminal status, or has at least one recorded attempt (even
+      // a foul with no valid mark, e.g. their very first throw). Without the attempts.length check,
+      // an athlete whose first-ever attempt is a foul would have mark==null and active flip back to
+      // false once judged, so this row would be dropped entirely and the client's own last-known-good
+      // merge (which only overlays fields it actually receives) would keep replaying the stale
+      // active:true from the earlier mid-attempt poll forever - the athlete's row would then stay
+      // stuck showing as "currently competing" indefinitely, confirmed live for the Décastar 2026 men's
+      // shot put (Markus Rooth, Devon Williams, Jami Schlueter all stuck active after fouling attempt 1).
+      if(mark==null&&!terminal&&!active&&!attempts.length)continue;
       const entry=resultsByName[name]??={};
       if(athlete.country)entry.nation=athlete.country;
       if(athlete.id_WA)entry.athleteIdWA=String(athlete.id_WA);
@@ -126,7 +134,7 @@ async function collectDiscipline(ids,discipline,resultsByName){
         mark,display:terminal||String(raw??''),resultStatus:terminal,
         points:terminal?0:(row?.points!=null&&row.points!==''?Number(row.points):null),
         status:row?.status||'',athleteId:athlete.id_WA?String(athlete.id_WA):null,
-        attempts:isTrack?[]:isVertical?attemptsFromVertical(row):attemptsFromHorizontal(row),
+        attempts,
         attemptMode:isTrack?null:isVertical?'vertical':'series',
         wind:heatWind,
         active
