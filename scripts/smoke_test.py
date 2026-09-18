@@ -32,6 +32,12 @@ check('data-type="men"' in index and 'data-type="women"' in index, 'Men/women ev
 check('Grønn = 4 resultater' in index and 'Gul = 3 resultater' in index and 'Oransje = 2 resultater' in index and 'Rød = 1 resultat' in index, 'Forecast colour legend is incomplete')
 check('athlete-compare-basis-modal.js' in index, 'Forecast-basis popup script not loaded')
 check('live-attempt-details-fix20260918.js' in index, 'Live-attempt script not loaded')
+# forecast-popup-fast.js was a stale duplicate of the "Opprinnelig forventet sluttpoeng"
+# dropdown: it registered its own capturing document click listener for '.forecast-total-cell'
+# with stopImmediatePropagation(), loaded before forecast-enhancements-*.js, so ITS buggy
+# (no-fallback-to-older-seasons) originalTotal() silently won over the correct one for every
+# athlete missing 2025-2026 results in any event (e.g. Markus Rooth). Never re-add this script.
+check('forecast-popup-fast.js' not in index, 'Stale forecast-popup-fast.js must not be loaded (it silently overrides the forecast score dropdown - see PR #155)')
 
 basis = (APP / 'athlete-compare-basis-modal.js').read_text(encoding='utf-8')
 check('basis-rank' in basis and '#f4f7fb' in basis, 'Forecast row numbers are not explicitly neutral/white')
