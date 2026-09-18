@@ -12,46 +12,42 @@ jobs:
     steps:
       - name: Install Playwright
         run: npm i -D playwright && npx playwright install --with-deps chromium
-      - name: Reproduce the actual click flow for Sander Skotheim and Markus Rooth (fresh session)
+      - name: Compare direct-match athlete object vs row-resolved athlete object for Markus
         run: |
           node -e "
           const { chromium } = require('playwright');
           (async () => {
             const browser = await chromium.launch();
             const page = await browser.newPage();
-            const errors = [];
-            page.on('pageerror', e => errors.push('pageerror: ' + e.message));
-            page.on('console', msg => { if (msg.type() === 'error') errors.push('console.error: ' + msg.text()); });
             await page.goto('https://mangekampanalyse.no/', { waitUntil: 'networkidle', timeout: 60000 });
             await page.waitForTimeout(2500);
-
-            async function readDropdownFor(name) {
-              const clicked = await page.evaluate((name) => {
-                const rows = [...document.querySelectorAll('#liveForecastBody tr')];
-                const row = rows.find(r => r.querySelector('td.name')?.textContent?.trim() === name);
-                if (!row) return { ok: false, reason: 'row not found', names: rows.map(r=>r.querySelector('td.name')?.textContent?.trim()) };
-                const cell = row.querySelector('.forecast-total-cell');
-                if (!cell) return { ok: false, reason: 'total cell not found' };
-                cell.click();
-                return { ok: true };
-              }, name);
-              if (!clicked.ok) return clicked;
-              await page.waitForTimeout(300);
-              const text = await page.evaluate(() => document.querySelector('.forecast-score-dropdown')?.innerText || null);
-              return { ok: true, dropdownText: text };
-            }
-
-            const sander = await readDropdownFor('Sander Skotheim');
-            const markus = await readDropdownFor('Markus Rooth');
-
-            console.log('SANDER:', JSON.stringify(sander, null, 2));
-            console.log('MARKUS:', JSON.stringify(markus, null, 2));
-            console.log('PAGE ERRORS:', JSON.stringify(errors, null, 2));
-
-            // also check script src actually served to this fresh session
-            const scriptSrcs = await page.evaluate(() => [...document.scripts].map(s=>s.src).filter(s=>s.includes('forecast-enhancements')||s.includes('live-engine')));
-            console.log('SCRIPT SRCS:', JSON.stringify(scriptSrcs, null, 2));
-
+            const result = await page.evaluate(() => {
+              const direct = (D.athletes || []).find(a => a.name === 'Markus Rooth');
+              const rows = [...document.querySelectorAll('#liveForecastBody tr')];
+              const row = rows.find(r => r.querySelector('td.name')?.textContent?.trim() === 'Markus Rooth');
+              function norm(v){return String(v||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]+/g,' ').trim().toLowerCase();}
+              const viaRow = row ? (D.athletes||[]).find(a=>norm(a.name)===norm(row.querySelector('td.name').textContent.trim())) : null;
+              const sameRef = direct === viaRow;
+              const directPreds = D.events.map((e,i)=>({e, p: window.forecastBasisPrediction(direct, i)}));
+              const rowPreds = viaRow ? D.events.map((e,i)=>({e, p: window.forecastBasisPrediction(viaRow, i)})) : null;
+              // replicate originalTotal's exact loop manually with logging
+              let sum=0, failedAt=null;
+              for (let i=0;i<D.events.length;i++){
+                const p = typeof window.forecastBasisPrediction==='function' ? window.forecastBasisPrediction(viaRow, i) : 'MISSING_FN';
+                if (!Number.isFinite(Number(p))) { failedAt = {i, event: D.events[i], p}; break; }
+                sum += (typeof scoreEvent === 'function' ? scoreEvent(i, Number(p)) : 'no scoreEvent');
+              }
+              // how many total D.athletes and any duplicate names?
+              const names = (D.athletes||[]).map(a=>a.name);
+              const dupes = names.filter((n,i)=>names.indexOf(n)!==i);
+              return {
+                directFound: !!direct, viaRowFound: !!viaRow, sameRef,
+                directPreds, rowPreds, manualLoop: { failedAt, sum },
+                totalAthletes: names.length, duplicateNames: dupes,
+                directName: direct?.name, viaRowName: viaRow?.name
+              };
+            });
+            console.log(JSON.stringify(result, null, 2));
             await browser.close();
           })();
           "
