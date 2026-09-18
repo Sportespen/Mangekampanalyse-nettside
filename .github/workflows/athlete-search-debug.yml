@@ -10,13 +10,59 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Direct curl check of app-fix20260918.js
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install Playwright
         run: |
-          curl -sI "https://mangekampanalyse.no/app-fix20260918.js"
-          echo "---"
-          curl -s "https://mangekampanalyse.no/app-fix20260918.js" -o /tmp/a.js
-          echo "size: $(wc -c < /tmp/a.js)"
-          grep -o "function predict([^}]*}" /tmp/a.js
-          echo "---"
-          echo "checking response headers with cache bust:"
-          curl -sI "https://mangekampanalyse.no/app-fix20260918.js?x=$(date +%s%N)"
+          npm i -D playwright
+          npx playwright install --with-deps chromium
+      - name: Trace every setType() call after switching to women
+        run: |
+          cat > trace_settype.js <<'EOF'
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch();
+            const page = await browser.newPage();
+            page.on('console', msg => console.log('[page]', msg.text()));
+            await page.addInitScript(() => {
+              window.__setTypeCalls = [];
+              let installed = false;
+              const tryInstall = () => {
+                if (installed) return;
+                if (typeof window.setType !== 'function' || window.setType.__traced) return;
+                installed = true;
+                const real = window.setType;
+                function traced(type) {
+                  window.__setTypeCalls.push({ t: Date.now(), type, stack: new Error().stack });
+                  return real.apply(this, arguments);
+                }
+                traced.__traced = true;
+                window.setType = traced;
+              };
+              // setType is defined synchronously by app-fix20260918.js, then re-wrapped by several
+              // later scripts (live-engine.js, athlete-compare.js, the settype-guard) - keep re-checking
+              // so we wrap whatever is CURRENTLY assigned as early as possible, then never touch it again.
+              const poll = setInterval(tryInstall, 10);
+              setTimeout(() => clearInterval(poll), 6000);
+            });
+            await page.goto('https://mangekampanalyse.no/?nocache=' + Date.now(), { waitUntil: 'networkidle' });
+            await page.waitForTimeout(1000);
+            await page.click('button.event-switch-btn[data-type="women"]');
+            console.log('CLICKED WOMEN AT', Date.now());
+            await page.waitForTimeout(8000);
+            const calls = await page.evaluate(() => window.__setTypeCalls || []);
+            const currentTypeNow = await page.evaluate(() => typeof currentType !== 'undefined' ? currentType : 'undefined');
+            const activeBtn = await page.evaluate(() => document.querySelector('.event-switch-btn.active')?.dataset.type);
+            const firstNameInTable = await page.evaluate(() => document.querySelector('#liveForecastBody tr td.name')?.textContent);
+            console.log('=== setType() CALL LOG (relative ms since click) ===');
+            const clickTime = calls.length ? null : null;
+            calls.forEach(c => console.log(`type=${c.type}`));
+            console.log(JSON.stringify(calls.map(c => ({ t: c.t, type: c.type, stack: c.stack.split('\n').slice(0,6).join(' | ') })), null, 2));
+            console.log('=== FINAL STATE AFTER 8s ===');
+            console.log('currentType:', currentTypeNow, 'activeButton:', activeBtn, 'firstNameInTable:', firstNameInTable);
+            await browser.close();
+          })();
+          EOF
+          node trace_settype.js
