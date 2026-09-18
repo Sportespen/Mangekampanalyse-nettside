@@ -10,13 +10,45 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Direct curl check of app-fix20260918.js
+      - name: Check overall live-data health, timing and any stuck-active rows
         run: |
-          curl -sI "https://mangekampanalyse.no/app-fix20260918.js"
-          echo "---"
-          curl -s "https://mangekampanalyse.no/app-fix20260918.js" -o /tmp/a.js
-          echo "size: $(wc -c < /tmp/a.js)"
-          grep -o "function predict([^}]*}" /tmp/a.js
-          echo "---"
-          echo "checking response headers with cache bust:"
-          curl -sI "https://mangekampanalyse.no/app-fix20260918.js?x=$(date +%s%N)"
+          cat > probe6.py <<'EOF'
+          import json, time
+          import urllib.request
+
+          def get_json(url):
+              req = urllib.request.Request(url, headers={'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0 Mangekampanalyse/2.0'})
+              t0 = time.time()
+              with urllib.request.urlopen(req, timeout=25) as r:
+                  body = json.loads(r.read().decode('utf-8'))
+              return body, time.time() - t0
+
+          print('=== Timing + health of /api/live-decastar, 3 fetches 5s apart ===')
+          for i in range(3):
+              try:
+                  data, dt = get_json('https://mangekampanalyse.no/api/live-decastar?nocache=' + str(time.time()))
+                  print(f'fetch {i}: took {dt:.2f}s, updatedAt={data.get("updatedAt")}, status={data.get("status")}, '
+                        f'men.completedEvents={data.get("men",{}).get("completedEvents")}, '
+                        f'women.completedEvents={data.get("women",{}).get("completedEvents")}')
+                  active_men = [n for n,e in data.get('men',{}).get('results',{}).items() if any(v.get('active') for v in e.values() if isinstance(v, dict))]
+                  active_women = [n for n,e in data.get('women',{}).get('results',{}).items() if any(v.get('active') for v in e.values() if isinstance(v, dict))]
+                  print(f'  active men: {active_men}')
+                  print(f'  active women: {active_women}')
+              except Exception as e:
+                  print(f'fetch {i}: ERROR {e}')
+              time.sleep(5)
+
+          print()
+          print('=== Direct matsport competition endpoint health ===')
+          API = 'https://api.athle.matsport.com'
+          COMP = '65e4f577-c90c-4008-9955-dfa3563d7a86'
+          try:
+              req = urllib.request.Request(f'{API}/competitions/{COMP}', headers={'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0 Mangekampanalyse/2.0'})
+              t0 = time.time()
+              with urllib.request.urlopen(req, timeout=20) as r:
+                  comp = json.loads(r.read().decode('utf-8'))
+              print(f'matsport /competitions took {time.time()-t0:.2f}s, schedule days={len(comp.get("schedules",[]))}')
+          except Exception as e:
+              print('ERROR fetching matsport competitions endpoint:', e)
+          EOF
+          python3 probe6.py
