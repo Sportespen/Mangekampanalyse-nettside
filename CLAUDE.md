@@ -42,6 +42,15 @@ pipelinene er separate og deler ikke skjema.
    "reload loop", løst 2026-09-18).
 5. Oppdater `COMPETITION_ID`/`EVENT_MAP`/`RESULT_BLOCK` (eller de nye tilsvarende konstantene) og
    test grundig mot den ferske arrangørens live-data før konkurransen starter, ikke under den.
+6. Verifiser eksplisitt at ALLE enkeltforsøk i de tekniske øvelsene (hopp/kast) kommer med, ikke bare
+   siste/beste forsøk. `attemptsFromHorizontal`/`attemptsFromVertical` i `live-decastar.js` er skrevet
+   spesifikt mot matsport sin `attemptHorizontal`/`attemptVertical`-struktur (seks runde-objekter med
+   `round_Attempt`, hhv. tre høyde-forsøk `ht_Att1`/`ht_Att2`/`ht_Att3` pr. `attemptVertical`-rad). En
+   annen arrangør vil garantert ha en annen struktur for dette. Denne per-forsøk-lista er det som vises
+   i "forsøk"-nedtrekksmenyen i grensesnittet (jf. score-dropdownen), så mangler den, eller er den feil
+   mappet, ser det ut som noe fungerer (mark/poeng vises riktig) mens forsøkshistorikken faktisk er tom
+   eller feil for den nye arrangøren. Test denne biten spesifikt med minst én utøver som har flere
+   forsøk i en kast- eller hoppøvelse, ikke bare at sluttresultatet stemmer.
 
 ### Diagnostikk-mønster brukt i denne sesjonen
 
