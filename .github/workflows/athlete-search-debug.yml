@@ -12,47 +12,39 @@ jobs:
     steps:
       - name: Install Playwright
         run: npm i -D playwright && npx playwright install --with-deps chromium
-      - name: Instrument originalTotal in-flight and click Markus's row for real
+      - name: Wrap forecastBasisPrediction after load and click Markus's row
         run: |
           node -e "
           const { chromium } = require('playwright');
           (async () => {
             const browser = await chromium.launch();
             const page = await browser.newPage();
-            const logs = [];
-            page.on('console', msg => logs.push(msg.text()));
-            page.on('pageerror', e => logs.push('pageerror: ' + e.message));
-
-            await page.route('**/forecast-enhancements.js*', async (route) => {
-              const resp = await route.fetch();
-              let body = await resp.text();
-              const marker = 'function originalTotal(a){let sum=0;for(let i=0;i<D.events.length;i++){const p=typeof window.forecastBasisPrediction===\'function\'?window.forecastBasisPrediction(a,i):predict(a,i);if(!Number.isFinite(Number(p)))return null;sum+=scoreEvent(i,Number(p));}return sum;}';
-              const patched = 'function originalTotal(a){console.log(\"[TRACE] originalTotal called with a.name=\"+ (a&&a.name) + \" D.events.length=\"+D.events.length);let sum=0;for(let i=0;i<D.events.length;i++){const p=typeof window.forecastBasisPrediction===\'function\'?window.forecastBasisPrediction(a,i):predict(a,i);console.log(\"[TRACE] i=\"+i+\" event=\"+D.events[i]+\" p=\"+p+\" finite=\"+Number.isFinite(Number(p)));if(!Number.isFinite(Number(p))){console.log(\"[TRACE] BAILING at i=\"+i);return null;}sum+=scoreEvent(i,Number(p));}console.log(\"[TRACE] originalTotal sum=\"+sum);return sum;}';
-              if (body.includes(marker)) {
-                body = body.replace(marker, patched);
-                console.log('PATCH APPLIED');
-              } else {
-                console.log('PATCH MARKER NOT FOUND - source differs from expected');
-              }
-              await route.fulfill({ response: resp, body });
-            });
-
             await page.goto('https://mangekampanalyse.no/', { waitUntil: 'networkidle', timeout: 60000 });
             await page.waitForTimeout(2500);
 
-            await page.evaluate(() => {
+            const result = await page.evaluate(async () => {
+              const calls = [];
+              const orig = window.forecastBasisPrediction;
+              window.forecastBasisPrediction = function(a, i) {
+                const r = orig(a, i);
+                calls.push({ name: a && a.name, i, event: (typeof D !== 'undefined' ? D.events[i] : '?'), result: r });
+                return r;
+              };
+
+              const before = document.querySelectorAll('.forecast-score-dropdown').length;
               const rows = [...document.querySelectorAll('#liveForecastBody tr')];
               const row = rows.find(r => r.querySelector('td.name')?.textContent?.trim() === 'Markus Rooth');
-              row?.querySelector('.forecast-total-cell')?.click();
+              const cell = row ? row.querySelector('.forecast-total-cell') : null;
+              const foundRow = !!row, foundCell = !!cell;
+              if (cell) cell.click();
+              await new Promise(res => setTimeout(res, 400));
+              const after = document.querySelectorAll('.forecast-score-dropdown').length;
+              const dropdownText = document.querySelector('.forecast-score-dropdown')?.innerText || null;
+
+              window.forecastBasisPrediction = orig;
+              return { foundRow, foundCell, before, after, calls, dropdownText };
             });
-            await page.waitForTimeout(500);
-            const dropdownText = await page.evaluate(() => document.querySelector('.forecast-score-dropdown')?.innerText || null);
-
-            console.log('=== CONSOLE LOGS ===');
-            console.log(logs.join('\n'));
-            console.log('=== DROPDOWN TEXT ===');
-            console.log(dropdownText);
-
+            console.log(JSON.stringify(result, null, 2));
             await browser.close();
           })();
           "
