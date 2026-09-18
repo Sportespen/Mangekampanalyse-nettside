@@ -47,13 +47,19 @@ jobs:
             const perEvent = await page.evaluate(() => {
               const athlete = (D.athletes || []).find(a => a.name && a.name.toLowerCase().includes('rooth'));
               if (!athlete) return { error: 'athlete not found in D.athletes' };
-              return D.events.map((eventName, i) => {
-                let pred = null, err = null;
+              let sum = 0, sumOk = true;
+              const rows = D.events.map((eventName, i) => {
+                let pred = null, err = null, pts = null, ptsErr = null;
                 try { pred = window.forecastBasisPrediction(athlete, i); } catch (e) { err = String(e); }
-                return { eventName, pred, err };
+                try { pts = scoreEvent(i, Number(pred)); } catch (e) { ptsErr = String(e); }
+                if (!Number.isFinite(Number(pts))) sumOk = false; else sum += Number(pts);
+                return { eventName, pred, err, pts, ptsErr };
               });
+              let directTotal = null, directErr = null;
+              try { directTotal = window.__originalTotalDebug ? window.__originalTotalDebug(athlete) : 'no debug hook'; } catch (e) { directErr = String(e); }
+              return { rows, sum, sumOk, directTotal, directErr, athleteKeys: Object.keys(athlete) };
             });
-            console.log('=== PER-EVENT forecastBasisPrediction FOR MARKUS ===');
+            console.log('=== PER-EVENT forecastBasisPrediction + scoreEvent FOR MARKUS ===');
             console.log(JSON.stringify(perEvent, null, 2));
             await browser.close();
           })();
