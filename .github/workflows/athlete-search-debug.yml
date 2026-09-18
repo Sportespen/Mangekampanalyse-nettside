@@ -36,12 +36,12 @@ jobs:
               const name = (await nameCell.textContent() || '').trim();
               if (!name.toLowerCase().includes('rooth')) continue;
               found = true;
-              const totalCell = await row.$('td.total, td.forecast-total, td:last-child');
+              const totalCell = await row.$('.forecast-total-cell');
               if (totalCell) await totalCell.click();
               await page.waitForTimeout(800);
-              const modalText = await page.textContent('#modalContent');
-              console.log('=== MARKUS ROOTH MODAL TEXT ===');
-              console.log(modalText);
+              const dropdownText = await page.textContent('.forecast-score-dropdown').catch(() => null);
+              console.log('=== MARKUS ROOTH SCORE DROPDOWN ===');
+              console.log(dropdownText || '(dropdown not found)');
             }
             if (!found) console.log('Markus Rooth row not found in forecast table');
             await browser.close();
