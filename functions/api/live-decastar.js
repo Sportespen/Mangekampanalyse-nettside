@@ -111,7 +111,14 @@ async function collectDiscipline(ids,discipline,resultsByName){
       const raw=isTrack?row?.time:row?.result;
       const mark=parseMark(discipline,raw);
       const terminal=rawStatus(row?.status);
-      if(mark==null&&!terminal)continue;
+      // "current" is matsport's own live indicator for whichever athlete is mid-attempt right
+      // now (confirmed live: it briefly held the attempt outcome, e.g. "X", then cleared back to
+      // "" once the attempt was judged and folded into attemptVertical/attemptHorizontal) - the
+      // same flag the organiser's own site shows as a running-person icon next to that athlete.
+      // Keep the row even with no mark/terminal yet so the very first attempt of an event (before
+      // anyone has a result) still surfaces this flag.
+      const active=Boolean(String(row?.current??'').trim());
+      if(mark==null&&!terminal&&!active)continue;
       const entry=resultsByName[name]??={};
       if(athlete.country)entry.nation=athlete.country;
       if(athlete.id_WA)entry.athleteIdWA=String(athlete.id_WA);
@@ -121,7 +128,8 @@ async function collectDiscipline(ids,discipline,resultsByName){
         status:row?.status||'',athleteId:athlete.id_WA?String(athlete.id_WA):null,
         attempts:isTrack?[]:isVertical?attemptsFromVertical(row):attemptsFromHorizontal(row),
         attemptMode:isTrack?null:isVertical?'vertical':'series',
-        wind:heatWind
+        wind:heatWind,
+        active
       };
     }
   }
