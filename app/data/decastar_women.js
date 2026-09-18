@@ -14,7 +14,6 @@ window.MANGEKAMP_DATA.women.decastar.push(...[
 {"qp":"","wr":"","waId":14593982,"name":"Lovisa Karlsson","nation":"SWE","birth":"","pb":6218,"theoretical":0,"utilization":0,"potential":0,"diff_top":-795,"bests":{}},
 {"qp":"","wr":"","waId":14926486,"name":"Anna-Elisabeth Ehlers","nation":"GER","birth":"","pb":6216,"theoretical":0,"utilization":0,"potential":0,"diff_top":-797,"bests":{}},
 {"qp":"","wr":"","waId":14734285,"name":"Léonie Cambours","nation":"FRA","birth":"","pb":6192,"theoretical":0,"utilization":0,"potential":0,"diff_top":-821,"bests":{}},
-{"qp":"","wr":"","waId":14810666,"name":"Marie Dehning","nation":"GER","birth":"","pb":6180,"theoretical":0,"utilization":0,"potential":0,"diff_top":-833,"bests":{}},
 {"qp":"","wr":"","waId":14642887,"name":"Ellen Barber","nation":"GBR","birth":"","pb":6169,"theoretical":0,"utilization":0,"potential":0,"diff_top":-844,"bests":{}},
 {"qp":"","wr":"","waId":14516958,"name":"Célia Perron","nation":"FRA","birth":"","pb":6138,"theoretical":0,"utilization":0,"potential":0,"diff_top":-875,"bests":{}},
 {"qp":"","wr":"","waId":14659312,"name":"Mareike Rösing","nation":"GER","birth":"","pb":6105,"theoretical":0,"utilization":0,"potential":0,"diff_top":-908,"bests":{}},
