@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Install Playwright
         run: npm i -D playwright && npx playwright install --with-deps chromium
-      - name: Load Décastar page and probe forecastBasisPrediction for Markus Rooth
+      - name: Reproduce the actual click flow for Sander Skotheim and Markus Rooth (fresh session)
         run: |
           node -e "
           const { chromium } = require('playwright');
@@ -23,26 +23,35 @@ jobs:
             page.on('pageerror', e => errors.push('pageerror: ' + e.message));
             page.on('console', msg => { if (msg.type() === 'error') errors.push('console.error: ' + msg.text()); });
             await page.goto('https://mangekampanalyse.no/', { waitUntil: 'networkidle', timeout: 60000 });
-            await page.waitForTimeout(2000);
-            const result = await page.evaluate(() => {
-              const athlete = (D?.athletes || []).find(a => a.name === 'Markus Rooth');
-              if (!athlete) return { error: 'athlete not found in D.athletes', currentComp: typeof currentComp !== 'undefined' ? currentComp : 'undefined', athleteNames: (D?.athletes||[]).map(a=>a.name) };
-              const events = D.events;
-              const perEvent = events.map((e, i) => {
-                let pred = null, err = null;
-                try { pred = typeof window.forecastBasisPrediction === 'function' ? window.forecastBasisPrediction(athlete, i) : 'fn missing'; }
-                catch (ex) { err = String(ex); }
-                return { event: e, pred, err };
-              });
-              return {
-                currentComp: typeof currentComp !== 'undefined' ? currentComp : 'undefined',
-                athleteFound: true,
-                perEvent,
-                hasForecastBasisPrediction: typeof window.forecastBasisPrediction === 'function'
-              };
-            });
-            console.log(JSON.stringify(result, null, 2));
+            await page.waitForTimeout(2500);
+
+            async function readDropdownFor(name) {
+              const clicked = await page.evaluate((name) => {
+                const rows = [...document.querySelectorAll('#liveForecastBody tr')];
+                const row = rows.find(r => r.querySelector('td.name')?.textContent?.trim() === name);
+                if (!row) return { ok: false, reason: 'row not found', names: rows.map(r=>r.querySelector('td.name')?.textContent?.trim()) };
+                const cell = row.querySelector('.forecast-total-cell');
+                if (!cell) return { ok: false, reason: 'total cell not found' };
+                cell.click();
+                return { ok: true };
+              }, name);
+              if (!clicked.ok) return clicked;
+              await page.waitForTimeout(300);
+              const text = await page.evaluate(() => document.querySelector('.forecast-score-dropdown')?.innerText || null);
+              return { ok: true, dropdownText: text };
+            }
+
+            const sander = await readDropdownFor('Sander Skotheim');
+            const markus = await readDropdownFor('Markus Rooth');
+
+            console.log('SANDER:', JSON.stringify(sander, null, 2));
+            console.log('MARKUS:', JSON.stringify(markus, null, 2));
             console.log('PAGE ERRORS:', JSON.stringify(errors, null, 2));
+
+            // also check script src actually served to this fresh session
+            const scriptSrcs = await page.evaluate(() => [...document.scripts].map(s=>s.src).filter(s=>s.includes('forecast-enhancements')||s.includes('live-engine')));
+            console.log('SCRIPT SRCS:', JSON.stringify(scriptSrcs, null, 2));
+
             await browser.close();
           })();
           "
