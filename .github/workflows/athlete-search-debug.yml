@@ -10,6 +10,44 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install Playwright
+        run: |
+          npm i -D playwright
+          npx playwright install --with-deps chromium
+      - name: Verify Markus Rooth's original forecast in a real browser
+        run: |
+          cat > /tmp/verify_markus.js <<'EOF'
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch();
+            const page = await browser.newPage();
+            await page.goto('https://mangekampanalyse.no/?nocache=' + Date.now(), { waitUntil: 'networkidle' });
+            await page.click('button.tab.feature-card[data-tab="forecast"]');
+            await page.waitForTimeout(1500);
+            const rows = await page.$$('#liveForecastBody tr');
+            let found = false;
+            for (const row of rows) {
+              const nameCell = await row.$('td.name');
+              if (!nameCell) continue;
+              const name = (await nameCell.textContent() || '').trim();
+              if (!name.toLowerCase().includes('rooth')) continue;
+              found = true;
+              const totalCell = await row.$('td.total, td.forecast-total, td:last-child');
+              if (totalCell) await totalCell.click();
+              await page.waitForTimeout(800);
+              const modalText = await page.textContent('#modalContent');
+              console.log('=== MARKUS ROOTH MODAL TEXT ===');
+              console.log(modalText);
+            }
+            if (!found) console.log('Markus Rooth row not found in forecast table');
+            await browser.close();
+          })();
+          EOF
+          node /tmp/verify_markus.js
       - name: Check attempts for all field events (not just Lengde)
         run: |
           curl -s "https://mangekampanalyse.no/api/live-decastar?t=$(date +%s%N)" -o /tmp/live.json
