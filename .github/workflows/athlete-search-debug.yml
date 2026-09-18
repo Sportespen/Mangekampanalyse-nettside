@@ -10,7 +10,7 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Probe matsport API for a "who's up now" field
+      - name: Dump full payload for women's Høyde event + all event statuses
         run: |
           python3 - <<'EOF'
           import json, urllib.request
@@ -27,59 +27,18 @@ jobs:
                   return json.load(r)
 
           comp = get(f"/competitions/{COMP}")
-          print("=== COMPETITION TOP-LEVEL KEYS ===")
-          print(list(comp.keys()))
-
           schedules = comp.get("schedules", [])
           events = []
           for day in schedules:
               for ev in day.get("events", []):
                   events.append(ev)
 
-          print(f"\n=== {len(events)} EVENTS IN SCHEDULE ===")
-          for ev in events[:5]:
-              print(json.dumps(ev, ensure_ascii=False)[:500])
-
-          # Fetch full payload for every event, print a one-line summary, and dump full
-          # detail for whichever ones look "in progress" (some but not all results present).
-          summaries = []
-          in_progress = []
+          print("=== ALL EVENT STATUSES ===")
           for ev in events:
-              eid = ev.get("id")
-              if not eid:
-                  continue
-              try:
-                  payload = get(f"/events/{eid}")
-              except Exception as e:
-                  summaries.append(f"{ev.get('phase') or ev.get('event')} ({ev.get('gender')}): ERROR {e}")
-                  continue
-              n_engaged = len((payload.get("engaged") or {}).get("results") or [])
-              counts = {}
-              for block_key in ["trackResult", "horizontalResult", "verticalResult"]:
-                  block = payload.get(block_key)
-                  if isinstance(block, dict):
-                      counts[block_key] = len(block.get("results") or [])
-              summaries.append(f"{ev.get('phase') or ev.get('event')} ({ev.get('gender')}) id={eid}: engaged={n_engaged} counts={counts}")
-              total_with_marks = sum(counts.values())
-              if 0 < total_with_marks < n_engaged:
-                  in_progress.append((ev, payload, counts))
+              print(ev.get("status"), "|", ev.get("phase"), "|", ev.get("gender"), "|", ev.get("id"))
 
-          print("\n=== ALL EVENTS SUMMARY ===")
-          for s in summaries:
-              print(s)
-
-          print(f"\n=== {len(in_progress)} EVENTS LOOK IN-PROGRESS ===")
-          for ev, payload, counts in in_progress[:2]:
-              print(f"\n--- {ev.get('phase') or ev.get('event')} ({ev.get('gender')}) ---")
-              print("top-level keys:", list(payload.keys()))
-              for block_key in ["trackResult", "horizontalResult", "verticalResult", "engaged"]:
-                  block = payload.get(block_key)
-                  if not isinstance(block, dict):
-                      continue
-                  print(f"  block '{block_key}' keys:", list(block.keys()))
-                  results = block.get("results")
-                  if isinstance(results, list) and results:
-                      print(f"    first result row keys:", list(results[0].keys()))
-                      print(f"    first result row:", json.dumps(results[0], ensure_ascii=False)[:1000])
-                      print(f"    last result row:", json.dumps(results[-1], ensure_ascii=False)[:1000])
+          print("\n=== FULL PAYLOAD FOR WOMEN'S HØYDE (given event id) ===")
+          eid = "65e4f577-c90c-4008-9955-dfa3563d7a86_ATSTAW700B02"
+          payload = get(f"/events/{eid}")
+          print(json.dumps(payload, ensure_ascii=False, indent=1)[:6000])
           EOF
