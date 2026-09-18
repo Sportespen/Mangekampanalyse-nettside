@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Install Playwright
         run: npm i -D playwright && npx playwright install --with-deps chromium
-      - name: Click Sander Skotheim's Lengde cell and read the attempt modal
+      - name: Verify Markus Rooth's dropdown after the full cache-bypass fix
         run: |
           node -e "
           const { chromium } = require('playwright');
@@ -22,18 +22,15 @@ jobs:
             await page.goto('https://mangekampanalyse.no/', { waitUntil: 'networkidle', timeout: 60000 });
             await page.waitForTimeout(2500);
             const result = await page.evaluate(async () => {
-              const scriptSrcs = [...document.scripts].map(s=>s.src).filter(s=>s.includes('live-'));
+              const scriptSrcs = [...document.scripts].map(s=>s.src).filter(s=>s.includes('app-') || s.includes('forecast-enhancements'));
+              const predictSrc = typeof predict !== 'undefined' ? predict.toString() : 'predict not global';
               const rows = [...document.querySelectorAll('#liveForecastBody tr')];
-              const row = rows.find(r => r.querySelector('td.name')?.textContent?.trim() === 'Sander Skotheim');
-              if (!row) return { scriptSrcs, error: 'row not found' };
-              const cells = [...row.cells];
-              const lengdeIdx = D.events.indexOf('Lengde');
-              const cell = cells[3 + lengdeIdx];
-              const hasActualClass = cell?.classList.contains('actual');
-              cell?.click();
+              const row = rows.find(r => r.querySelector('td.name')?.textContent?.trim() === 'Markus Rooth');
+              const cell = row ? row.querySelector('.forecast-total-cell') : null;
+              if (cell) cell.click();
               await new Promise(res => setTimeout(res, 400));
-              const modalText = document.querySelector('#modalContent')?.innerText || null;
-              return { scriptSrcs, hasActualClass, modalText };
+              const dropdownText = document.querySelector('.forecast-score-dropdown')?.innerText || null;
+              return { scriptSrcs, predictSrc, dropdownText };
             });
             console.log(JSON.stringify(result, null, 2));
             await browser.close();
