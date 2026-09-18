@@ -10,13 +10,12 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Dump full payload for women's Høyde event + all event statuses
+      - name: Find the "current" field value for the athlete currently in action
         run: |
           python3 - <<'EOF'
           import json, urllib.request
 
           API = "https://api.athle.matsport.com"
-          COMP = "65e4f577-c90c-4008-9955-dfa3563d7a86"
 
           def get(path):
               req = urllib.request.Request(API + path, headers={
@@ -26,19 +25,13 @@ jobs:
               with urllib.request.urlopen(req, timeout=20) as r:
                   return json.load(r)
 
-          comp = get(f"/competitions/{COMP}")
-          schedules = comp.get("schedules", [])
-          events = []
-          for day in schedules:
-              for ev in day.get("events", []):
-                  events.append(ev)
-
-          print("=== ALL EVENT STATUSES ===")
-          for ev in events:
-              print(ev.get("status"), "|", ev.get("phase"), "|", ev.get("gender"), "|", ev.get("id"))
-
-          print("\n=== FULL PAYLOAD FOR WOMEN'S HØYDE (given event id) ===")
           eid = "65e4f577-c90c-4008-9955-dfa3563d7a86_ATSTAW700B02"
           payload = get(f"/events/{eid}")
-          print(json.dumps(payload, ensure_ascii=False, indent=1)[:6000])
+          block = payload.get("verticalResult") or {}
+          results = block.get("results") or []
+          print("event status:", payload.get("status"))
+          print(f"{len(results)} athletes\n")
+          for row in results:
+              name = row.get("athlete", {}).get("longName")
+              print(f"{name!r}: current={row.get('current')!r} rank={row.get('rank')} displayRank={row.get('displayRank')} result={row.get('result')} status={row.get('status')!r}")
           EOF
