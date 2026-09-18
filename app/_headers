@@ -6,3 +6,9 @@
 
 /*.js
   Cache-Control: no-cache, must-revalidate
+
+/app.js
+  Cache-Control: no-cache, must-revalidate
+
+/forecast-enhancements.js
+  Cache-Control: no-cache, must-revalidate
