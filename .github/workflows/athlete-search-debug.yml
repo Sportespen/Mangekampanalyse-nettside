@@ -10,12 +10,33 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Check what index.html actually serves right now
+      - name: Verify predict() source and Markus Rooth's dropdown after cache-header fix
         run: |
-          curl -s "https://mangekampanalyse.no/?nocache=$(date +%s)" -o /tmp/live_index.html -D /tmp/headers.txt
-          echo "=== response headers ==="
-          cat /tmp/headers.txt
-          echo "=== app.js / forecast-enhancements.js references ==="
-          grep -o 'app.js?v=[a-z0-9-]*\|forecast-enhancements.js?v=[a-z0-9-]*' /tmp/live_index.html
-          echo "=== script tag count ==="
-          grep -oc 'app.js\|forecast-enhancements.js' /tmp/live_index.html
+          curl -s "https://mangekampanalyse.no/app.js?check=$(date +%s)" -o /tmp/app.js
+          echo "=== raw predict() source (no-query fetch) ==="
+          grep -o 'function predict([^}]*}' /tmp/app.js
+      - name: Install Playwright
+        run: npm i -D playwright && npx playwright install --with-deps chromium
+      - name: Click Markus Rooth's row in a fresh session
+        run: |
+          node -e "
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch();
+            const page = await browser.newPage();
+            await page.goto('https://mangekampanalyse.no/', { waitUntil: 'networkidle', timeout: 60000 });
+            await page.waitForTimeout(2500);
+            const result = await page.evaluate(async () => {
+              const predictSrc = typeof predict !== 'undefined' ? predict.toString() : 'predict not global';
+              const rows = [...document.querySelectorAll('#liveForecastBody tr')];
+              const row = rows.find(r => r.querySelector('td.name')?.textContent?.trim() === 'Markus Rooth');
+              const cell = row ? row.querySelector('.forecast-total-cell') : null;
+              if (cell) cell.click();
+              await new Promise(res => setTimeout(res, 400));
+              const dropdownText = document.querySelector('.forecast-score-dropdown')?.innerText || null;
+              return { predictSrc, dropdownText };
+            });
+            console.log(JSON.stringify(result, null, 2));
+            await browser.close();
+          })();
+          "
