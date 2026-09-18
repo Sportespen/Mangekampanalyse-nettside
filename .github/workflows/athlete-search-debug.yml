@@ -10,29 +10,13 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Install Playwright
-        run: npm i -D playwright && npx playwright install --with-deps chromium
-      - name: Verify Markus Rooth's dropdown after the full cache-bypass fix
+      - name: Direct curl check of app-fix20260918.js
         run: |
-          node -e "
-          const { chromium } = require('playwright');
-          (async () => {
-            const browser = await chromium.launch();
-            const page = await browser.newPage();
-            await page.goto('https://mangekampanalyse.no/', { waitUntil: 'networkidle', timeout: 60000 });
-            await page.waitForTimeout(2500);
-            const result = await page.evaluate(async () => {
-              const scriptSrcs = [...document.scripts].map(s=>s.src).filter(s=>s.includes('app-') || s.includes('forecast-enhancements'));
-              const predictSrc = typeof predict !== 'undefined' ? predict.toString() : 'predict not global';
-              const rows = [...document.querySelectorAll('#liveForecastBody tr')];
-              const row = rows.find(r => r.querySelector('td.name')?.textContent?.trim() === 'Markus Rooth');
-              const cell = row ? row.querySelector('.forecast-total-cell') : null;
-              if (cell) cell.click();
-              await new Promise(res => setTimeout(res, 400));
-              const dropdownText = document.querySelector('.forecast-score-dropdown')?.innerText || null;
-              return { scriptSrcs, predictSrc, dropdownText };
-            });
-            console.log(JSON.stringify(result, null, 2));
-            await browser.close();
-          })();
-          "
+          curl -sI "https://mangekampanalyse.no/app-fix20260918.js"
+          echo "---"
+          curl -s "https://mangekampanalyse.no/app-fix20260918.js" -o /tmp/a.js
+          echo "size: $(wc -c < /tmp/a.js)"
+          grep -o "function predict([^}]*}" /tmp/a.js
+          echo "---"
+          echo "checking response headers with cache bust:"
+          curl -sI "https://mangekampanalyse.no/app-fix20260918.js?x=$(date +%s%N)"
