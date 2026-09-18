@@ -10,15 +10,13 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Dump raw trackResult row for men's 100m to find the wind field name
+      - name: Verify wind now appears in live-decastar API output
         run: |
-          BASE="https://api.athle.matsport.com"
-          EID="65e4f577-c90c-4008-9955-dfa3563d7a86_ATSTAM900A01"
-          curl -s "$BASE/events/$EID" -H "Accept: application/json" -o /tmp/f.json
+          curl -s "https://mangekampanalyse.no/api/live-decastar" -o /tmp/live.json
           node -e "
-            const d=JSON.parse(require('fs').readFileSync('/tmp/f.json','utf8'));
-            console.log('top-level keys:', Object.keys(d));
-            console.log('trackResult keys:', Object.keys(d.trackResult||{}));
-            console.log('trackResult.wind value:', JSON.stringify(d.trackResult?.wind));
-            console.log('trackResult.summary:', JSON.stringify(d.trackResult?.summary));
+            const d=JSON.parse(require('fs').readFileSync('/tmp/live.json','utf8'));
+            console.log('status:', d.status, '| error:', d.error||'(none)');
+            const men=d.men?.results||{};
+            const sample=Object.entries(men).slice(0,3);
+            console.log('sample men 100m rows (with wind):', JSON.stringify(sample.map(([name,row])=>({name,wind:row['100m']?.wind,mark:row['100m']?.mark})), null, 2));
           "
