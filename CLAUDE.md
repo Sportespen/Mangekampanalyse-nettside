@@ -1,15 +1,52 @@
 # Notater til Claude for dette repoet
 
-## Live-resultater er hardkodet mot arrangørens API - alt må sjekkes på nytt for neste konkurranse
+**Status:** Både Décastar Talence 2026 og EM Birmingham 2026 er avsluttet. Live-pollingen mot
+begge er stanset (se punkt 12 i sjekklisten). Resultatene ligger fast med vilje - ikke gjenopprett
+polling for disse to med mindre noen eksplisitt ber om det. Alt under er skrevet for å gjøre NESTE
+konkurranse (en annen arrangør) raskest og tryggest mulig å sette i drift.
 
-Alt vi har bygget/fikset for live-dataene under Décastar Talence 2026 er skrevet spesifikt mot
-**matsport** sitt API (`api.athle.matsport.com`), i `functions/api/live-decastar.js`. Neste
-konkurranse kan ha en helt annen arrangør/leverandør med et helt annet dataformat - INGENTING av
-det organisatør-spesifikke under kan tas for gitt at bare "fungerer" igjen. Dette er ikke noe som
-skjer automatisk - det krever at vi går gjennom hele denne lista og verifiserer/skriver om hvert
-punkt før neste konkurranse går live.
+## Neste arrangør - oppskrift (les dette først)
 
-### Sjekkliste før neste konkurranse (annen arrangør)
+Live-resultatene er hardkodet mot **matsport** sitt API (`api.athle.matsport.com`), samlet i
+ÉN fil: `functions/api/live-decastar.js`. Alt annet i appen - forecast-tabellen, "Frys"-knappen,
+uthevingen av siste resultat, forsøk-nedtrekksmenyen, DNF-håndteringen, alt - leser bare den
+STANDARDISERTE JSON-kontrakten denne filen produserer. Den har null kjennskap til matsport.
+Det betyr: å bytte arrangør er i prinsippet å skrive om ÉN fil riktig, ikke å røre resten av appen.
+
+1. **Skaff arrangørens live-resultat-URL/API** (dette er det ENESTE du som bruker faktisk må gi
+   meg - se "Hva du må gi meg" nedenfor).
+2. **Test det nye APIet empirisk FØR noe kode skrives** - se "Diagnostikk-mønster" nederst. Ikke
+   anta at det ligner på matsport sitt.
+3. **Kopiér malen**: `functions/api/_TEMPLATE-live-organizer.js` → `functions/api/live-<navn>.js`
+   (fjern understreken foran - Cloudflare Pages ruter automatisk enhver fil i `functions/api/`
+   uten understrek som `/api/<filnavn>`). Malen har hele kontrakten dokumentert inline pluss
+   `TODO`-markører for alt som må fylles ut. Gå gjennom sjekklisten under mens du fyller den ut.
+4. **Valider resultatet** mot kontrakten før klienten pekes dit:
+   `python3 scripts/validate_live_contract.py https://mangekampanalyse.no/api/live-<navn>`
+   (eller mot en lokal JSON-fil). Dette fanger opp skjemafeil uten at du må åpne nettleseren.
+5. **Koble den nye funksjonen inn i klienten** i
+   `app/live-refresh-api-fix20260918.js`/`app/live-refresh-api.js` (samme mønster som
+   `refreshDecastar()`/`fetchFreshDecastarLive()`/`applyDecastar()` bruker i dag for
+   `MANGEKAMP_LIVE_DECASTAR` - navnene er historiske fra Décastar-sesongen, men fungerer for
+   hvilken som helst konkurranse; du trenger ikke døpe dem om). Husk `window.setInterval(...)` -
+   den er bevisst FJERNET nå siden konkurransen er over, og må legges til på nytt for den nye.
+6. **Legg til et alternativ i `#competitionSelect`** i `app/index.html` og sørg for at
+   `buildRoot()`/roster-datafilene (`app/data/*.js`) har et start-felt for den nye konkurransen -
+   dette er separat fra live-pluggen og forventes å være nytt innhold hver gang, ikke kode å skrive om.
+7. **Bump cache-bust-versjonen** (se punkt 12 nedenfor) og **skru på polling** igjen
+   (`window.setInterval(refresh<Navn>, ...)`, tunet etter faktisk oppdateringstakt - se punkt 10).
+8. Gå gjennom hele sjekklisten under, verifiser hvert punkt eksplisitt.
+
+### Hva DU må gi meg
+
+- **Den nye arrangørens live-resultat-nettside eller API-URL.** Det er alt som strengt tatt kreves
+  for å komme i gang - jeg tester og reverse-engineerer resten empirisk (se diagnostikk-mønsteret).
+- Hvis den nye konkurransen har et ANNET sett øvelser enn tikamp/sjukamp (f.eks. en annen
+  mangekamp-variant), eller en helt ny utøverliste/startliste - si ifra, det er innhold jeg ikke
+  kan gjette meg til.
+- Alt annet (kode, mapping, testing, deploy) er mitt ansvar.
+
+## Sjekkliste før neste konkurranse (annen arrangør)
 
 1. **Finn og test den nye arrangørens live-API først**, før noe kode skrives - se
    "Diagnostikk-mønster" nederst i dette dokumentet. Forstå det faktiske dataformatet empirisk,
@@ -48,35 +85,38 @@ punkt før neste konkurranse går live.
     den nye kildens data faktisk oppfører seg tilsvarende for øvelser med flere samtidige stasjoner.
 11. **Cloudflare edge cache-TTL og klientens polling-intervall** (`cacheTtl:10` i `getJson()` i
     `live-decastar.js`, samt klientens 10-sekunders `setInterval(refresh...)`/
-    `setInterval(refreshDecastar...)` i `live-refresh-api-fix20260918.js`/`live-refresh-api.js`) er
+    `setInterval(refreshDecastar...)` i `live-refresh-api-fix20260918.js`/`live-refresh-api.js`) var
     tilpasset matsport sin oppdateringstakt, empirisk observert under Talence (justert ned fra
-    20s/30s til 10s/10s 2026-09-19 etter ønske om raskere oppdatering - verste-fall-ventetid fra
-    resultat hos arrangøren til det vises hos oss er summen av disse to, altså ca. 20 sekunder nå).
-    Den nye arrangøren kan oppdatere mye oftere eller sjeldnere - test faktisk takt (se
-    diagnostikk-mønster) og juster begge tall til det som gir mening for den nye kilden, ikke bare
-    gjenbruk disse tallene blindt. (Birmingham-integrasjonens separate `reloadLiveData`-intervall,
-    20 sekunder, er en annen mekanisme - den laster den statiske `live_birmingham.js`-datafilen på
-    nytt, ikke et API-kall, og er ikke rørt av denne justeringen.)
-12. **Ingen reload-logikk i statiske datafiler får lov til å kjøre på nytt ved periodiske
+    20s/30s til 10s/10s 2026-09-19 etter ønske om raskere oppdatering). Begge
+    `setInterval`-kallene er FJERNET nå (2026-09-19, se punkt 12) siden konkurransen er over - de
+    må legges tilbake for neste konkurranse, tunet mot DENS faktiske takt (se diagnostikk-mønster),
+    ikke bare gjenbruk 10 sekunder blindt.
+12. **Live-polling er midlertidig stanset for begge fjorårets konkurranser** (2026-09-19, se
+    `install()` i `live-refresh-api-fix20260918.js`/`live-refresh-api.js`) - Talence og Birmingham
+    er begge ferdigspilt, og resultatene skal ligge fast. `refresh(false)`/`refreshDecastar()`
+    kjører fortsatt ÉN gang ved sideinnlasting (henter siste kjente tall), men de gjentagende
+    `window.setInterval(...)`-kallene er borte. Dette MÅ legges til på nytt (steg 7 i oppskriften
+    over) når en ny konkurranse faktisk er live.
+13. **Ingen reload-logikk i statiske datafiler får lov til å kjøre på nytt ved periodiske
     klient-side oppdateringer.** `app/data/live_birmingham.js` hadde historisk en engangs
     cache-bust-omlasting som ved en feil kjørte på nytt hver gang filen ble satt inn dynamisk igjen,
     og forårsaket full sideomlasting hvert 20. sekund (fikset 2026-09-18). Hvis en ny statisk
     live-datafil for den nye arrangøren får en lignende engangs-oppstartslogikk, må den eksplisitt
     sjekke `document.currentScript?.dataset?.mangekampLiveRefresh` (eller tilsvarende) for å unngå
     samme feil.
-13. **`completedEvents`-telling (entered/resolved pr. øvelse i `collectSection`/`collectDiscipline`
+14. **`completedEvents`-telling (entered/resolved pr. øvelse i `collectSection`/`collectDiscipline`
     i `live-decastar.js`) må ha noe å telle mot.** Logikken - en øvelse teller ikke som fullført før
     ALLE påmeldte i feltet har et resultat eller en terminal-status - er generisk i prinsippet, men
     forutsetter at den nye kilden faktisk oppgir et "hele feltet"-tall pr. øvelse (`stats.entered`)
     å sammenligne mot, ikke bare radene som tilfeldigvis har kommet inn så langt. Uten dette blir
     "X øvelser fullført" upålitelig igjen, akkurat som før dette ble fikset 2026-09-19.
-14. **`attempts`-arrayet brukes nå av TO uavhengige ting, ikke bare forsøk-nedtrekksmenyen**: siden
+15. **`attempts`-arrayet brukes nå av TO uavhengige ting, ikke bare forsøk-nedtrekksmenyen**: siden
     2026-09-19 leser `rawResultKeyFor()` i `live-engine-fix20260918.js`/`live-engine.js` også
     `athlete.liveAttempts[i]` (populert fra `raw.attempts` i `applyLiveToAthletes()`) for å avgjøre
     hva som er "siste innmeldte resultat" - se punkt 7 over og "Siste innmeldte resultat"-uthevingen
     (den blå ruten) lenger ned. Får den nye arrangørens attempts-struktur (punkt 7) feil skjema,
     bryter altså BÅDE forsøk-modalen OG uthevings-funksjonen, ikke bare den ene.
-15. **`current`/`active`-feltet (punkt 5) brukes nå også til å flytte uthevingen til en helt ny
+16. **`current`/`active`-feltet (punkt 5) brukes nå også til å flytte uthevingen til en helt ny
     øvelse** (`rawResultKeyFor()`s `'ACT'`-fallback, lagt til 2026-09-19) - når ingen har et dømt
     forsøk ennå i en øvelse, men noen er markert aktive der, flytter uthevingen seg dit likevel.
     Samme avhengighet som punkt 5, men verifiser den også for DENNE funksjonen spesifikt, ikke bare
@@ -86,10 +126,20 @@ Birmingham-integrasjonen (`live-refresh-api-fix20260918.js`/`live-refresh-api.js
 bruker en helt annen arrangør/kilde (European Athletics) med sitt eget dataformat - de to
 pipelinene er separate og deler ikke skjema, men samme sjekkliste gjelder i prinsippet for begge.
 
-### Ikke organisatør-spesifikt (skal fungere uendret for neste konkurranse)
+## Verktøy for neste arrangør
 
-Disse er generelle UI/logikk-funksjoner bygget under Talence som IKKE er koblet til matsport sitt
-dataformat, og bør fungere fint for neste arrangør uten endring, så lenge punktene over er løst:
+- **`functions/api/_TEMPLATE-live-organizer.js`** - kopiérbar mal med hele JSON-kontrakten
+  dokumentert inline (se toppen av filen), pluss `TODO`-markører for alt organisator-spesifikt.
+  Ikke rutet av Cloudflare Pages (understrek-prefiks), trygt å la ligge som referanse.
+- **`scripts/validate_live_contract.py <url-eller-fil>`** - validerer at en live-JSON-respons
+  faktisk følger kontrakten (riktige felt, riktige typer, gyldige statuskoder) før klienten pekes
+  dit. Testet mot både gyldig og ugyldig eksempeldata 2026-09-19.
+
+## Ikke organisatør-spesifikt (skal fungere uendret for neste konkurranse)
+
+Disse er generelle UI/logikk-funksjoner som IKKE er koblet til matsport sitt dataformat, og bør
+fungere fint for neste arrangør uten endring, så lenge sjekklisten over er løst (dvs. at den nye
+`live-<navn>.js`-filen faktisk produserer riktig kontrakt):
 
 - Highlight av valgt utøver i score-dropdownen (sticky navnekolonne + magenta/gul markering).
 - Lukk-på-klikk-inni for score-dropdownen.
@@ -101,35 +151,48 @@ dataformat, og bør fungere fint for neste arrangør uten endring, så lenge pun
 - **"Oppdater"-knappen gjør en full `location.reload()`** i stedet for bare å hente nye data - sikrer
   at en fane som har vært åpen over en deploy også henter ny JS, ikke bare nye tall (fikset
   2026-09-19).
+- **Siden laster seg selv på nytt automatisk når en ny versjon er deployet** (`<meta name="mka-build">`
+  i `app/index.html` + en liten poller som sjekker hvert 60. sekund og gjør `location.reload()` ved
+  mismatch, lagt til 2026-09-19). 100 % generisk, ingen arrangør-avhengighet. Husk: dette gjelder
+  KODE-fikser - selve live-DATAEN har alltid oppdatert seg av seg selv via polling, uavhengig av
+  dette. Viktig: `<meta name="mka-build">`s `content`-verdi MÅ bruke nøyaktig samme
+  versjonsstreng som `?v=`-taggene på script-tagene (se cache-bust-punktet nedenfor) - da bumper
+  samme `sed`-kommando begge på én gang.
 - **Selvhelbredende `mergeLive()`** i `live-refresh-api-fix20260918.js`/`live-refresh-api.js` -
   forkaster en forgiftet/ugyldig lokal cache-base i stedet for å slå den sammen med fersk data, så
   en korrupt `localStorage`-verdi ikke kan låse statusboksen fast på "viser siste gyldige data" for
   alltid (kritisk fiks 2026-09-19).
+- **Statusboksen respekterer hvilken konkurranse som faktisk er valgt** - `refresh()`s (Birmingham)
+  og `refreshDecastar()`s feilhåndtering viser bare fallback-meldingen når DEN konkurransen faktisk
+  er den valgte i `#competitionSelect`, så én konkurranses (upålitelige) kilde aldri kan overskrive
+  statusboksen mens brukeren ser på den andre, sunne konkurransen (fikset 2026-09-19).
 - **"Vis poeng"-vekslingsknappen og stilen på "Sorter"-nedtrekksmenyen** i forecast-panelet.
 - **DNF/DNS-forplantning venter på at øvelsen faktisk er ferdig for hele feltet** før den kopierer en
   utøvers terminal-status inn i senere, ikke-startede øvelser (`terminalCodeForCell()` sin
   `stop<completed`-sjekk) - OG ekte deltakelse (et reelt resultat eller "aktiv nå") i en senere celle
   vinner alltid over en arvet DNF/DNS fra en tidligere øvelse (fikset 2026-09-19). Selve mekanismen
-  er generisk; den forutsetter bare punkt 13 og 15 over.
+  er generisk; den forutsetter bare punkt 14 og 16 over.
 - **"Siste innmeldte resultat"-uthevingen (den blå ruten) og selve diff-/lagringsmekanismen bak den**
   (`rawResultKeyFor()`/`updateLatestResultHighlight()`, persistert i `localStorage` under
   `mka-forecast-latest-v3`) er generisk logikk - den følger med på hvert enkelt forsøk (også et
   bomkast/"X", og flytter seg selv til en helt ny øvelse så snart noen blir aktive der), viser
   ALLTID bare én celle om gangen, og overlever sideomlasting. Bygget og herdet gjennom flere runder
-  2026-09-19 (se punkt 14 og 15 over for hva som faktisk MÅ sjekkes per arrangør: selve
+  2026-09-19 (se punkt 15 og 16 over for hva som faktisk MÅ sjekkes per arrangør: selve
   `attempts`/`active`-feltene den leser fra).
 - **"❄ Frys"-knappen** i forecast-panelet (lar en kommentator fryse visningen på et gitt tidspunkt
   mens ny data fortsetter å hentes i bakgrunnen) er 100 % generisk - den fryser en kopi av
   `window.MANGEKAMP_LIVE`/`MANGEKAMP_LIVE_DECASTAR` og har ingen avhengighet til matsport sitt
   dataformat i det hele tatt (lagt til 2026-09-19).
 - **Cache-bust-disiplinen**: `app/index.html` sine `<script src="...fix20260918.js?v=...">`-tagger
-  MÅ få en ny `?v=`-verdi hver gang den refererte filen endres, ellers kan nettlesere som allerede
-  har lastet siden fortsette å kjøre gammel JS på ubestemt tid selv etter en vellykket deploy (rammet
-  oss flere ganger 2026-09-19, se `20260919-livefix2` t.o.m. `livefix9` i git-historikken). Dette
-  gjelder generelt for ALLE JS-filer, ikke bare live-data-filene - husk å bumpe versjonsstrengen som
-  siste steg i enhver PR som endrer en fil referert med `?v=`.
+  (og `<meta name="mka-build">`, se over) MÅ få en ny versjonsverdi hver gang en referert fil
+  endres, ellers kan nettlesere som allerede har lastet siden fortsette å kjøre gammel JS selv
+  etter en vellykket deploy (rammet oss gjentatte ganger 2026-09-19, se `20260919-livefix2` t.o.m.
+  `livefix15` i git-historikken - auto-reload-polleren over gjør at dette nå løser seg selv innen
+  ~60 sekunder i stedet for å kreve en manuell hard-refresh). Gjelder ALLE JS-filer referert med
+  `?v=`, ikke bare live-data-filene - bump versjonsstrengen som siste steg i enhver PR som endrer
+  en slik fil.
 
-### Diagnostikk-mønster brukt i denne sesjonen
+## Diagnostikk-mønster
 
 Denne sandboksen har ikke direkte nettverkstilgang til eksterne live-API-er (organisatørens domene
 er blokkert av proxyen her), men GitHub Actions-runnere har det. Mønsteret som er brukt gjentatte
@@ -137,10 +200,19 @@ ganger for å feilsøke live-data-problemer, og som bør gjenbrukes for å utfor
 
 1. Skriv om `.github/workflows/athlete-search-debug.yml` (denne filen gjenbrukes som engangs-rigg,
    innholdet overskrives for hver ny undersøkelse - den er ikke ment å beholde historikk).
-2. Commit/push til en midlertidig branch.
-3. Trigger kjøringen med `mcp__github__actions_run_trigger` (method `run_workflow`).
+   **Pass på innrykk**: en `python3 - <<'PYEOF'`-heredoc inni et YAML `run: |`-blokk MÅ ha alle
+   linjene (python-koden og selve `PYEOF`) innrykket like mye som resten av shell-scriptet, ellers
+   blir HELE YAML-filen ugyldig og `workflow_dispatch` feiler med en misvisende
+   "does not have workflow_dispatch trigger"-feilmelding. Valider alltid med
+   `python3 -c "import yaml; yaml.safe_load(open('.github/workflows/athlete-search-debug.yml'))"`
+   FØR push.
+2. Commit/push til en midlertidig branch, opprett PR, vent på at required status check blir grønn,
+   merge (squash).
+3. Trigger kjøringen med `mcp__github__actions_run_trigger` (method `run_workflow`, `ref: main`) -
+   `workflow_dispatch` krever at filen faktisk ligger på default branch, ikke bare på feature-branchen.
 4. Vent og hent loggen med `mcp__github__get_job_logs`.
 
 Dette er både for å teste mot arrangørens API direkte (Python/curl) og for å teste selve
 nettsiden i en ekte nettleser (Playwright), siden `mangekampanalyse.no` heller ikke er nåbar direkte
-fra denne sandboksen.
+fra denne sandboksen. Bruk **`scripts/validate_live_contract.py`** for å sjekke en ny arrangørs
+JSON-skjema i stedet for å bygge en ny diagnostikk-rigg for akkurat det - langt raskere.
