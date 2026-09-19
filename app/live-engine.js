@@ -7,9 +7,32 @@
   // up an entire unseen table as "new".
   const forecastLatestKeys={};
   const forecastSnapshots={};
+  // Persisted across page reloads (the "Oppdater" button and any manual refresh do a full
+  // location.reload()) so the highlight survives instead of silently resetting to "nothing is new"
+  // every time the page reloads - without this, a result that landed just before a reload would
+  // never get highlighted at all, since the in-memory snapshot it'd be diffed against is gone.
+  const FORECAST_LATEST_STORAGE_KEY='mka-forecast-latest-v1';
+  function loadForecastLatestState(){
+    try{
+      const raw=localStorage.getItem(FORECAST_LATEST_STORAGE_KEY);if(!raw)return;
+      const parsed=JSON.parse(raw);if(!parsed||typeof parsed!=='object')return;
+      if(parsed.snapshots&&typeof parsed.snapshots==='object')Object.assign(forecastSnapshots,parsed.snapshots);
+      if(parsed.latestKeys&&typeof parsed.latestKeys==='object'){
+        for(const [scope,keys] of Object.entries(parsed.latestKeys))if(Array.isArray(keys))forecastLatestKeys[scope]=new Set(keys);
+      }
+    }catch(_err){}
+  }
+  function saveForecastLatestState(){
+    try{
+      const latestKeysObj={};
+      for(const [scope,set] of Object.entries(forecastLatestKeys))latestKeysObj[scope]=[...set];
+      localStorage.setItem(FORECAST_LATEST_STORAGE_KEY,JSON.stringify({snapshots:forecastSnapshots,latestKeys:latestKeysObj}));
+    }catch(_err){}
+  }
+  loadForecastLatestState();
   function forecastScopeKey(){return (typeof currentComp!=='undefined'?currentComp:'')+'|'+(typeof currentType!=='undefined'?currentType:'');}
   function resultKeyFor(athlete,i){const code=terminalCodeForCell(athlete,i);if(code)return 'T:'+code;if(hasActual(athlete,i)){const v=actualMark(athlete,i);return v==null?null:'M:'+v;}return null;}
-  function updateLatestResultHighlight(rows){const scope=forecastScopeKey(),snapshot={};for(const r of rows){for(let i=0;i<D.events.length;i++){const key=resultKeyFor(r.athlete,i);if(key==null)continue;snapshot[r.athlete.name+'|'+i]=key;}}const prev=forecastSnapshots[scope];if(prev){const changed=[];for(const k in snapshot){if(snapshot[k]!==prev[k])changed.push(k);}if(changed.length)forecastLatestKeys[scope]=new Set(changed);}forecastSnapshots[scope]=snapshot;return forecastLatestKeys[scope]||new Set();}
+  function updateLatestResultHighlight(rows){const scope=forecastScopeKey(),snapshot={};for(const r of rows){for(let i=0;i<D.events.length;i++){const key=resultKeyFor(r.athlete,i);if(key==null)continue;snapshot[r.athlete.name+'|'+i]=key;}}const prev=forecastSnapshots[scope];if(prev){const changed=[];for(const k in snapshot){if(snapshot[k]!==prev[k])changed.push(k);}if(changed.length)forecastLatestKeys[scope]=new Set(changed);}forecastSnapshots[scope]=snapshot;saveForecastLatestState();return forecastLatestKeys[scope]||new Set();}
   const TERMINAL=new Set(['DNS','DNF','DQ','NM','NH']);
   const LANGS=['nb','en','de'];
   const L={
