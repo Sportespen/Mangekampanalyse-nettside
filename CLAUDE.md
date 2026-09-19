@@ -58,6 +58,23 @@ punkt før neste konkurranse går live.
     live-datafil for den nye arrangøren får en lignende engangs-oppstartslogikk, må den eksplisitt
     sjekke `document.currentScript?.dataset?.mangekampLiveRefresh` (eller tilsvarende) for å unngå
     samme feil.
+13. **`completedEvents`-telling (entered/resolved pr. øvelse i `collectSection`/`collectDiscipline`
+    i `live-decastar.js`) må ha noe å telle mot.** Logikken - en øvelse teller ikke som fullført før
+    ALLE påmeldte i feltet har et resultat eller en terminal-status - er generisk i prinsippet, men
+    forutsetter at den nye kilden faktisk oppgir et "hele feltet"-tall pr. øvelse (`stats.entered`)
+    å sammenligne mot, ikke bare radene som tilfeldigvis har kommet inn så langt. Uten dette blir
+    "X øvelser fullført" upålitelig igjen, akkurat som før dette ble fikset 2026-09-19.
+14. **`attempts`-arrayet brukes nå av TO uavhengige ting, ikke bare forsøk-nedtrekksmenyen**: siden
+    2026-09-19 leser `rawResultKeyFor()` i `live-engine-fix20260918.js`/`live-engine.js` også
+    `athlete.liveAttempts[i]` (populert fra `raw.attempts` i `applyLiveToAthletes()`) for å avgjøre
+    hva som er "siste innmeldte resultat" - se punkt 7 over og "Siste innmeldte resultat"-uthevingen
+    (den blå ruten) lenger ned. Får den nye arrangørens attempts-struktur (punkt 7) feil skjema,
+    bryter altså BÅDE forsøk-modalen OG uthevings-funksjonen, ikke bare den ene.
+15. **`current`/`active`-feltet (punkt 5) brukes nå også til å flytte uthevingen til en helt ny
+    øvelse** (`rawResultKeyFor()`s `'ACT'`-fallback, lagt til 2026-09-19) - når ingen har et dømt
+    forsøk ennå i en øvelse, men noen er markert aktive der, flytter uthevingen seg dit likevel.
+    Samme avhengighet som punkt 5, men verifiser den også for DENNE funksjonen spesifikt, ikke bare
+    for den røde prikken.
 
 Birmingham-integrasjonen (`live-refresh-api-fix20260918.js`/`live-refresh-api.js`, mot `/api/live`)
 bruker en helt annen arrangør/kilde (European Athletics) med sitt eget dataformat - de to
@@ -72,6 +89,39 @@ dataformat, og bør fungere fint for neste arrangør uten endring, så lenge pun
 - Lukk-på-klikk-inni for score-dropdownen.
 - Den pulserende røde "live nå"-visuelle stilen selv (CSS/ikon) - bare datakilden bak `active`-feltet
   er organisatør-spesifikk, ikke selve UI-komponenten.
+- **Fanebytte (Tikamp menn / Sjukamp kvinner) kaller `syncLive()` selv** (`setType()`-wrapperen i
+  `app.js`/`app-fix20260918.js`) - uten dette henger live-status og forecast-tabellen igjen på
+  forrige faneskjønns data i opptil 30 sekunder etter bytte (fikset 2026-09-19).
+- **"Oppdater"-knappen gjør en full `location.reload()`** i stedet for bare å hente nye data - sikrer
+  at en fane som har vært åpen over en deploy også henter ny JS, ikke bare nye tall (fikset
+  2026-09-19).
+- **Selvhelbredende `mergeLive()`** i `live-refresh-api-fix20260918.js`/`live-refresh-api.js` -
+  forkaster en forgiftet/ugyldig lokal cache-base i stedet for å slå den sammen med fersk data, så
+  en korrupt `localStorage`-verdi ikke kan låse statusboksen fast på "viser siste gyldige data" for
+  alltid (kritisk fiks 2026-09-19).
+- **"Vis poeng"-vekslingsknappen og stilen på "Sorter"-nedtrekksmenyen** i forecast-panelet.
+- **DNF/DNS-forplantning venter på at øvelsen faktisk er ferdig for hele feltet** før den kopierer en
+  utøvers terminal-status inn i senere, ikke-startede øvelser (`terminalCodeForCell()` sin
+  `stop<completed`-sjekk) - OG ekte deltakelse (et reelt resultat eller "aktiv nå") i en senere celle
+  vinner alltid over en arvet DNF/DNS fra en tidligere øvelse (fikset 2026-09-19). Selve mekanismen
+  er generisk; den forutsetter bare punkt 13 og 15 over.
+- **"Siste innmeldte resultat"-uthevingen (den blå ruten) og selve diff-/lagringsmekanismen bak den**
+  (`rawResultKeyFor()`/`updateLatestResultHighlight()`, persistert i `localStorage` under
+  `mka-forecast-latest-v3`) er generisk logikk - den følger med på hvert enkelt forsøk (også et
+  bomkast/"X", og flytter seg selv til en helt ny øvelse så snart noen blir aktive der), viser
+  ALLTID bare én celle om gangen, og overlever sideomlasting. Bygget og herdet gjennom flere runder
+  2026-09-19 (se punkt 14 og 15 over for hva som faktisk MÅ sjekkes per arrangør: selve
+  `attempts`/`active`-feltene den leser fra).
+- **"❄ Frys"-knappen** i forecast-panelet (lar en kommentator fryse visningen på et gitt tidspunkt
+  mens ny data fortsetter å hentes i bakgrunnen) er 100 % generisk - den fryser en kopi av
+  `window.MANGEKAMP_LIVE`/`MANGEKAMP_LIVE_DECASTAR` og har ingen avhengighet til matsport sitt
+  dataformat i det hele tatt (lagt til 2026-09-19).
+- **Cache-bust-disiplinen**: `app/index.html` sine `<script src="...fix20260918.js?v=...">`-tagger
+  MÅ få en ny `?v=`-verdi hver gang den refererte filen endres, ellers kan nettlesere som allerede
+  har lastet siden fortsette å kjøre gammel JS på ubestemt tid selv etter en vellykket deploy (rammet
+  oss flere ganger 2026-09-19, se `20260919-livefix2` t.o.m. `livefix9` i git-historikken). Dette
+  gjelder generelt for ALLE JS-filer, ikke bare live-data-filene - husk å bumpe versjonsstrengen som
+  siste steg i enhver PR som endrer en fil referert med `?v=`.
 
 ### Diagnostikk-mønster brukt i denne sesjonen
 
