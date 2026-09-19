@@ -42,7 +42,13 @@
     const attempts=athlete.liveAttempts?.[i];
     if(Array.isArray(attempts)&&attempts.length){const last=attempts[attempts.length-1];return 'A:'+attempts.length+':'+(last?.result??'')+':'+(last?.height??'');}
     const status=String(athlete.liveStatus?.[i]||'').trim().toUpperCase();if(status)return 'S:'+status;
-    const v=athlete.liveActual?.[i];return Number.isFinite(v)?'M:'+v:null;
+    const v=athlete.liveActual?.[i];if(Number.isFinite(v))return 'M:'+v;
+    // Nobody has a judged attempt in this discipline yet, but this athlete has just stepped up
+    // (matsport's own "current" flag) - that's the whole field's attention moving to a brand new
+    // event, which is as newsworthy as any single result, so it should move the highlight there too
+    // rather than leaving it stuck on the previous event until the first attempt is finally judged.
+    if(athlete.liveActive?.[i])return 'ACT';
+    return null;
   }
   function updateLatestResultHighlight(rows){
     const scope=forecastScopeKey(),snapshot={};
