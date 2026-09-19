@@ -10,13 +10,61 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Direct curl check of app-fix20260918.js
+      - name: Check hurdles (110mh/100mh) data - our API, active flags, raw matsport
         run: |
-          curl -sI "https://mangekampanalyse.no/app-fix20260918.js"
-          echo "---"
-          curl -s "https://mangekampanalyse.no/app-fix20260918.js" -o /tmp/a.js
-          echo "size: $(wc -c < /tmp/a.js)"
-          grep -o "function predict([^}]*}" /tmp/a.js
-          echo "---"
-          echo "checking response headers with cache bust:"
-          curl -sI "https://mangekampanalyse.no/app-fix20260918.js?x=$(date +%s%N)"
+          cat > probe9.py <<'EOF'
+          import json, time
+          import urllib.request
+
+          def get_json(url):
+              req = urllib.request.Request(url, headers={'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0 Mangekampanalyse/2.0'})
+              with urllib.request.urlopen(req, timeout=20) as r:
+                  return json.loads(r.read().decode('utf-8'))
+
+          print('=== Our own /api/live-decastar - hurdles field presence + active flags ===')
+          live = get_json('https://mangekampanalyse.no/api/live-decastar?nocache=' + str(time.time()))
+          for gender, key in [('men','110mh'),('women','100mh')]:
+              results = live.get(gender, {}).get('results', {})
+              have = {n: e.get(key) for n, e in results.items() if e.get(key)}
+              print(f'{gender} {key}: {len(have)} of {len(results)} athletes have data')
+              actives = [n for n,v in have.items() if v.get('active')]
+              print(f'  active right now: {actives}')
+              for n, v in list(have.items())[:3]:
+                  print('  ', n, v)
+              print(f'  eventHasMarks[{key}]:', live.get(gender, {}).get('eventHasMarks', {}).get(key))
+
+          print()
+          print('=== Raw matsport schedule - hurdles events ===')
+          API = 'https://api.athle.matsport.com'
+          COMP = '65e4f577-c90c-4008-9955-dfa3563d7a86'
+          def mget(path):
+              req = urllib.request.Request(API + path, headers={'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0 Mangekampanalyse/2.0'})
+              with urllib.request.urlopen(req, timeout=20) as r:
+                  return json.loads(r.read().decode('utf-8'))
+          comp = mget(f'/competitions/{COMP}')
+          hurdle_ids = []
+          for day in comp.get('schedules', []):
+              for ev in day.get('events', []):
+                  phase = str(ev.get('phase','')) + ' ' + str(ev.get('event',''))
+                  if 'hurdle' in phase.lower():
+                      hurdle_ids.append((ev.get('id'), ev.get('gender'), phase, ev.get('status')))
+          print('Found hurdle events:')
+          for eid, gender, phase, status in hurdle_ids:
+              print(' ', eid, '| gender=', gender, '| phase=', phase, '| status=', status)
+
+          print()
+          for eid, gender, phase, status in hurdle_ids:
+              payload = mget(f'/events/{eid}')
+              track = payload.get('trackResult') or {}
+              rows = track.get('results') or []
+              print(f'--- event {eid} ({gender} / {phase}) — {len(rows)} rows ---')
+              actives_raw = []
+              for row in rows:
+                  athlete = row.get('athlete') or {}
+                  name = (athlete.get('longName') or '').strip()
+                  cur = str(row.get('current') or '').strip()
+                  if cur:
+                      actives_raw.append((name, cur, row.get('time'), row.get('status')))
+              print('  raw active rows:', actives_raw)
+          EOF
+          python3 probe9.py
