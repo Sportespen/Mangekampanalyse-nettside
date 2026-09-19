@@ -31,7 +31,7 @@ const RESULT_BLOCK={
 function appDiscipline(text){const s=String(text||'');for(const[rx,name]of EVENT_MAP)if(rx.test(s))return name;return null;}
 function cleanName(v){return String(v||'').replace(/\s+/g,' ').trim();}
 async function getJson(path){
-  const r=await fetch(`${API}${path}`,{headers:{Accept:'application/json','User-Agent':'Mozilla/5.0 Mangekampanalyse/2.0'},cf:{cacheTtl:20,cacheEverything:true}});
+  const r=await fetch(`${API}${path}`,{headers:{Accept:'application/json','User-Agent':'Mozilla/5.0 Mangekampanalyse/2.0'},cf:{cacheTtl:10,cacheEverything:true}});
   if(!r.ok)throw new Error(`${path}: HTTP ${r.status}`);
   return r.json();
 }
