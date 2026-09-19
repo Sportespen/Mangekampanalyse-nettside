@@ -95,7 +95,13 @@
   // can read as a placeholder terminal code before the discipline is truly over for anyone - carrying
   // it forward immediately would wrongly mark the athlete as out of the competition (and hide any
   // real mark they go on to post) before the event that supposedly ended it has actually ended.
-  function terminalCodeForCell(a,i){const own=terminalStatus(a,i);if(own)return own;const stop=firstTerminalIndex(a);if(stop<0||i<=stop)return null;const completed=Number(liveForType().completedEvents||0);return stop<completed?terminalStatus(a,stop):null;}
+  // A terminal code only really means "out for the rest of the competition" if matsport itself
+  // reports it for that exact cell (own) - a code carried forward from an EARLIER event is only a
+  // best guess for events we have no other information about yet. Confirmed live: an athlete with a
+  // DNF read on an earlier event kept competing normally afterwards (had a real, currently-live mark
+  // in a later event) - real participation in a cell always beats a code merely inherited from an
+  // earlier one.
+  function terminalCodeForCell(a,i){const own=terminalStatus(a,i);if(own)return own;if(hasActual(a,i)||isLiveActive(a,i))return null;const stop=firstTerminalIndex(a);if(stop<0||i<=stop)return null;const completed=Number(liveForType().completedEvents||0);return stop<completed?terminalStatus(a,stop):null;}
   function chaseDiffSeconds(pointGap,leader,lastIndex){if(pointGap<=0)return 0;const leaderTime=predictedMark(leader,lastIndex);if(!Number.isFinite(Number(leaderTime)))return null;const leaderScore=scoreEvent(lastIndex,Number(leaderTime));const target=leaderScore+pointGap;let lo=0,hi=Math.round(Number(leaderTime)*100),best=null;while(lo<=hi){const mid=Math.floor((lo+hi)/2);const t=mid/100;const pts=scoreEvent(lastIndex,t);if(pts>=target){best=t;lo=mid+1;}else hi=mid-1;}return best==null?null:Number((Number(leaderTime)-best).toFixed(2));}
   function formatDiffSeconds(v){if(v==null||!Number.isFinite(Number(v)))return '—';return Number(v).toFixed(2).replace('.',',')+' s';}
   function renderAllAnalyses(){renderAnalyse();renderRanking();renderLiveForecast();}
