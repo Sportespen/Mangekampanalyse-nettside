@@ -10,38 +10,46 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Check production live-decastar women completedEvents vs schedule order
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install Playwright
         run: |
-          echo "=== production /api/live-decastar women section ==="
-          curl -s "https://mangekampanalyse.no/api/live-decastar?t=$(date +%s%N)" -o /tmp/live.json
-          python3 - <<'PYEOF'
-import json
-d=json.load(open('/tmp/live.json'))
-w=d.get('women',{})
-print("completedEvents:", w.get('completedEvents'))
-print("eventHasMarks:", json.dumps(w.get('eventHasMarks'), indent=2))
-results = w.get('results', {})
-print("num athletes with results:", len(results))
-# For each discipline, list who has it and whether it's a mark/terminal/active-only
-from collections import defaultdict
-disc = defaultdict(list)
-for name, entry in results.items():
-    for k, v in entry.items():
-        if isinstance(v, dict) and 'mark' in v:
-            disc[k].append((name, v.get('mark'), v.get('resultStatus'), v.get('active')))
-for k, rows in disc.items():
-    resolved = sum(1 for r in rows if r[1] is not None or r[2])
-    print(f"--- {k}: entered(seen)={len(rows)} resolved={resolved} ---")
-    for r in rows:
-        print("   ", r)
-PYEOF
-          echo "=== matsport schedule raw order for women events (Décastar Talence 2026) ==="
-          curl -s "https://api.athle.matsport.com/competitions/65e4f577-c90c-4008-9955-dfa3563d7a86" -o /tmp/comp.json
-          python3 - <<'PYEOF'
-import json
-d=json.load(open('/tmp/comp.json'))
-for day in d.get('schedules', []):
-    for ev in day.get('events', []):
-        if str(ev.get('gender','')).upper()=='W':
-            print(day.get('date'), ev.get('id'), ev.get('phase'), ev.get('event'), ev.get('startTime') or ev.get('start') or '')
-PYEOF
+          npm init -y >/dev/null 2>&1
+          npm install playwright@latest >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
+      - name: Watch production forecast table for JS errors and freezing
+        run: |
+          node - <<'NODEEOF'
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch();
+            const page = await browser.newPage();
+            const errors = [];
+            page.on('pageerror', e => errors.push('PAGEERROR: ' + e.message));
+            page.on('console', msg => { if (msg.type() === 'error') errors.push('CONSOLE: ' + msg.text()); });
+            await page.goto('https://mangekampanalyse.no/', { waitUntil: 'networkidle', timeout: 60000 });
+            await page.waitForTimeout(2000);
+            const snap = async () => {
+              return await page.evaluate(() => {
+                const status = document.querySelector('.status')?.textContent || '';
+                const banner = document.querySelector('#forecastBanner')?.textContent || '';
+                const rowsCount = document.querySelectorAll('#liveForecastBody tr').length;
+                const firstRow = document.querySelector('#liveForecastBody tr')?.textContent?.slice(0,200) || '';
+                return { status, banner, rowsCount, firstRow, mangekampLiveDecastar: !!window.MANGEKAMP_LIVE_DECASTAR, updatedAt: window.MANGEKAMP_LIVE_DECASTAR?.updatedAt };
+              });
+            };
+            console.log('=== snapshot 1 (t=0s) ===');
+            console.log(JSON.stringify(await snap(), null, 2));
+            await page.waitForTimeout(35000);
+            console.log('=== snapshot 2 (t=35s, after one 30s poll cycle) ===');
+            console.log(JSON.stringify(await snap(), null, 2));
+            await page.waitForTimeout(35000);
+            console.log('=== snapshot 3 (t=70s) ===');
+            console.log(JSON.stringify(await snap(), null, 2));
+            console.log('=== JS errors captured ===');
+            console.log(errors.length ? errors.join('\n') : '(none)');
+            await browser.close();
+          })();
+          NODEEOF
