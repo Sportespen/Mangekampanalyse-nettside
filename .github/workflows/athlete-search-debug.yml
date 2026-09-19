@@ -10,31 +10,34 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Check decastar health now and confirm which JS version is served
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install Playwright
         run: |
-          echo "=== which live-refresh-api version does index.html reference right now? ==="
-          curl -s "https://mangekampanalyse.no/?t=$(date +%s%N)" | grep -o 'live-refresh-api-fix20260918.js?v=[a-z0-9-]*'
-          echo "=== does that exact file contain the Birmingham setInterval removal (only 1 setInterval call left)? ==="
-          ver=$(curl -s "https://mangekampanalyse.no/?t=$(date +%s%N)" | grep -o 'live-refresh-api-fix20260918.js?v=[a-z0-9-]*' | head -1)
-          curl -s "https://mangekampanalyse.no/$ver" -o /tmp/live-refresh.js
-          echo "setInterval count: $(grep -o 'setInterval' /tmp/live-refresh.js | wc -l)"
-          grep -o "window.setInterval([^;]*;" /tmp/live-refresh.js
-          echo ""
-          echo "=== live-decastar health, 6 polls @ 10s ==="
-          for i in $(seq 1 6); do
-            start=$(date +%s%N)
-            code=$(curl -s -o /tmp/resp.json -w "%{http_code}" --max-time 25 "https://mangekampanalyse.no/api/live-decastar?t=$(date +%s%N)")
-            end=$(date +%s%N)
-            ms=$(( (end - start) / 1000000 ))
-            echo "poll $i @ $(date -u +%H:%M:%S) - HTTP $code - ${ms}ms"
-            if [ "$code" != "200" ]; then
-              echo "--- BODY ---"; cat /tmp/resp.json; echo "--- END ---"
-            else
-              python3 - <<'PYEOF'
-          import json
-          d=json.load(open('/tmp/resp.json'))
-          print('  updatedAt:', d.get('updatedAt'), '| error:', d.get('error'))
-          PYEOF
-            fi
-            sleep 10
-          done
+          npm init -y >/dev/null 2>&1
+          npm install playwright@latest >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
+      - name: Load page and watch for JS errors / unexpected reloads over 70s
+        run: |
+          node - <<'NODEEOF'
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch();
+            const page = await browser.newPage();
+            const errors = [];
+            let navCount = 0;
+            page.on('pageerror', e => errors.push('PAGEERROR: ' + e.message));
+            page.on('console', msg => { if (msg.type() === 'error') errors.push('CONSOLE: ' + msg.text()); });
+            page.on('load', () => { navCount++; });
+            await page.goto('https://mangekampanalyse.no/', { waitUntil: 'networkidle', timeout: 60000 });
+            const build = await page.evaluate(() => document.querySelector('meta[name="mka-build"]')?.content);
+            console.log('mka-build on load:', build, '| nav count after initial load:', navCount);
+            await page.waitForTimeout(70000);
+            console.log('nav count after 70s wait (should still be 1, since no new deploy landed):', navCount);
+            console.log('=== JS errors captured ===');
+            console.log(errors.length ? errors.join('\n---\n') : '(none)');
+            await browser.close();
+          })();
+          NODEEOF
