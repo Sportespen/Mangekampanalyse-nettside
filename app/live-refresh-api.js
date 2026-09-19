@@ -187,14 +187,14 @@
     window.refreshMangekampLiveDecastarNow=refreshDecastar;
     restorePersisted();
     restoreDecastarPersisted();
-    // EM Birmingham 2026 is over - its results are final and meant to stay put, and its live
-    // source has gone dark (confirmed 2026-09-19: /api/live returning HTTP 502 consistently, not
-    // intermittently). One attempt here still picks up the truly final numbers if that source ever
-    // comes back, but there's no point re-polling a finished competition's dead endpoint every
-    // 10 seconds forever - Décastar's own polling below is completely unaffected by this.
+    // Both competitions this build was tuned for - EM Birmingham 2026 and Décastar Talence 2026 -
+    // are over now, and their results are meant to stay put. One attempt at each here still picks
+    // up the truly final numbers if either source is still briefly reachable, but there's no
+    // point re-polling a finished competition's endpoint every 10 seconds forever. The NEXT
+    // competition (a different organiser) needs a fresh setInterval call here once it's actually
+    // live - see CLAUDE.md's "Next organiser playbook" for the full swap-over checklist.
     refresh(false);
     refreshDecastar();
-    window.setInterval(refreshDecastar,10000);
   }
   document.addEventListener('mka:languagechange',()=>{if(loadLastKnownGood()&&lastSuccessful)showFallbackStatus('restored',lastSuccessful);});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
