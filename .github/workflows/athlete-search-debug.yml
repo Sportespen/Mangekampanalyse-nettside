@@ -10,25 +10,27 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Poll /api/live-decastar every 10s like the client does, watch for failures
+      - name: Poll live-decastar and live (Birmingham) every 10s, check for failures
         run: |
           for i in $(seq 1 8); do
-            start=$(date +%s%N)
-            code=$(curl -s -o /tmp/resp.json -w "%{http_code}" --max-time 25 "https://mangekampanalyse.no/api/live-decastar?t=$(date +%s%N)")
-            end=$(date +%s%N)
-            ms=$(( (end - start) / 1000000 ))
-            size=$(wc -c < /tmp/resp.json)
-            echo "poll $i @ $(date -u +%H:%M:%S) - HTTP $code - ${ms}ms - ${size} bytes"
-            if [ "$code" != "200" ]; then
-              echo "--- BODY ---"
-              cat /tmp/resp.json
-              echo "--- END BODY ---"
-            else
-              python3 - <<'PYEOF'
-          import json
-          d=json.load(open('/tmp/resp.json'))
-          print('  updatedAt:', d.get('updatedAt'), '| error:', d.get('error'))
+            for path in "live-decastar" "live"; do
+              start=$(date +%s%N)
+              code=$(curl -s -o /tmp/resp_$path.json -w "%{http_code}" --max-time 25 "https://mangekampanalyse.no/api/$path?t=$(date +%s%N)")
+              end=$(date +%s%N)
+              ms=$(( (end - start) / 1000000 ))
+              echo "[$path] poll $i @ $(date -u +%H:%M:%S) - HTTP $code - ${ms}ms"
+              if [ "$code" != "200" ]; then
+                echo "--- BODY ($path) ---"
+                cat /tmp/resp_$path.json
+                echo "--- END ---"
+              else
+                python3 - "$path" <<'PYEOF'
+          import json,sys
+          p=sys.argv[1]
+          d=json.load(open(f'/tmp/resp_{p}.json'))
+          print(f'  [{p}] updatedAt:', d.get('updatedAt'), '| error:', d.get('error'))
           PYEOF
-            fi
-            sleep 10
+              fi
+            done
+            sleep 8
           done
