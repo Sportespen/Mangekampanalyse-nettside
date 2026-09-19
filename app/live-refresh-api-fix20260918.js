@@ -123,8 +123,15 @@
     }catch(err){
       console.warn('Direkte live-oppdatering feilet:',err);
       const saved=loadLastKnownGood();
-      if(saved){window.MANGEKAMP_LIVE=mergeLive(window.MANGEKAMP_LIVE||{},saved.data);lastSuccessful=new Date(saved.data?.updatedAt||saved.savedAt||Date.now());showFallbackStatus('fallback',lastSuccessful);}
-      else if(lastSuccessful){showFallbackStatus('fallback',lastSuccessful);}
+      // The status box is shared between both competitions - only touch it with Birmingham's
+      // fallback message when Birmingham is actually the one currently selected, otherwise a
+      // transient hiccup on ITS (separate, historically less reliable) source would overwrite
+      // whatever Décastar's own polling just correctly showed, even though the viewer never
+      // switched away from Décastar. State (last-known-good) is still restored either way so the
+      // data itself stays fresh for whenever the viewer does switch to Birmingham.
+      const onBirmingham=typeof currentComp==='undefined'||currentComp==='birmingham';
+      if(saved){window.MANGEKAMP_LIVE=mergeLive(window.MANGEKAMP_LIVE||{},saved.data);lastSuccessful=new Date(saved.data?.updatedAt||saved.savedAt||Date.now());if(onBirmingham)showFallbackStatus('fallback',lastSuccessful);}
+      else if(lastSuccessful&&onBirmingham){showFallbackStatus('fallback',lastSuccessful);}
       if(manual){setButton(saved?'⚠ Viser siste gyldige data':'⚠ Prøver igjen…',false);setTimeout(()=>setButton('↻ Oppdater',false),2600);}
     }
     finally{inFlight=false;}
@@ -168,6 +175,9 @@
       console.warn('Décastar live-oppdatering feilet:',err);
       const saved=loadDecastarLastKnownGood();
       if(saved)window.MANGEKAMP_LIVE_DECASTAR=mergeLive(window.MANGEKAMP_LIVE_DECASTAR||{},saved.data);
+      // Symmetric with refresh()'s guard above - only show a fallback message on the shared status
+      // box when Décastar is actually the one currently selected.
+      if(saved&&typeof currentComp!=='undefined'&&currentComp==='decastar')showFallbackStatus('fallback',new Date(saved.data?.updatedAt||saved.savedAt||Date.now()));
     }
     finally{decastarInFlight=false;}
   }
