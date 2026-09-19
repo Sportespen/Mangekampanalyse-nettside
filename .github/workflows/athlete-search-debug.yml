@@ -10,28 +10,59 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Check production live-decastar men+women over time
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install Playwright
         run: |
-          for i in 1 2 3; do
-            echo "=== poll $i at $(date -u +%H:%M:%S) ==="
-            curl -s "https://mangekampanalyse.no/api/live-decastar?t=$(date +%s%N)" -o /tmp/live_$i.json
-            python3 - "$i" <<'PYEOF'
-          import json,sys
-          i=sys.argv[1]
-          d=json.load(open(f'/tmp/live_{i}.json'))
-          m=d.get('men',{})
-          w=d.get('women',{})
-          print("updatedAt:", d.get('updatedAt'))
-          print("MEN completedEvents:", m.get('completedEvents'), "eventHasMarks:", m.get('eventHasMarks'))
-          print("WOMEN completedEvents:", w.get('completedEvents'), "eventHasMarks:", w.get('eventHasMarks'))
-          # Show Diskos detail for men to see if new marks are landing
-          disc=[]
-          for name, entry in m.get('results',{}).items():
-              v=entry.get('Diskos')
-              if v: disc.append((name, v.get('mark'), v.get('resultStatus'), v.get('active')))
-          print("MEN Diskos rows:", len(disc))
-          for r in sorted(disc, key=lambda x: (x[1] is None, x[1]), reverse=True)[:5]:
-              print("   ", r)
-          PYEOF
-            if [ "$i" -lt 3 ]; then sleep 35; fi
-          done
+          npm init -y >/dev/null 2>&1
+          npm install playwright@latest >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
+      - name: Watch production for JS errors and check women highlight
+        run: |
+          node - <<'NODEEOF'
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch();
+            const page = await browser.newPage();
+            const errors = [];
+            page.on('pageerror', e => errors.push('PAGEERROR: ' + e.message + '\n' + (e.stack||'')));
+            page.on('console', msg => { if (msg.type() === 'error') errors.push('CONSOLE: ' + msg.text()); });
+            await page.goto('https://mangekampanalyse.no/', { waitUntil: 'networkidle', timeout: 60000 });
+            await page.waitForTimeout(2000);
+
+            const snap = async (label) => {
+              const data = await page.evaluate(() => {
+                const status = document.querySelector('.status')?.textContent || '';
+                const banner = document.querySelector('#forecastBanner')?.textContent || '';
+                const latestCells = [...document.querySelectorAll('#liveForecastBody td.latest-result')].length;
+                const rowsCount = document.querySelectorAll('#liveForecastBody tr').length;
+                return { status, banner, latestCells, rowsCount };
+              });
+              console.log(`=== ${label} ===`);
+              console.log(JSON.stringify(data, null, 2));
+              return data;
+            };
+
+            await snap('men - t=0s');
+            await page.waitForTimeout(32000);
+            await snap('men - t=32s (after 1 poll)');
+
+            // switch to women's tab
+            const switched = await page.evaluate(() => {
+              const btn = document.querySelector('.event-switch-btn[data-type="women"]');
+              if (btn) { btn.click(); return true; }
+              return false;
+            });
+            console.log('switched to women tab:', switched);
+            await page.waitForTimeout(1000);
+            await snap('women - right after tab switch');
+            await page.waitForTimeout(32000);
+            await snap('women - t=32s after switch (after 1 more poll)');
+
+            console.log('=== JS errors captured ===');
+            console.log(errors.length ? errors.join('\n---\n') : '(none)');
+            await browser.close();
+          })();
+          NODEEOF
