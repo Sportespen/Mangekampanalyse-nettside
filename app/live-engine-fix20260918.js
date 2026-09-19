@@ -33,7 +33,17 @@
   }
   loadForecastLatestState();
   function forecastScopeKey(){return (typeof currentComp!=='undefined'?currentComp:'')+'|'+(typeof currentType!=='undefined'?currentType:'');}
-  function rawResultKeyFor(athlete,i){const status=String(athlete.liveStatus?.[i]||'').trim().toUpperCase();if(status)return 'S:'+status;const v=athlete.liveActual?.[i];return Number.isFinite(v)?'M:'+v:null;}
+  // For a throw/jump with a recorded attempt series, key off the attempts themselves (count + the
+  // newest one's raw value) rather than only the discipline's final mark/status - a foul ("X") is
+  // just as much a just-reported result as a valid distance, and waiting for the whole series (or
+  // the whole field) to finish before highlighting anything would make it look like whichever
+  // athlete is mid-series has been skipped over entirely.
+  function rawResultKeyFor(athlete,i){
+    const attempts=athlete.liveAttempts?.[i];
+    if(Array.isArray(attempts)&&attempts.length){const last=attempts[attempts.length-1];return 'A:'+attempts.length+':'+(last?.result??'')+':'+(last?.height??'');}
+    const status=String(athlete.liveStatus?.[i]||'').trim().toUpperCase();if(status)return 'S:'+status;
+    const v=athlete.liveActual?.[i];return Number.isFinite(v)?'M:'+v:null;
+  }
   function updateLatestResultHighlight(rows){
     const scope=forecastScopeKey(),snapshot={};
     for(const r of rows){for(let i=0;i<D.events.length;i++){const key=rawResultKeyFor(r.athlete,i);if(key==null)continue;snapshot[r.athlete.name+'|'+i]=key;}}
@@ -99,7 +109,7 @@
   function applyAuthoritativeField(){const next=authoritativeAthletes();D.athletes=next;const count=document.querySelector('#athleteCount');if(count)count.textContent=next.length+' '+(next.length===1?tx('athlete'):tx('athletes'));}
   function updateStatus(){const box=statusBox();if(!box)return;const live=activeLiveData(),section=liveForType(),completed=Number(section.completedEvents||0),updated=live.updatedAt?new Date(live.updatedAt):null,locale=lang()==='en'?'en-GB':lang()==='de'?'de-DE':'nb-NO',when=updated&&!Number.isNaN(updated.getTime())?updated.toLocaleTimeString(locale,{hour:'2-digit',minute:'2-digit'}):'';if(competitionStarted()){const unit=completed===1?tx('event'):tx('events'),sourceText=liveListAvailable()?tx('liveContinuous'):tx('liveWaiting');box.innerHTML=`<span class="dot"></span><div><b>LIVE${completed?' – '+completed+' '+unit+' '+tx('completed'):''}</b><small>${when?tx('updated')+' '+when+'. ':''}${sourceText}</small></div>`;box.classList.add('live-active');}else{box.innerHTML=`<span class="dot"></span><div><b>${tx('before')}</b><small>${tx('beforeSub')}</small></div>`;box.classList.remove('live-active');}}
   function terminalOf(raw){if(!raw||typeof raw!=='object')return null;const s=String(raw.resultStatus||raw.display||'').trim().toUpperCase();return TERMINAL.has(s)?s:null;}
-  function applyLiveToAthletes(){(D.athletes||[]).forEach(a=>{const byName=findLiveEntry(a.name)?.value;a.liveActual=[];a.liveStatus=[];a.liveActive=[];a.actual=a.actual||[];D.events.forEach((eventName,i)=>{const raw=byName?.[eventName];if(raw==null)return;if(typeof raw==='object'&&raw.active)a.liveActive[i]=true;const terminal=terminalOf(raw);if(terminal){a.liveStatus[i]=terminal;return;}const markRaw=typeof raw==='object'?raw.mark:raw;if(markRaw==null)return;const mark=Number(markRaw);if(Number.isFinite(mark)){a.actual[i]=mark;a.liveActual[i]=mark;}});});}
+  function applyLiveToAthletes(){(D.athletes||[]).forEach(a=>{const byName=findLiveEntry(a.name)?.value;a.liveActual=[];a.liveStatus=[];a.liveActive=[];a.liveAttempts=[];a.actual=a.actual||[];D.events.forEach((eventName,i)=>{const raw=byName?.[eventName];if(raw==null)return;if(typeof raw==='object'&&raw.active)a.liveActive[i]=true;if(typeof raw==='object'&&Array.isArray(raw.attempts)&&raw.attempts.length)a.liveAttempts[i]=raw.attempts;const terminal=terminalOf(raw);if(terminal){a.liveStatus[i]=terminal;return;}const markRaw=typeof raw==='object'?raw.mark:raw;if(markRaw==null)return;const mark=Number(markRaw);if(Number.isFinite(mark)){a.actual[i]=mark;a.liveActual[i]=mark;}});});}
   // Prefers the MANGEKAMP_HISTORY-driven basis (forecast-enhancements.js's basisFor(), exposed as
   // window.forecastBasisPrediction - the same one powering the "Prognosegrunnlag" modal) over
   // app.js's predict()/athlete.recent, which stays empty for every athlete in roster files like
