@@ -32,6 +32,15 @@
   function mergeLive(oldLive={},newLive={}){
     if(!oldLive||typeof oldLive!=='object')return newLive;
     if(!newLive||typeof newLive!=='object')return oldLive;
+    // If the existing base (in-memory or restored from localStorage) doesn't even look like valid
+    // live data itself - e.g. left over from an incompatible older cache format - merging with it
+    // can poison an otherwise perfectly valid fresh payload into failing looksValid() too, which
+    // permanently freezes the status box on the fallback text and its stale timestamp forever
+    // (apply()/applyDecastar() throw before ever recording a new successful update). Once the base
+    // itself fails the same shape check applied to a whole payload, treat it as empty and start
+    // fresh from the new data instead of merging with garbage - this self-heals on the very next
+    // successful fetch rather than requiring the viewer to manually clear their browser storage.
+    if(!looksValid(oldLive))return newLive;
     return {...oldLive,...newLive,men:mergeSection(oldLive.men||{},newLive.men||{}),women:mergeSection(oldLive.women||{},newLive.women||{})};
   }
   function resultCount(section){return Object.keys(section?.results||{}).length;}
@@ -87,8 +96,12 @@
     }finally{clearTimeout(timer);}
   }
   function apply(data){
-    const merged=mergeLive(window.MANGEKAMP_LIVE||{},data);
-    if(!looksValid(merged))throw new Error('Ugyldige live-data etter sammenslåing');
+    let merged=mergeLive(window.MANGEKAMP_LIVE||{},data);
+    // Belt-and-suspenders alongside the mergeLive() self-heal above: never throw away a fresh,
+    // already-validated payload just because merging it with whatever's currently cached produced
+    // something invalid - fall back to the fresh data on its own rather than getting stuck.
+    if(!looksValid(merged))merged=looksValid(data)?data:null;
+    if(!merged)throw new Error('Ugyldige live-data etter sammenslåing');
     window.MANGEKAMP_LIVE=merged;lastSuccessful=new Date(data.updatedAt||Date.now());saveLastKnownGood(merged);
     if(typeof setType==='function')setType(typeof currentType!=='undefined'?currentType:'men');
     if(typeof syncLive==='function'){try{syncLive();}catch(_err){}}
@@ -136,8 +149,9 @@
     }finally{clearTimeout(timer);}
   }
   function applyDecastar(data){
-    const merged=mergeLive(window.MANGEKAMP_LIVE_DECASTAR||{},data);
-    if(!looksValid(merged))throw new Error('Ugyldige live-data etter sammenslåing');
+    let merged=mergeLive(window.MANGEKAMP_LIVE_DECASTAR||{},data);
+    if(!looksValid(merged))merged=looksValid(data)?data:null;
+    if(!merged)throw new Error('Ugyldige live-data etter sammenslåing');
     window.MANGEKAMP_LIVE_DECASTAR=merged;saveDecastarLastKnownGood(merged);
     if(typeof syncLive==='function'&&typeof currentComp!=='undefined'&&currentComp==='decastar'){try{syncLive();}catch(_err){}}
   }
