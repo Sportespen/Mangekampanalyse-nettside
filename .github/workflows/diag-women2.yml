@@ -15,32 +15,32 @@ jobs:
           echo "=== production /api/live-decastar women section ==="
           curl -s "https://mangekampanalyse.no/api/live-decastar?t=$(date +%s%N)" -o /tmp/live.json
           python3 - <<'PYEOF'
-import json
-d=json.load(open('/tmp/live.json'))
-w=d.get('women',{})
-print("completedEvents:", w.get('completedEvents'))
-print("eventHasMarks:", json.dumps(w.get('eventHasMarks'), indent=2))
-results = w.get('results', {})
-print("num athletes with results:", len(results))
-from collections import defaultdict
-disc = defaultdict(list)
-for name, entry in results.items():
-    for k, v in entry.items():
-        if isinstance(v, dict) and 'mark' in v:
-            disc[k].append((name, v.get('mark'), v.get('resultStatus'), v.get('active')))
-for k, rows in disc.items():
-    resolved = sum(1 for r in rows if r[1] is not None or r[2])
-    print(f"--- {k}: entered(seen)={len(rows)} resolved={resolved} ---")
-    for r in rows:
-        print("   ", r)
-PYEOF
-          echo "=== matsport schedule raw order for women events (Décastar Talence 2026) ==="
+          import json
+          d=json.load(open('/tmp/live.json'))
+          w=d.get('women',{})
+          print("completedEvents:", w.get('completedEvents'))
+          print("eventHasMarks:", json.dumps(w.get('eventHasMarks'), indent=2))
+          results = w.get('results', {})
+          print("num athletes with results:", len(results))
+          from collections import defaultdict
+          disc = defaultdict(list)
+          for name, entry in results.items():
+              for k, v in entry.items():
+                  if isinstance(v, dict) and 'mark' in v:
+                      disc[k].append((name, v.get('mark'), v.get('resultStatus'), v.get('active')))
+          for k, rows in disc.items():
+              resolved = sum(1 for r in rows if r[1] is not None or r[2])
+              print(f"--- {k}: entered(seen)={len(rows)} resolved={resolved} ---")
+              for r in rows:
+                  print("   ", r)
+          PYEOF
+          echo "=== matsport schedule raw order for women events (Decastar Talence 2026) ==="
           curl -s "https://api.athle.matsport.com/competitions/65e4f577-c90c-4008-9955-dfa3563d7a86" -o /tmp/comp.json
           python3 - <<'PYEOF'
-import json
-d=json.load(open('/tmp/comp.json'))
-for day in d.get('schedules', []):
-    for ev in day.get('events', []):
-        if str(ev.get('gender','')).upper()=='W':
-            print(day.get('date'), ev.get('id'), ev.get('phase'), ev.get('event'), ev.get('startTime') or ev.get('start') or '')
-PYEOF
+          import json
+          d=json.load(open('/tmp/comp.json'))
+          for day in d.get('schedules', []):
+              for ev in day.get('events', []):
+                  if str(ev.get('gender','')).upper()=='W':
+                      print(day.get('date'), ev.get('id'), ev.get('phase'), ev.get('event'), ev.get('startTime') or ev.get('start') or '')
+          PYEOF
