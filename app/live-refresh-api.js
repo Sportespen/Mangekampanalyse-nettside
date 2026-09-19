@@ -187,9 +187,13 @@
     window.refreshMangekampLiveDecastarNow=refreshDecastar;
     restorePersisted();
     restoreDecastarPersisted();
+    // EM Birmingham 2026 is over - its results are final and meant to stay put, and its live
+    // source has gone dark (confirmed 2026-09-19: /api/live returning HTTP 502 consistently, not
+    // intermittently). One attempt here still picks up the truly final numbers if that source ever
+    // comes back, but there's no point re-polling a finished competition's dead endpoint every
+    // 10 seconds forever - Décastar's own polling below is completely unaffected by this.
     refresh(false);
     refreshDecastar();
-    window.setInterval(()=>refresh(false),10000);
     window.setInterval(refreshDecastar,10000);
   }
   document.addEventListener('mka:languagechange',()=>{if(loadLastKnownGood()&&lastSuccessful)showFallbackStatus('restored',lastSuccessful);});
