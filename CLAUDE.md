@@ -46,11 +46,17 @@ punkt før neste konkurranse går live.
 10. **Flere samtidig aktive utøvere** (f.eks. to kastringer eller to høyde-stativer) er allerede
     støttet generisk i koden (ingen "bare én aktiv"-antagelse noe sted), men verifiser likevel at
     den nye kildens data faktisk oppfører seg tilsvarende for øvelser med flere samtidige stasjoner.
-11. **Cloudflare edge cache-TTL og klientens polling-intervall** (`cacheTtl:20` i `getJson()`, samt
-    klientens 20-sekunders `reloadLiveData`-intervall) er tilpasset matsport sin oppdateringstakt,
-    empirisk observert under Talence. Den nye arrangøren kan oppdatere mye oftere eller sjeldnere -
-    test faktisk takt (se diagnostikk-mønster) og juster begge tall til det som gir mening for den
-    nye kilden, ikke bare gjenbruk 20 sekunder blindt.
+11. **Cloudflare edge cache-TTL og klientens polling-intervall** (`cacheTtl:10` i `getJson()` i
+    `live-decastar.js`, samt klientens 10-sekunders `setInterval(refresh...)`/
+    `setInterval(refreshDecastar...)` i `live-refresh-api-fix20260918.js`/`live-refresh-api.js`) er
+    tilpasset matsport sin oppdateringstakt, empirisk observert under Talence (justert ned fra
+    20s/30s til 10s/10s 2026-09-19 etter ønske om raskere oppdatering - verste-fall-ventetid fra
+    resultat hos arrangøren til det vises hos oss er summen av disse to, altså ca. 20 sekunder nå).
+    Den nye arrangøren kan oppdatere mye oftere eller sjeldnere - test faktisk takt (se
+    diagnostikk-mønster) og juster begge tall til det som gir mening for den nye kilden, ikke bare
+    gjenbruk disse tallene blindt. (Birmingham-integrasjonens separate `reloadLiveData`-intervall,
+    20 sekunder, er en annen mekanisme - den laster den statiske `live_birmingham.js`-datafilen på
+    nytt, ikke et API-kall, og er ikke rørt av denne justeringen.)
 12. **Ingen reload-logikk i statiske datafiler får lov til å kjøre på nytt ved periodiske
     klient-side oppdateringer.** `app/data/live_birmingham.js` hadde historisk en engangs
     cache-bust-omlasting som ved en feil kjørte på nytt hver gang filen ble satt inn dynamisk igjen,

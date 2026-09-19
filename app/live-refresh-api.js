@@ -179,8 +179,8 @@
     restoreDecastarPersisted();
     refresh(false);
     refreshDecastar();
-    window.setInterval(()=>refresh(false),30000);
-    window.setInterval(refreshDecastar,30000);
+    window.setInterval(()=>refresh(false),10000);
+    window.setInterval(refreshDecastar,10000);
   }
   document.addEventListener('mka:languagechange',()=>{if(loadLastKnownGood()&&lastSuccessful)showFallbackStatus('restored',lastSuccessful);});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
