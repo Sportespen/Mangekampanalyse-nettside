@@ -92,10 +92,15 @@ function parseMark(discipline,raw){
   const m=text.match(/-?\d+(?:\.\d+)?/);
   return m?Number(m[0]):null;
 }
-async function collectDiscipline(ids,discipline,resultsByName){
+async function collectDiscipline(ids,discipline,resultsByName,disciplineStats){
   const blockKey=RESULT_BLOCK[discipline];
   const isTrack=blockKey==='trackResult',isVertical=blockKey==='verticalResult';
   const payloads=await Promise.all(ids.map(id=>getJson(`/events/${id}`).catch(()=>null)));
+  // Tracks how many athletes are actually entered in this discipline (every row seen, regardless
+  // of whether they have a mark yet) versus how many are resolved (have a mark or a terminal
+  // status like DNS/DNF) - used by collectSection to only count a discipline as "completed" once
+  // EVERYONE entered has a result, not just the first athlete to finish.
+  const stats=disciplineStats[discipline]??={entered:0,resolved:0};
   for(const payload of payloads){
     // Wind is per-heat (one reading for everyone in that start list), not per-athlete - confirmed
     // live against Décastar Talence 2026's men's 100m Heat 1 ("+1.8"), so it's read once per payload
@@ -111,6 +116,8 @@ async function collectDiscipline(ids,discipline,resultsByName){
       const raw=isTrack?row?.time:row?.result;
       const mark=parseMark(discipline,raw);
       const terminal=rawStatus(row?.status);
+      stats.entered++;
+      if(mark!=null||terminal)stats.resolved++;
       // "current" is matsport's own live indicator for whichever athlete is mid-attempt right
       // now (confirmed live: it briefly held the attempt outcome, e.g. "X", then cleared back to
       // "" once the attempt was judged and folded into attemptVertical/attemptHorizontal) - the
@@ -145,14 +152,21 @@ async function collectDiscipline(ids,discipline,resultsByName){
 async function collectSection(schedule,gender){
   const idsByDiscipline=eventIdsByDiscipline(schedule,gender);
   const results={};
-  await Promise.all(Object.entries(idsByDiscipline).map(([discipline,ids])=>collectDiscipline(ids,discipline,results)));
+  const disciplineStats={};
+  await Promise.all(Object.entries(idsByDiscipline).map(([discipline,ids])=>collectDiscipline(ids,discipline,results,disciplineStats)));
   const eventHasMarks={};
   for(const discipline of Object.keys(idsByDiscipline)){
     eventHasMarks[discipline]=Object.values(results).filter(r=>r[discipline]).length;
   }
   const disciplineOrder=Object.keys(idsByDiscipline);
   let completedEvents=0;
-  for(const discipline of disciplineOrder){if((eventHasMarks[discipline]||0)>0)completedEvents++;else break;}
+  // A discipline only counts toward the progress counter once EVERY entered athlete has a result
+  // (a mark or a terminal status like DNS/DNF) - not just the first one to finish, which used to
+  // make "X øvelser fullført" jump the moment a single athlete posted a mark.
+  for(const discipline of disciplineOrder){
+    const stats=disciplineStats[discipline];
+    if(stats&&stats.entered>0&&stats.resolved>=stats.entered)completedEvents++;else break;
+  }
   return {completedEvents,results,eventHasMarks};
 }
 export async function onRequestGet(){

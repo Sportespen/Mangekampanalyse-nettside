@@ -158,7 +158,7 @@
     finally{decastarInFlight=false;}
   }
   function install(){
-    const b=button();if(b)b.onclick=function(e){e.preventDefault();refresh(true);refreshDecastar();};
+    const b=button();if(b)b.onclick=function(e){e.preventDefault();location.reload();};
     window.refreshMangekampLiveNow=refresh;
     window.refreshMangekampLiveDecastarNow=refreshDecastar;
     restorePersisted();
