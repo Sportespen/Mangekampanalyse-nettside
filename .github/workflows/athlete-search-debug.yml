@@ -10,25 +10,25 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Check men's Stav (pole vault) attempt data right now
+      - name: Poll /api/live-decastar every 10s like the client does, watch for failures
         run: |
-          curl -s "https://mangekampanalyse.no/api/live-decastar?t=$(date +%s%N)" -o /tmp/live.json
-          python3 - <<'PYEOF'
+          for i in $(seq 1 8); do
+            start=$(date +%s%N)
+            code=$(curl -s -o /tmp/resp.json -w "%{http_code}" --max-time 25 "https://mangekampanalyse.no/api/live-decastar?t=$(date +%s%N)")
+            end=$(date +%s%N)
+            ms=$(( (end - start) / 1000000 ))
+            size=$(wc -c < /tmp/resp.json)
+            echo "poll $i @ $(date -u +%H:%M:%S) - HTTP $code - ${ms}ms - ${size} bytes"
+            if [ "$code" != "200" ]; then
+              echo "--- BODY ---"
+              cat /tmp/resp.json
+              echo "--- END BODY ---"
+            else
+              python3 - <<'PYEOF'
           import json
-          d=json.load(open('/tmp/live.json'))
-          m=d.get('men',{})
-          print("updatedAt:", d.get('updatedAt'))
-          print("MEN completedEvents:", m.get('completedEvents'))
-          print("eventHasMarks:", m.get('eventHasMarks'))
-          results = m.get('results', {})
-          print("=== Stav (pole vault) rows ===")
-          for name, entry in results.items():
-              v = entry.get('Stav')
-              if v:
-                  print(name, "| mark:", v.get('mark'), "| status:", v.get('resultStatus'), "| active:", v.get('active'), "| attempts:", v.get('attempts'))
-          print("=== Diskos rows (for comparison) ===")
-          for name, entry in results.items():
-              v = entry.get('Diskos')
-              if v:
-                  print(name, "| mark:", v.get('mark'), "| status:", v.get('resultStatus'), "| active:", v.get('active'), "| attempts len:", len(v.get('attempts') or []))
+          d=json.load(open('/tmp/resp.json'))
+          print('  updatedAt:', d.get('updatedAt'), '| error:', d.get('error'))
           PYEOF
+            fi
+            sleep 10
+          done
