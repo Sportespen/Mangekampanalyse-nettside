@@ -10,22 +10,13 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch current live-decastar payload and summarize + dump
+      - name: Test matsport upstream directly
         run: |
-          curl -s -m 30 "https://mangekampanalyse.no/api/live-decastar" -o /tmp/decastar.json
-          echo "--- HTTP status check ---"
-          curl -s -m 30 -o /dev/null -w "HTTP:%{http_code}\n" "https://mangekampanalyse.no/api/live-decastar"
-          echo "--- summary ---"
-          python3 - <<'PYEOF'
-          import json
-          with open('/tmp/decastar.json', encoding='utf-8') as f:
-              data = json.load(f)
-          print('competition:', data.get('competition'))
-          print('status:', data.get('status'))
-          print('updatedAt:', data.get('updatedAt'))
-          for gender in ('men', 'women'):
-              sec = data.get(gender) or {}
-              print(f'{gender}: completedEvents={sec.get("completedEvents")} athletes={len(sec.get("results") or {})}')
-          PYEOF
-          echo "--- full JSON dump ---"
-          cat /tmp/decastar.json
+          echo "--- competition endpoint ---"
+          curl -s -m 30 -o /tmp/comp.json -w "HTTP:%{http_code}\n" "https://api.athle.matsport.com/competitions/65e4f577-c90c-4008-9955-dfa3563d7a86"
+          echo "--- first 2000 chars ---"
+          head -c 2000 /tmp/comp.json
+          echo ""
+          echo "--- our own proxy again ---"
+          curl -s -m 30 -o /tmp/ours.json -w "HTTP:%{http_code}\n" "https://mangekampanalyse.no/api/live-decastar"
+          cat /tmp/ours.json
