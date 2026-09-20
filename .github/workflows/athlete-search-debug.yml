@@ -11,26 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - name: Verify the static Decastar snapshot is actually served on production
-        timeout-minutes: 2
+      - name: Idle placeholder
         run: |
-          echo "--- index.html references the new file ---"
-          curl -s -m 15 "https://mangekampanalyse.no/?nocache=$(date +%s)" -o /tmp/index.html
-          grep -o 'live_decastar\.js[^"]*"' /tmp/index.html
-          grep -o 'mka-build" content="[^"]*"' /tmp/index.html
-          echo "--- fetch the static snapshot file directly ---"
-          curl -s -m 15 "https://mangekampanalyse.no/data/live_decastar.js?v=20260920-decastarstatic1" -o /tmp/live_decastar.js
-          wc -c /tmp/live_decastar.js
-          echo "--- confirm Markus Rooth and Nafissatou Thiam are in there with real marks ---"
-          python3 - <<'PYEOF'
-          import json
-          with open('/tmp/live_decastar.js', encoding='utf-8') as f:
-              content = f.read()
-          content = content.replace('window.MANGEKAMP_LIVE_DECASTAR=', '').rstrip(';\n')
-          data = json.loads(content)
-          print('men completedEvents:', data['men']['completedEvents'], 'athletes:', len(data['men']['results']))
-          print('women completedEvents:', data['women']['completedEvents'], 'athletes:', len(data['women']['results']))
-          rooth = data['men']['results'].get('Markus ROOTH')
-          print('Rooth 100m:', rooth.get('100m',{}).get('display') if rooth else 'MISSING')
-          print('Rooth events present:', sorted(k for k in (rooth or {}) if k != 'nation'))
-          PYEOF
+          echo "No active diagnostic. Rewrite this file's steps for the next investigation."
