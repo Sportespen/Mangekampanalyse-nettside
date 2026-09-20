@@ -11,42 +11,33 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Inspect Talence 2026 results structure (event list only, no full dump)
+      - name: Map Rooth's Talence 2026 disciplines to their eventId/competitionId
         timeout-minutes: 2
         run: |
-          curl -s -m 20 -A "Mozilla/5.0 Mangekampanalyse/2.0" \
-            "https://worldathletics.org/competition/calendar-results/results/7233797" \
-            -o /tmp/page.html
-          wc -c /tmp/page.html
+          curl -s -m 20 -A "Mozilla/5.0 Mangekampanalyse/2.0" "https://worldathletics.org/athletes/norway/markus-rooth-14783534" -o /tmp/rooth.html
           python3 - <<'PYEOF'
-          import json
-          with open('/tmp/page.html', encoding='utf-8') as f:
+          import json, re
+          with open('/tmp/rooth.html', encoding='utf-8') as f:
               html = f.read()
           marker = 'id="__NEXT_DATA__"'
           idx = html.find(marker)
-          if idx == -1:
-              print('NO __NEXT_DATA__ FOUND')
-              print(html[:1000])
-          else:
-              open_tag_end = html.find('>', idx) + 1
-              close_tag = html.find('</script>', open_tag_end)
-              data = json.loads(html[open_tag_end:close_tag])
-              page_props = data.get('props', {}).get('pageProps', {})
-              cer = page_props.get('calendarEventsResults', {})
-              comp = cer.get('competition', {})
-              print('competition:', comp)
-              titles = cer.get('eventTitles', [])
-              print('title count:', len(titles))
-              for t in titles:
-                  evs = t.get('events', [])
-                  print('title:', t.get('eventTitle'), 'events in title:', len(evs))
-                  for ev in evs:
-                      races = ev.get('races', [])
-                      total_results = sum(len(r.get('results', [])) for r in races)
-                      print('  event:', ev.get('event'), 'gender:', ev.get('gender'), 'eventId:', ev.get('eventId'), 'races:', len(races), 'total result rows:', total_results)
-                      if races:
-                          sample = races[0].get('results', [])[:1]
-                          print('    sample result row keys:', list(sample[0].keys()) if sample else 'NONE')
-                          if sample:
-                              print('    sample result row:', json.dumps(sample[0])[:500])
+          open_tag_end = html.find('>', idx) + 1
+          close_tag = html.find('</script>', open_tag_end)
+          data = json.loads(html[open_tag_end:close_tag])
+
+          def walk(obj, path=''):
+              if isinstance(obj, dict):
+                  if obj.get('discipline') and isinstance(obj.get('results'), list):
+                      disc = obj['discipline']
+                      for r in obj['results']:
+                          comp = str(r.get('competition',''))
+                          if 'calence' in comp.lower() or 'talence' in comp.lower() or 'castar' in comp.lower():
+                              print(disc, '| eventId:', r.get('eventId'), '| competitionId:', r.get('competitionId'), '| date:', r.get('date'), '| mark:', r.get('mark'))
+                  for k, v in obj.items():
+                      walk(v, path+'/'+k)
+              elif isinstance(obj, list):
+                  for item in obj:
+                      walk(item, path)
+
+          walk(data)
           PYEOF
