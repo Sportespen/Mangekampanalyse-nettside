@@ -10,19 +10,28 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Find WA links on decastar.fr and try WA competition search
+      - name: Inspect decastar.fr results page and WA search __NEXT_DATA__
         run: |
-          echo "--- decastar.fr results/live page, look for worldathletics.org links ---"
-          curl -s -m 20 -A "Mozilla/5.0 Mangekampanalyse/2.0" "https://decastar.fr/en/" -o /tmp/decastar_home.html
-          grep -o 'worldathletics\.org[^"'"'"']*' /tmp/decastar_home.html | sort -u | head -20
-          echo "--- try a few likely results/live subpages ---"
-          for path in "en/results" "en/live" "resultats" "en/2026" "en/the-meeting"; do
-            echo "== $path =="
-            curl -s -m 15 -A "Mozilla/5.0 Mangekampanalyse/2.0" "https://decastar.fr/$path" -o /tmp/p.html
-            wc -c /tmp/p.html
-            grep -o 'worldathletics\.org[^"'"'"']*' /tmp/p.html | sort -u | head -10
-          done
-          echo "--- WA global search API attempt ---"
-          curl -s -m 15 -A "Mozilla/5.0 Mangekampanalyse/2.0" "https://worldathletics.org/search?query=decastar" -o /tmp/search.html
-          wc -c /tmp/search.html
-          grep -o 'calendar-results/results/[0-9]*' /tmp/search.html | sort -u | head -20
+          echo "--- decastar.fr/en/results full content (iframe/links) ---"
+          curl -s -m 20 -A "Mozilla/5.0 Mangekampanalyse/2.0" "https://decastar.fr/en/results" -o /tmp/results.html
+          grep -oE '(iframe[^>]*src="[^"]*"|href="[^"]*"|worldathletics[^"'"'"'<> ]*|matsport[^"'"'"'<> ]*)' /tmp/results.html | sort -u | head -60
+          echo "--- WA search page __NEXT_DATA__ ---"
+          curl -s -m 20 -A "Mozilla/5.0 Mangekampanalyse/2.0" "https://worldathletics.org/search?query=decastar%202026" -o /tmp/search.html
+          python3 - <<'PYEOF'
+          import json, re
+          with open('/tmp/search.html', encoding='utf-8') as f:
+              html = f.read()
+          marker = 'id="__NEXT_DATA__"'
+          idx = html.find(marker)
+          if idx == -1:
+              print('NO __NEXT_DATA__ on search page')
+          else:
+              open_tag_end = html.find('>', idx) + 1
+              close_tag = html.find('</script>', open_tag_end)
+              text = html[open_tag_end:close_tag]
+              ids = sorted(set(re.findall(r'"competitionId"\s*:\s*(\d+)', text)))
+              print('competitionIds found:', ids)
+              names = re.findall(r'"name"\s*:\s*"([^"]*[Dd][ée]castar[^"]*)"', text)
+              print('names:', sorted(set(names)))
+              print(text[:3000])
+          PYEOF
