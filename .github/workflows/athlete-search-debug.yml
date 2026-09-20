@@ -9,8 +9,10 @@ on:
 jobs:
   debug:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - name: Fetch full Decastar Talence 2026 results (competitionId 7233797)
+      - name: Inspect Talence 2026 results structure (event list only, no full dump)
+        timeout-minutes: 2
         run: |
           curl -s -m 20 -A "Mozilla/5.0 Mangekampanalyse/2.0" \
             "https://worldathletics.org/competition/calendar-results/results/7233797" \
@@ -24,33 +26,27 @@ jobs:
           idx = html.find(marker)
           if idx == -1:
               print('NO __NEXT_DATA__ FOUND')
-              print(html[:1500])
+              print(html[:1000])
           else:
               open_tag_end = html.find('>', idx) + 1
               close_tag = html.find('</script>', open_tag_end)
               data = json.loads(html[open_tag_end:close_tag])
               page_props = data.get('props', {}).get('pageProps', {})
-              comp = page_props.get('calendarEventsResults', {}).get('competition', {})
+              cer = page_props.get('calendarEventsResults', {})
+              comp = cer.get('competition', {})
               print('competition:', comp)
-              titles = page_props.get('calendarEventsResults', {}).get('eventTitles', [])
-              events = []
+              titles = cer.get('eventTitles', [])
+              print('title count:', len(titles))
               for t in titles:
-                  for ev in t.get('events', []):
-                      events.append((ev.get('event'), ev.get('eventId'), ev.get('gender')))
-              print('event count:', len(events))
-              for e in events:
-                  print(' ', e)
-              with open('/tmp/decastar_2026_full.json', 'w', encoding='utf-8') as out:
-                  json.dump(page_props, out)
-              print('dumped', len(json.dumps(page_props)), 'bytes to /tmp/decastar_2026_full.json')
+                  evs = t.get('events', [])
+                  print('title:', t.get('eventTitle'), 'events in title:', len(evs))
+                  for ev in evs:
+                      races = ev.get('races', [])
+                      total_results = sum(len(r.get('results', [])) for r in races)
+                      print('  event:', ev.get('event'), 'gender:', ev.get('gender'), 'eventId:', ev.get('eventId'), 'races:', len(races), 'total result rows:', total_results)
+                      if races:
+                          sample = races[0].get('results', [])[:1]
+                          print('    sample result row keys:', list(sample[0].keys()) if sample else 'NONE')
+                          if sample:
+                              print('    sample result row:', json.dumps(sample[0])[:500])
           PYEOF
-          echo "--- base64 of the full dump so it survives the log ---"
-          base64 -w0 /tmp/decastar_2026_full.json > /tmp/decastar_2026_full.b64
-          wc -c /tmp/decastar_2026_full.b64
-          split -b 200000 /tmp/decastar_2026_full.b64 /tmp/chunk_
-          for f in /tmp/chunk_*; do
-            echo "===CHUNK $f START==="
-            cat "$f"
-            echo ""
-            echo "===CHUNK $f END==="
-          done
