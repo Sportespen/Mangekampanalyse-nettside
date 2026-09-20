@@ -10,38 +10,19 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch WA results page (candidate 2026 id) and extract __NEXT_DATA__
+      - name: Find WA links on decastar.fr and try WA competition search
         run: |
-          curl -s -m 20 -A "Mozilla/5.0 Mangekampanalyse/2.0" \
-            "https://worldathletics.org/competition/calendar-results/results/7196994" \
-            -o /tmp/page.html
-          echo "--- page size ---"
-          wc -c /tmp/page.html
-          python3 - <<'PYEOF'
-          import json
-          with open('/tmp/page.html', encoding='utf-8') as f:
-              html = f.read()
-          marker = 'id="__NEXT_DATA__"'
-          idx = html.find(marker)
-          if idx == -1:
-              print('NO __NEXT_DATA__ FOUND')
-              print(html[:1500])
-          else:
-              open_tag_end = html.find('>', idx) + 1
-              close_tag = html.find('</script>', open_tag_end)
-              data = json.loads(html[open_tag_end:close_tag])
-              page_props = data.get('props', {}).get('pageProps', {})
-              comp = page_props.get('calendarEventsResults', {}).get('competition', {})
-              print('competition:', comp)
-              titles = page_props.get('calendarEventsResults', {}).get('eventTitles', [])
-              events = []
-              for t in titles:
-                  for ev in t.get('events', []):
-                      events.append((ev.get('event'), ev.get('eventId'), ev.get('gender')))
-              print('event count:', len(events))
-              for e in events:
-                  print(' ', e)
-              with open('/tmp/next_data.json', 'w', encoding='utf-8') as out:
-                  json.dump(page_props, out)
-              print('dumped', len(json.dumps(page_props)), 'bytes')
-          PYEOF
+          echo "--- decastar.fr results/live page, look for worldathletics.org links ---"
+          curl -s -m 20 -A "Mozilla/5.0 Mangekampanalyse/2.0" "https://decastar.fr/en/" -o /tmp/decastar_home.html
+          grep -o 'worldathletics\.org[^"'"'"']*' /tmp/decastar_home.html | sort -u | head -20
+          echo "--- try a few likely results/live subpages ---"
+          for path in "en/results" "en/live" "resultats" "en/2026" "en/the-meeting"; do
+            echo "== $path =="
+            curl -s -m 15 -A "Mozilla/5.0 Mangekampanalyse/2.0" "https://decastar.fr/$path" -o /tmp/p.html
+            wc -c /tmp/p.html
+            grep -o 'worldathletics\.org[^"'"'"']*' /tmp/p.html | sort -u | head -10
+          done
+          echo "--- WA global search API attempt ---"
+          curl -s -m 15 -A "Mozilla/5.0 Mangekampanalyse/2.0" "https://worldathletics.org/search?query=decastar" -o /tmp/search.html
+          wc -c /tmp/search.html
+          grep -o 'calendar-results/results/[0-9]*' /tmp/search.html | sort -u | head -20
