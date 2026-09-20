@@ -10,12 +10,5 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Compare current Birmingham vs Decastar proxy behavior
-        run: |
-          echo "--- Birmingham /api/live ---"
-          curl -s -m 20 -o /tmp/birmingham.json -w "HTTP:%{http_code}\n" "https://mangekampanalyse.no/api/live"
-          head -c 600 /tmp/birmingham.json
-          echo ""
-          echo "--- Decastar /api/live-decastar ---"
-          curl -s -m 20 -o /tmp/decastar.json -w "HTTP:%{http_code}\n" "https://mangekampanalyse.no/api/live-decastar"
-          head -c 600 /tmp/decastar.json
+      - name: Placeholder - overwrite this file's steps for the next investigation
+        run: echo "Scratch diagnostic rig. See CLAUDE.md's Diagnostikk-mønster section for how to use this."
