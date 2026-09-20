@@ -15,7 +15,7 @@ jobs:
         run: |
           npm install playwright@1.48.0
           npx playwright install --with-deps chromium
-      - name: Inspect forecast panel for both competitions
+      - name: Capture the real error thrown by syncLive() on Decastar
         timeout-minutes: 3
         run: |
           cat > check.mjs << 'EOF'
@@ -31,30 +31,25 @@ jobs:
             await page.goto('https://mangekampanalyse.no/', { waitUntil: 'domcontentloaded', timeout: 20000 });
             await page.waitForTimeout(2000);
             await page.click('button[data-tab="forecast"]').catch(()=>{});
-            await page.waitForTimeout(1000);
+            await page.waitForTimeout(500);
 
-            async function dump(label) {
-              const banner = await page.$eval('#forecastBanner', el => el.textContent).catch(()=>'NO BANNER');
-              const pill = await page.$eval('#forecastLivePill', el => el.textContent).catch(()=>'NO PILL');
-              const rowCount = await page.$$eval('#liveForecastBody tr', rows => rows.length).catch(()=>-1);
-              console.log(`--- ${label} ---`);
-              console.log('BANNER:', banner);
-              console.log('PILL:', pill);
-              console.log('ROWS:', rowCount);
-            }
+            // Switch to decastar first via the normal path (may leave things broken)
+            await page.selectOption('#competitionSelect', 'decastar').catch(()=>{});
+            await page.waitForTimeout(500);
 
-            const opts = await page.$$eval('#competitionSelect option', os => os.map(o=>({value:o.value,text:o.textContent}))).catch(()=>null);
-            console.log('OPTIONS:', JSON.stringify(opts));
-
-            await dump('initial (default competition)');
-
-            if (opts) {
-              for (const o of opts) {
-                await page.selectOption('#competitionSelect', o.value).catch(()=>{});
-                await page.waitForTimeout(1000);
-                await dump('after selecting ' + o.text);
+            // Now call syncLive() directly and capture any thrown error with its stack
+            const result = await page.evaluate(() => {
+              try {
+                window.syncLive();
+                return { ok: true };
+              } catch (e) {
+                return { ok: false, message: e.message, stack: e.stack };
               }
-            }
+            });
+            console.log('DIRECT syncLive() RESULT:', JSON.stringify(result, null, 2));
+
+            const banner = await page.$eval('#forecastBanner', el => el.textContent).catch(()=>'NO BANNER');
+            console.log('BANNER AFTER DIRECT CALL:', banner);
           } catch (e) {
             console.log('SCRIPT ERROR:', e.message);
           }
