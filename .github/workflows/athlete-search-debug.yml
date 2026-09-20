@@ -10,13 +10,51 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Test matsport upstream directly
+      - name: Query World Athletics GraphQL for Decastar Talence 2026 results
         run: |
-          echo "--- competition endpoint ---"
-          curl -s -m 30 -o /tmp/comp.json -w "HTTP:%{http_code}\n" "https://api.athle.matsport.com/competitions/65e4f577-c90c-4008-9955-dfa3563d7a86"
-          echo "--- first 2000 chars ---"
-          head -c 2000 /tmp/comp.json
-          echo ""
-          echo "--- our own proxy again ---"
-          curl -s -m 30 -o /tmp/ours.json -w "HTTP:%{http_code}\n" "https://mangekampanalyse.no/api/live-decastar"
-          cat /tmp/ours.json
+          python3 - <<'PYEOF'
+          import json
+          import urllib.request
+
+          WA_GRAPHQL = 'https://graphql-prod-4881.edge.aws.worldathletics.org/graphql'
+          WA_API_KEY = 'da2-wbnmtmvlpbhifh3uc2xaxsue5i'
+
+          QUERY = """query GetCalendarCompetitionResults($competitionId: Int) {
+            getCalendarCompetitionResults(competitionId: $competitionId) {
+              eventTitles {
+                events {
+                  event
+                  races {
+                    date
+                    race
+                    results { place mark wind records competitor { id iaafId name } }
+                  }
+                }
+              }
+            }
+          }"""
+
+          for cid in (7121760, 10229536):
+              body = json.dumps({'query': QUERY, 'variables': {'competitionId': cid}}).encode('utf-8')
+              req = urllib.request.Request(
+                  WA_GRAPHQL,
+                  data=body,
+                  headers={
+                      'content-type': 'application/json',
+                      'accept': '*/*',
+                      'x-api-key': WA_API_KEY,
+                  },
+              )
+              print(f'--- competitionId={cid} ---')
+              try:
+                  with urllib.request.urlopen(req, timeout=20) as r:
+                      text = r.read().decode('utf-8')
+                      print('HTTP', r.status)
+                      print(text[:3000])
+              except Exception as e:
+                  print('ERROR', e)
+                  try:
+                      print(e.read().decode('utf-8')[:1000])
+                  except Exception:
+                      pass
+          PYEOF
