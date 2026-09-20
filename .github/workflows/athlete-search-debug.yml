@@ -10,13 +10,30 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: DNS + reachability checks
+      - name: Fetch WA results page and extract __NEXT_DATA__
         run: |
-          echo "--- general DNS sanity ---"
-          getent hosts worldathletics.org || echo "worldathletics.org: FAIL"
-          echo "--- graphql host ---"
-          getent hosts graphql-prod-4881.edge.aws.worldathletics.org || echo "graphql-prod-4881.edge.aws.worldathletics.org: FAIL"
-          echo "--- curl worldathletics.org ---"
-          curl -s -m 15 -o /dev/null -w "HTTP:%{http_code}\n" "https://worldathletics.org/" || echo "curl failed"
-          echo "--- curl graphql host (GET, expect 4xx not DNS error) ---"
-          curl -s -m 15 -o /dev/null -w "HTTP:%{http_code}\n" "https://graphql-prod-4881.edge.aws.worldathletics.org/graphql" || echo "curl failed"
+          curl -s -m 20 -A "Mozilla/5.0 Mangekampanalyse/2.0" \
+            "https://worldathletics.org/competition/calendar-results/results/7121760?eventId=10229536" \
+            -o /tmp/page.html
+          echo "--- page size ---"
+          wc -c /tmp/page.html
+          python3 - <<'PYEOF'
+          import json
+          with open('/tmp/page.html', encoding='utf-8') as f:
+              html = f.read()
+          marker = 'id="__NEXT_DATA__"'
+          idx = html.find(marker)
+          if idx == -1:
+              print('NO __NEXT_DATA__ FOUND')
+              print(html[:1500])
+          else:
+              open_tag_end = html.find('>', idx) + 1
+              close_tag = html.find('</script>', open_tag_end)
+              data = json.loads(html[open_tag_end:close_tag])
+              page_props = data.get('props', {}).get('pageProps', {})
+              print('pageProps keys:', list(page_props.keys()))
+              with open('/tmp/next_data.json', 'w', encoding='utf-8') as out:
+                  json.dump(page_props, out)
+              print('dumped', len(json.dumps(page_props)), 'bytes to /tmp/next_data.json')
+              print(json.dumps(page_props)[:4000])
+          PYEOF
