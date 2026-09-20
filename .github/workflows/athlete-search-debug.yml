@@ -9,6 +9,50 @@ on:
 jobs:
   debug:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - name: Placeholder - overwrite this file's steps for the next investigation
-        run: echo "Scratch diagnostic rig. See CLAUDE.md's Diagnostikk-mønster section for how to use this."
+      - name: Check response headers and fresh-load banner state
+        run: |
+          echo "--- index.html headers ---"
+          curl -s -m 20 -D - -o /tmp/index.html "https://mangekampanalyse.no/?nocache=$(date +%s)" | grep -i "cache-control\|cf-cache-status\|age:\|etag\|last-modified"
+          echo "--- mka-build in fresh HTML ---"
+          grep -o 'mka-build" content="[^"]*"' /tmp/index.html
+          echo "--- i18n-final-runtime version tag in fresh HTML ---"
+          grep -o 'i18n-final-runtime\.js?v=[^"]*"' /tmp/index.html
+          echo "--- fetch that exact JS file and confirm the fix is actually served ---"
+          curl -s -m 20 "https://mangekampanalyse.no/i18n-final-runtime.js?v=20260920-decastarbanner1" -o /tmp/rt.js
+          grep -c "Birmingham 2026" /tmp/rt.js || true
+          grep -o "if(banner&&/[^)]*)test(banner.textContent" /tmp/rt.js | head -3
+      - name: Install Playwright
+        run: |
+          npm install playwright@1.48.0
+          npx playwright install --with-deps chromium
+      - name: Fresh-context check of the live banner right now
+        timeout-minutes: 3
+        run: |
+          cat > check.mjs << 'EOF'
+          import { chromium } from 'playwright';
+          const browser = await chromium.launch();
+          const page = await browser.newPage();
+          const consoleMsgs = [];
+          page.on('console', msg => consoleMsgs.push(`[${msg.type()}] ${msg.text()}`));
+          page.on('pageerror', err => consoleMsgs.push(`[pageerror] ${err.message}`));
+          await page.goto('https://mangekampanalyse.no/?cachebust=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 20000 });
+          await page.waitForTimeout(2500);
+          await page.click('button[data-tab="forecast"]').catch(()=>{});
+          await page.waitForTimeout(1000);
+          const buildMeta = await page.$eval('meta[name="mka-build"]', el => el.content).catch(()=>'NO META');
+          console.log('mka-build meta on loaded page:', buildMeta);
+          const scriptSrc = await page.$eval('script[src*="i18n-final-runtime"]', el => el.src).catch(()=>'NOT FOUND');
+          console.log('i18n-final-runtime script src actually loaded:', scriptSrc);
+          const banner = await page.$eval('#forecastBanner', el => el.textContent).catch(()=>'NO BANNER');
+          console.log('BANNER (decastar, default selection):', banner);
+          await page.selectOption('#competitionSelect', 'decastar').catch(()=>{});
+          await page.waitForTimeout(1000);
+          const banner2 = await page.$eval('#forecastBanner', el => el.textContent).catch(()=>'NO BANNER');
+          console.log('BANNER after selecting decastar explicitly:', banner2);
+          console.log('--- console/page errors ---');
+          for (const m of consoleMsgs) console.log(m);
+          await browser.close();
+          EOF
+          timeout 150 node check.mjs || echo "FAILED exit=$?"
