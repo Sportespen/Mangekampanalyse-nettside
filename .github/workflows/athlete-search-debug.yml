@@ -9,56 +9,28 @@ on:
 jobs:
   debug:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 3
     steps:
-      - name: Install Playwright
+      - name: Verify the static Decastar snapshot is actually served on production
+        timeout-minutes: 2
         run: |
-          npm install playwright@1.48.0
-          npx playwright install --with-deps chromium
-      - name: Verify final Decastar results show up for both competitions
-        timeout-minutes: 3
-        run: |
-          cat > check.mjs << 'EOF'
-          import { chromium } from 'playwright';
-
-          const browser = await chromium.launch();
-          const page = await browser.newPage();
-          const consoleMsgs = [];
-          page.on('console', msg => consoleMsgs.push(`[${msg.type()}] ${msg.text()}`));
-          page.on('pageerror', err => consoleMsgs.push(`[pageerror] ${err.message}`));
-
-          try {
-            await page.goto('https://mangekampanalyse.no/?verify=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 20000 });
-            await page.waitForTimeout(2500);
-            await page.click('button[data-tab="forecast"]').catch(()=>{});
-            await page.waitForTimeout(1000);
-
-            async function dump(label) {
-              const banner = await page.$eval('#forecastBanner', el => el.textContent).catch(()=>'NO BANNER');
-              const pill = await page.$eval('#forecastLivePill', el => el.textContent).catch(()=>'NO PILL');
-              const rowCount = await page.$$eval('#liveForecastBody tr', rows => rows.length).catch(()=>-1);
-              const firstRowCells = await page.$$eval('#liveForecastBody tr:first-child td', tds => tds.slice(0,8).map(td => td.textContent.trim())).catch(()=>[]);
-              console.log(`--- ${label} ---`);
-              console.log('BANNER:', banner);
-              console.log('PILL:', pill);
-              console.log('ROWS:', rowCount);
-              console.log('FIRST ROW CELLS:', JSON.stringify(firstRowCells));
-            }
-
-            await page.selectOption('#competitionSelect', 'decastar').catch(()=>{});
-            await page.waitForTimeout(1000);
-            await dump('Decastar');
-
-            await page.selectOption('#competitionSelect', 'birmingham').catch(()=>{});
-            await page.waitForTimeout(1000);
-            await dump('Birmingham');
-          } catch (e) {
-            console.log('SCRIPT ERROR:', e.message);
-          }
-
-          console.log('--- console/page errors (all) ---');
-          for (const m of consoleMsgs) console.log(m);
-
-          await browser.close();
-          EOF
-          timeout 150 node check.mjs || echo "NODE SCRIPT TIMED OUT OR FAILED, exit=$?"
+          echo "--- index.html references the new file ---"
+          curl -s -m 15 "https://mangekampanalyse.no/?nocache=$(date +%s)" -o /tmp/index.html
+          grep -o 'live_decastar\.js[^"]*"' /tmp/index.html
+          grep -o 'mka-build" content="[^"]*"' /tmp/index.html
+          echo "--- fetch the static snapshot file directly ---"
+          curl -s -m 15 "https://mangekampanalyse.no/data/live_decastar.js?v=20260920-decastarstatic1" -o /tmp/live_decastar.js
+          wc -c /tmp/live_decastar.js
+          echo "--- confirm Markus Rooth and Nafissatou Thiam are in there with real marks ---"
+          python3 - <<'PYEOF'
+          import json
+          with open('/tmp/live_decastar.js', encoding='utf-8') as f:
+              content = f.read()
+          content = content.replace('window.MANGEKAMP_LIVE_DECASTAR=', '').rstrip(';\n')
+          data = json.loads(content)
+          print('men completedEvents:', data['men']['completedEvents'], 'athletes:', len(data['men']['results']))
+          print('women completedEvents:', data['women']['completedEvents'], 'athletes:', len(data['women']['results']))
+          rooth = data['men']['results'].get('Markus ROOTH')
+          print('Rooth 100m:', rooth.get('100m',{}).get('display') if rooth else 'MISSING')
+          print('Rooth events present:', sorted(k for k in (rooth or {}) if k != 'nation'))
+          PYEOF
