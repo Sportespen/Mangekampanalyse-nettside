@@ -10,30 +10,47 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Find Decastar Talence 2026 competitionId via Markus Rooth's WA profile
+      - name: Fetch full Decastar Talence 2026 results (competitionId 7233797)
         run: |
-          curl -s -m 20 -A "Mozilla/5.0 Mangekampanalyse/2.0" "https://worldathletics.org/athletes/norway/markus-rooth-14783534" -o /tmp/rooth.html
-          wc -c /tmp/rooth.html
+          curl -s -m 20 -A "Mozilla/5.0 Mangekampanalyse/2.0" \
+            "https://worldathletics.org/competition/calendar-results/results/7233797" \
+            -o /tmp/page.html
+          wc -c /tmp/page.html
           python3 - <<'PYEOF'
-          import json, re
-          with open('/tmp/rooth.html', encoding='utf-8') as f:
+          import json
+          with open('/tmp/page.html', encoding='utf-8') as f:
               html = f.read()
           marker = 'id="__NEXT_DATA__"'
           idx = html.find(marker)
           if idx == -1:
               print('NO __NEXT_DATA__ FOUND')
+              print(html[:1500])
           else:
               open_tag_end = html.find('>', idx) + 1
               close_tag = html.find('</script>', open_tag_end)
-              text = html[open_tag_end:close_tag]
-              with open('/tmp/rooth_next_data.json', 'w', encoding='utf-8') as out:
-                  out.write(text)
-              print('dumped', len(text), 'bytes')
-              # Look for anything mentioning Talence or Decastar with a nearby numeric id
-              for m in re.finditer(r'.{150}(Talence|[Dd].castar).{200}', text):
-                  print(m.group(0))
-                  print('---')
+              data = json.loads(html[open_tag_end:close_tag])
+              page_props = data.get('props', {}).get('pageProps', {})
+              comp = page_props.get('calendarEventsResults', {}).get('competition', {})
+              print('competition:', comp)
+              titles = page_props.get('calendarEventsResults', {}).get('eventTitles', [])
+              events = []
+              for t in titles:
+                  for ev in t.get('events', []):
+                      events.append((ev.get('event'), ev.get('eventId'), ev.get('gender')))
+              print('event count:', len(events))
+              for e in events:
+                  print(' ', e)
+              with open('/tmp/decastar_2026_full.json', 'w', encoding='utf-8') as out:
+                  json.dump(page_props, out)
+              print('dumped', len(json.dumps(page_props)), 'bytes to /tmp/decastar_2026_full.json')
           PYEOF
-          echo "--- grep for competitionId near Talence/Decastar ---"
-          grep -o '"competitionId":[0-9]*' /tmp/rooth_next_data.json | sort -u | head -20
-          grep -o '.\{0,80\}Talence.\{0,80\}' /tmp/rooth_next_data.json | head -10
+          echo "--- base64 of the full dump so it survives the log ---"
+          base64 -w0 /tmp/decastar_2026_full.json > /tmp/decastar_2026_full.b64
+          wc -c /tmp/decastar_2026_full.b64
+          split -b 200000 /tmp/decastar_2026_full.b64 /tmp/chunk_
+          for f in /tmp/chunk_*; do
+            echo "===CHUNK $f START==="
+            cat "$f"
+            echo ""
+            echo "===CHUNK $f END==="
+          done
