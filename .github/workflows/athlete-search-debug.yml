@@ -1,7 +1,7 @@
 name: Athlete search debug (diagnostic)
 
 permissions:
-  contents: write
+  contents: read
 
 on:
   workflow_dispatch:
@@ -9,152 +9,56 @@ on:
 jobs:
   debug:
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - name: Fetch all 17 Talence 2026 disciplines and build static snapshot
-        timeout-minutes: 4
+      - name: Install Playwright
         run: |
-          python3 - <<'PYEOF'
-          import json, re, subprocess, sys, urllib.request
+          npm install playwright@1.48.0
+          npx playwright install --with-deps chromium
+      - name: Verify final Decastar results show up for both competitions
+        timeout-minutes: 3
+        run: |
+          cat > check.mjs << 'EOF'
+          import { chromium } from 'playwright';
 
-          COMP_ID = '7233797'
-          MEN_EVENTS = [
-              ('100m', 10229630, 'trackResult'),
-              ('Lengde', 10229617, 'horizontalResult'),
-              ('Kule', 10229619, 'horizontalResult'),
-              ('Høyde', 10229615, 'verticalResult'),
-              ('400m', 10229631, 'trackResult'),
-              ('110mh', 10229611, 'trackResult'),
-              ('Diskos', 10229620, 'horizontalResult'),
-              ('Stav', 10229616, 'verticalResult'),
-              ('Spyd', 10229636, 'horizontalResult'),
-              ('1500m', 10229502, 'trackResult'),
-          ]
-          WOMEN_EVENTS = [
-              ('100mh', 10229522, 'trackResult'),
-              ('Høyde', 10229526, 'verticalResult'),
-              ('Kule', 10229530, 'horizontalResult'),
-              ('200m', 10229510, 'trackResult'),
-              ('Lengde', 10229528, 'horizontalResult'),
-              ('Spyd', 10229533, 'horizontalResult'),
-              ('800m', 10229512, 'trackResult'),
-          ]
-          TERMINAL = {'DNS', 'DNF', 'DQ', 'NM', 'NH'}
+          const browser = await chromium.launch();
+          const page = await browser.newPage();
+          const consoleMsgs = [];
+          page.on('console', msg => consoleMsgs.push(`[${msg.type()}] ${msg.text()}`));
+          page.on('pageerror', err => consoleMsgs.push(`[pageerror] ${err.message}`));
 
-          def fetch_event(event_id):
-              url = f'https://worldathletics.org/competition/calendar-results/results/{COMP_ID}?eventId={event_id}'
-              req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 Mangekampanalyse/2.0'})
-              with urllib.request.urlopen(req, timeout=20) as r:
-                  html = r.read().decode('utf-8')
-              marker = 'id="__NEXT_DATA__"'
-              idx = html.find(marker)
-              if idx == -1:
-                  return []
-              open_tag_end = html.find('>', idx) + 1
-              close_tag = html.find('</script>', open_tag_end)
-              data = json.loads(html[open_tag_end:close_tag])
-              page_props = data.get('props', {}).get('pageProps', {})
-              titles = page_props.get('calendarEventsResults', {}).get('eventTitles', [])
-              rows = []
-              for t in titles:
-                  for ev in t.get('events', []):
-                      if ev.get('eventId') != event_id:
-                          continue
-                      for race in ev.get('races', []):
-                          rows.extend(race.get('results', []))
-              return rows
+          try {
+            await page.goto('https://mangekampanalyse.no/?verify=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 20000 });
+            await page.waitForTimeout(2500);
+            await page.click('button[data-tab="forecast"]').catch(()=>{});
+            await page.waitForTimeout(1000);
 
-          def parse_mark(discipline, raw):
-              if raw is None:
-                  return None
-              text = str(raw).strip().replace(',', '.')
-              if not text or text.upper() in TERMINAL or text in ('-', '—', 'X'):
-                  return None
-              if ':' in text and discipline in ('1500m', '800m'):
-                  parts = text.split(':')
-                  try:
-                      return float(parts[-2]) * 60 + float(parts[-1])
-                  except (ValueError, IndexError):
-                      return None
-              m = re.search(r'-?\d+(?:\.\d+)?', text)
-              return float(m.group(0)) if m else None
+            async function dump(label) {
+              const banner = await page.$eval('#forecastBanner', el => el.textContent).catch(()=>'NO BANNER');
+              const pill = await page.$eval('#forecastLivePill', el => el.textContent).catch(()=>'NO PILL');
+              const rowCount = await page.$$eval('#liveForecastBody tr', rows => rows.length).catch(()=>-1);
+              const firstRowCells = await page.$$eval('#liveForecastBody tr:first-child td', tds => tds.slice(0,8).map(td => td.textContent.trim())).catch(()=>[]);
+              console.log(`--- ${label} ---`);
+              console.log('BANNER:', banner);
+              console.log('PILL:', pill);
+              console.log('ROWS:', rowCount);
+              console.log('FIRST ROW CELLS:', JSON.stringify(firstRowCells));
+            }
 
-          def terminal_status(raw):
-              t = str(raw or '').strip().upper()
-              return t if t in TERMINAL else None
+            await page.selectOption('#competitionSelect', 'decastar').catch(()=>{});
+            await page.waitForTimeout(1000);
+            await dump('Decastar');
 
-          def collect_section(event_defs):
-              results = {}
-              event_has_marks = {}
-              for discipline, event_id, block_kind in event_defs:
-                  rows = fetch_event(event_id)
-                  added = 0
-                  for row in rows:
-                      competitor = row.get('competitor') or {}
-                      name = str(competitor.get('name') or '').strip()
-                      if not name:
-                          continue
-                      raw_mark = row.get('mark')
-                      mark = parse_mark(discipline, raw_mark)
-                      terminal = terminal_status(raw_mark)
-                      if mark is None and not terminal:
-                          continue
-                      entry = results.setdefault(name, {})
-                      if competitor.get('teamMembers') is None and row.get('nationality'):
-                          entry['nation'] = row.get('nationality')
-                      points = row.get('points')
-                      entry[discipline] = {
-                          'mark': mark,
-                          'display': terminal or str(raw_mark or ''),
-                          'resultStatus': terminal,
-                          'points': 0 if terminal else (int(points) if points not in (None, '') else None),
-                          'status': 'Finished' if not terminal else terminal,
-                          'wind': str(row.get('wind') or ''),
-                      }
-                      added += 1
-                  event_has_marks[discipline] = added
-              disciplines_in_order = [d for d, _, _ in event_defs]
-              completed_events = 0
-              for d in disciplines_in_order:
-                  if event_has_marks.get(d, 0) > 0:
-                      completed_events += 1
-                  else:
-                      break
-              return {'completedEvents': completed_events, 'results': results, 'eventHasMarks': event_has_marks}
-
-          men = collect_section(MEN_EVENTS)
-          women = collect_section(WOMEN_EVENTS)
-
-          payload = {
-              'competition': 'Décastar Talence 2026',
-              'source': 'https://worldathletics.org/competition/calendar-results/results/7233797',
-              'competitionId': COMP_ID,
-              'updatedAt': '2026-09-19T20:00:00.000Z',
-              'status': 'waiting',
-              'men': men,
-              'women': women,
+            await page.selectOption('#competitionSelect', 'birmingham').catch(()=>{});
+            await page.waitForTimeout(1000);
+            await dump('Birmingham');
+          } catch (e) {
+            console.log('SCRIPT ERROR:', e.message);
           }
 
-          js = 'window.MANGEKAMP_LIVE_DECASTAR=' + json.dumps(payload, ensure_ascii=False, separators=(',', ':')) + ';\n'
-          with open('app/data/live_decastar.js', 'w', encoding='utf-8') as f:
-              f.write(js)
+          console.log('--- console/page errors (all) ---');
+          for (const m of consoleMsgs) console.log(m);
 
-          print('men athletes:', len(men['results']), 'completedEvents:', men['completedEvents'])
-          print('women athletes:', len(women['results']), 'completedEvents:', women['completedEvents'])
-          print('file size:', len(js), 'bytes')
-
-          import os
-          if len(men['results']) < 10 or len(women['results']) < 8:
-              print('SANITY CHECK FAILED - too few athletes, not committing')
-              sys.exit(1)
-          PYEOF
-      - name: Commit and push the static snapshot
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add app/data/live_decastar.js
-          git status --short
-          git diff --cached --stat
-          git commit -m "data: capture final Décastar Talence 2026 results as a static snapshot"
-          git push origin HEAD:refs/heads/diag/build-decastar-static-snapshot
+          await browser.close();
+          EOF
+          timeout 150 node check.mjs || echo "NODE SCRIPT TIMED OUT OR FAILED, exit=$?"
