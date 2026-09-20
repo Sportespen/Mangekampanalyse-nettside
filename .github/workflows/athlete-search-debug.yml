@@ -10,5 +10,22 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Placeholder - overwrite this file's steps for the next investigation
-        run: echo "Scratch diagnostic rig. See CLAUDE.md's Diagnostikk-mønster section for how to use this."
+      - name: Check cache headers on index.html and JS, no cache-busting at all
+        run: |
+          echo "--- index.html, plain request like a real visitor (no query params) ---"
+          curl -s -m 20 -D - -o /tmp/index.html "https://mangekampanalyse.no/" | grep -i "cache-control\|cf-cache-status\|age:\|etag\|last-modified\|content-length"
+          echo "--- mka-build in that response ---"
+          grep -o 'mka-build" content="[^"]*"' /tmp/index.html
+          echo "--- i18n-final-runtime version tag referenced in that response ---"
+          grep -o 'i18n-final-runtime\.js?v=[^"]*"' /tmp/index.html
+          echo ""
+          echo "--- second identical request right after, to see if cf-cache-status changes (HIT vs MISS/DYNAMIC) ---"
+          curl -s -m 20 -D - -o /dev/null "https://mangekampanalyse.no/" | grep -i "cache-control\|cf-cache-status\|age:"
+          echo ""
+          echo "--- the JS file itself, plain request ---"
+          curl -s -m 20 -D - -o /tmp/rt.js "https://mangekampanalyse.no/i18n-final-runtime.js?v=20260920-decastarbanner1" | grep -i "cache-control\|cf-cache-status\|age:\|etag"
+          grep -c "Birmingham 2026" /tmp/rt.js || echo "0 (fixed version, good)"
+          echo ""
+          echo "--- request from a different simulated client (different UA / no cookies) ---"
+          curl -s -m 20 -A "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15" -D - -o /tmp/index2.html "https://mangekampanalyse.no/" | grep -i "cache-control\|cf-cache-status\|age:"
+          grep -o 'mka-build" content="[^"]*"' /tmp/index2.html
