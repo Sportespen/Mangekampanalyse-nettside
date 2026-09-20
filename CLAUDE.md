@@ -121,6 +121,21 @@ Det betyr: å bytte arrangør er i prinsippet å skrive om ÉN fil riktig, ikke 
     forsøk ennå i en øvelse, men noen er markert aktive der, flytter uthevingen seg dit likevel.
     Samme avhengighet som punkt 5, men verifiser den også for DENNE funksjonen spesifikt, ikke bare
     for den røde prikken.
+17. **`#forecastBanner`/`#forecastLivePill` har EGEN i18n-reformattering i `app/i18n-final-runtime.js`
+    (`forecastHead()`), atskilt fra `live-engine.js` sin egen `tx()`-baserte tekst.** Den kjører på
+    hvert fanebytte, konkurransebytte og forecast-re-render, og pleide å sjekke om banneret
+    inneholdt den bokstavelige teksten "Birmingham 2026" for å avgjøre om det allerede hadde ekte
+    innhold - alt annet (inkludert et helt korrekt Décastar-banner) ble tolket som "ikke lastet enda"
+    og tilbakestilt til plassholderteksten "Venter på arrangørens live-resultater." Dette var den
+    faktiske årsaken til at Décastar sitt banner flimret tilbake til plassholderen mens Birmingham sitt
+    fungerte fint, selv lenge etter at begge konkurransene var over (fikset 2026-09-20). Fikset til å
+    hente konkurransenavnet dynamisk fra banneret i stedet for å hardkode et navn - MEN pass på at en
+    ny arrangørs konkurransenavn ikke ved et uhell inneholder " · " (skilletegnet denne logikken bruker
+    for å avgjøre om banneret har ekte innhold). NB: det finnes flere ELDRE kopier av akkurat denne
+    samme logikken (`app/i18n-consolidated.js`, `app/i18n-final-stabilizer.js`, `app/i18n-polish.js`,
+    `app/i18n-stability-fix.js`) som IKKE er referert fra `app/index.html` og dermed aldri kjører -
+    ikke la deg lure av dem, og ikke koble dem inn igjen uten å fikse samme "Birmingham 2026"-antagelse
+    i dem først.
 
 Birmingham-integrasjonen (`live-refresh-api-fix20260918.js`/`live-refresh-api.js`, mot `/api/live`)
 bruker en helt annen arrangør/kilde (European Athletics) med sitt eget dataformat - de to
