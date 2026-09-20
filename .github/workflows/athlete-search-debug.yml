@@ -10,16 +10,12 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Check the WA news report page for a results link
+      - name: Compare current Birmingham vs Decastar proxy behavior
         run: |
-          for url in \
-            "https://worldathletics.org/news/report/decastar-talence-2026" \
-            "https://worldathletics.org/competitions/world-athletics-combined-events-tour/news/decastar-talence-2026"; do
-            echo "== $url =="
-            curl -s -m 20 -A "Mozilla/5.0 Mangekampanalyse/2.0" "$url" -o /tmp/news.html
-            wc -c /tmp/news.html
-            grep -o 'calendar-results/results/[0-9]*[^"'"'"']*' /tmp/news.html | sort -u
-            grep -o '"competitionId"[^,}]*' /tmp/news.html | sort -u | head -10
-            grep -o '"eventId_WA"[^,}]*' /tmp/news.html | sort -u | head -10
-            grep -o '"nameUrlSlug":"decastar[^"]*"' /tmp/news.html | sort -u | head -10
-          done
+          echo "--- Birmingham /api/live ---"
+          curl -s -m 20 -o /tmp/birmingham.json -w "HTTP:%{http_code}\n" "https://mangekampanalyse.no/api/live"
+          head -c 600 /tmp/birmingham.json
+          echo ""
+          echo "--- Decastar /api/live-decastar ---"
+          curl -s -m 20 -o /tmp/decastar.json -w "HTTP:%{http_code}\n" "https://mangekampanalyse.no/api/live-decastar"
+          head -c 600 /tmp/decastar.json
