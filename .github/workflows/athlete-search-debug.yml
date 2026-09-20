@@ -10,51 +10,13 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Query World Athletics GraphQL for Decastar Talence 2026 results
+      - name: DNS + reachability checks
         run: |
-          python3 - <<'PYEOF'
-          import json
-          import urllib.request
-
-          WA_GRAPHQL = 'https://graphql-prod-4881.edge.aws.worldathletics.org/graphql'
-          WA_API_KEY = 'da2-wbnmtmvlpbhifh3uc2xaxsue5i'
-
-          QUERY = """query GetCalendarCompetitionResults($competitionId: Int) {
-            getCalendarCompetitionResults(competitionId: $competitionId) {
-              eventTitles {
-                events {
-                  event
-                  races {
-                    date
-                    race
-                    results { place mark wind records competitor { id iaafId name } }
-                  }
-                }
-              }
-            }
-          }"""
-
-          for cid in (7121760, 10229536):
-              body = json.dumps({'query': QUERY, 'variables': {'competitionId': cid}}).encode('utf-8')
-              req = urllib.request.Request(
-                  WA_GRAPHQL,
-                  data=body,
-                  headers={
-                      'content-type': 'application/json',
-                      'accept': '*/*',
-                      'x-api-key': WA_API_KEY,
-                  },
-              )
-              print(f'--- competitionId={cid} ---')
-              try:
-                  with urllib.request.urlopen(req, timeout=20) as r:
-                      text = r.read().decode('utf-8')
-                      print('HTTP', r.status)
-                      print(text[:3000])
-              except Exception as e:
-                  print('ERROR', e)
-                  try:
-                      print(e.read().decode('utf-8')[:1000])
-                  except Exception:
-                      pass
-          PYEOF
+          echo "--- general DNS sanity ---"
+          getent hosts worldathletics.org || echo "worldathletics.org: FAIL"
+          echo "--- graphql host ---"
+          getent hosts graphql-prod-4881.edge.aws.worldathletics.org || echo "graphql-prod-4881.edge.aws.worldathletics.org: FAIL"
+          echo "--- curl worldathletics.org ---"
+          curl -s -m 15 -o /dev/null -w "HTTP:%{http_code}\n" "https://worldathletics.org/" || echo "curl failed"
+          echo "--- curl graphql host (GET, expect 4xx not DNS error) ---"
+          curl -s -m 15 -o /dev/null -w "HTTP:%{http_code}\n" "https://graphql-prod-4881.edge.aws.worldathletics.org/graphql" || echo "curl failed"
