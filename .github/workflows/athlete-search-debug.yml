@@ -10,5 +10,22 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Placeholder - overwrite this file's steps for the next investigation
-        run: echo "Scratch diagnostic rig. See CLAUDE.md's Diagnostikk-mønster section for how to use this."
+      - name: Fetch current live-decastar payload and summarize + dump
+        run: |
+          curl -s -m 30 "https://mangekampanalyse.no/api/live-decastar" -o /tmp/decastar.json
+          echo "--- HTTP status check ---"
+          curl -s -m 30 -o /dev/null -w "HTTP:%{http_code}\n" "https://mangekampanalyse.no/api/live-decastar"
+          echo "--- summary ---"
+          python3 - <<'PYEOF'
+          import json
+          with open('/tmp/decastar.json', encoding='utf-8') as f:
+              data = json.load(f)
+          print('competition:', data.get('competition'))
+          print('status:', data.get('status'))
+          print('updatedAt:', data.get('updatedAt'))
+          for gender in ('men', 'women'):
+              sec = data.get(gender) or {}
+              print(f'{gender}: completedEvents={sec.get("completedEvents")} athletes={len(sec.get("results") or {})}')
+          PYEOF
+          echo "--- full JSON dump ---"
+          cat /tmp/decastar.json
