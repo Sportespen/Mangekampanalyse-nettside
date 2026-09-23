@@ -35,4 +35,15 @@
   setInterval(checkForUpdate,60000);
 })();
 </script>
+<script>
+// First-party visit counter (see functions/api/track.js) - fires once per real page load, not on
+// every background live-data poll. Same-origin call, so it isn't caught by ad-blocker lists the
+// way third-party analytics beacons (e.g. cloudflareinsights.com) commonly are.
+(function(){
+  try{
+    if(navigator.sendBeacon){navigator.sendBeacon('/api/track');}
+    else{fetch('/api/track',{method:'POST',keepalive:true,cache:'no-store'}).catch(function(){});}
+  }catch(_err){}
+})();
+</script>
 </body></html>
