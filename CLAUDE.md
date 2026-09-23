@@ -136,6 +136,25 @@ Det betyr: å bytte arrangør er i prinsippet å skrive om ÉN fil riktig, ikke 
     `app/i18n-stability-fix.js`) som IKKE er referert fra `app/index.html` og dermed aldri kjører -
     ikke la deg lure av dem, og ikke koble dem inn igjen uten å fikse samme "Birmingham 2026"-antagelse
     i dem først.
+18. **Live-endepunktenes EGET svar må ha kort edge-cache, ikke `no-store`.** Under selve Décastar
+    (18.–19. sep, mens 10-sekunders klient-polling fortsatt kjørte) satte `functions/api/live.js` og
+    `functions/api/live-decastar.js` `cache-control: no-store, no-cache, must-revalidate, max-age=0`
+    på sitt EGET svar - dvs. at Cloudflares edge aldri fikk lov til å gjenbruke svaret for flere
+    samtidige besøkende. Hver eneste poll fra hver eneste åpne fane kjørte derfor HELE
+    hente-fra-arrangør-og-bearbeid-pipelinen fra bunnen av, uavhengig av at andre besøkende hadde
+    bedt om akkurat det samme sekundet før. Kombinert med at `live.js` i tillegg satte
+    `cf:{cacheTtl:0,cacheEverything:false}` på selve kallet mot European Athletics (dvs. dobbelt
+    deaktivert caching), sprengte dette Cloudflares CPU-tidsgrense for om lag halvparten av alle
+    forespørsler under konkurransen (se Cloudflare Pages → Metrics for 18.–19. sep: 18 205 av
+    18 206 feil var "Exceeded CPU Time Limits"). Fikset 2026-09-23: begge filenes EGET svar bruker nå
+    `cache-control: public, max-age=8` (rett under datidens 10-sekunders polling-intervall), og
+    `live.js` sitt `query()`-kall bruker nå `cf:{cacheTtl:8,cacheEverything:true}` (samme mønster som
+    `live-decastar.js` sin `getJson()` allerede hadde med `cacheTtl:10`). Feilresponsen (catch-blokken)
+    skal fortsatt ha `no-store` - en midlertidig feil fra arrangøren skal ALDRI mellomlagres og vises
+    til nye besøkende i flere sekunder. For neste arrangør: sett samme mønster fra dag én i den nye
+    `live-<navn>.js`-filen (kopiér `max-age`-verdien fra malen/dette punktet, ikke fra en gammel
+    `no-store`-vane), og vurder om `max-age` bør tunes ned mot det faktiske polling-intervallet du
+    velger i punkt 11 - for høy verdi gir utdatert "live"-følelse, for lav gir liten effekt.
 
 Birmingham-integrasjonen (`live-refresh-api-fix20260918.js`/`live-refresh-api.js`, mot `/api/live`)
 bruker en helt annen arrangør/kilde (European Athletics) med sitt eget dataformat - de to
