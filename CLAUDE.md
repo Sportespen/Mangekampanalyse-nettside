@@ -241,6 +241,30 @@ fungere fint for neste arrangør uten endring, så lenge sjekklisten over er lø
   `?v=`, ikke bare live-data-filene - bump versjonsstrengen som siste steg i enhver PR som endrer
   en slik fil.
 
+## Første-parts besøksteller (lagt til 2026-09-23)
+
+`functions/api/track.js` (skriver) og `functions/api/stats.js` (leser) teller besøk og unike
+besøkende (anonymisert IP+dato hashet med SHA-256, aldri lagret rått) per dag i en Cloudflare KV-
+database. `app/index.html` kaller `/api/track` én gang per faktisk sideinnlasting (via
+`navigator.sendBeacon`, ikke ved hvert bakgrunns-live-poll). `app/stats.html` viser tallene.
+
+Bygget fordi Cloudflare Web Analytics (`cloudflareinsights.com`-beacon) og request-tellingen i
+Pages sin egen Metrics-fane begge var upålitelige for å svare på "hvor mange besøkte siden": Web
+Analytics blokkeres ofte av annonseblokkere/personvernverktøy (kjent tredjeparts-sporings-domene),
+og Metrics sin request-telling inkluderer ALL bakgrunnstrafikk (live-polling osv.), ikke bare
+faktiske sidevisninger - se punkt 18 over for hvordan akkurat det problemet i tillegg overbelastet
+CPU-tidsgrensen. Denne telleren er første-parts (samme domene, `/api/track`) og teller kun faktiske
+sideinnlastinger, så den unngår begge problemene.
+
+**To manuelle steg kreves i Cloudflare-dashbordet - koden virker ikke uten dem:**
+1. **Opprett en KV-database og bind den til Pages-prosjektet** som miljøvariabelen `VISITS_KV`
+   (Workers & Pages → mangekampanalyse-nettside → Settings → Bindings → legg til KV-binding, navn
+   `VISITS_KV`). Uten dette svarer `/api/stats` med en tydelig feilmelding i stedet for tall.
+2. **Beskytt `/stats*` og `/api/stats*` med Cloudflare Access** (Zero Trust → Access →
+   Applications → Self-hosted, path `mangekampanalyse.no/stats*` og et separat program for
+   `mangekampanalyse.no/api/stats*`, policy: kun e-post `sportespen@gmail.com`). VIKTIG: IKKE
+   beskytt `/api/track` - den må forbli åpen for alle besøkende, ellers telles ingen.
+
 ## Diagnostikk-mønster
 
 Denne sandboksen har ikke direkte nettverkstilgang til eksterne live-API-er (organisatørens domene
