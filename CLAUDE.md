@@ -12,6 +12,14 @@ vil sannsynligvis feile eller vise feil data mot en ny utgave uten at det er åp
 under er skrevet for å gjøre NESTE konkurranse (uansett om det er en helt ny arrangør, eller en
 senere utgave av Décastar/EM) raskest og tryggest mulig å sette i drift.
 
+**Generell regel, gjelder ALLE konkurranser denne siden noensinne dekker, ikke bare disse to:**
+Når en konkurranse er ferdigspilt, fryses resultatene og live-pollingen mot den stanses for godt.
+Konkurransen "gjenopptas" ALDRI. Dukker samme konkurransenavn opp igjen et senere år (uansett hvilken
+konkurranse det er), er det alltid en helt ny, uavhengig konkurranse som skal settes opp fra bunnen
+av via "neste arrangør"-oppskriften - aldri ved å skru på igjen pollingen mot en eksisterende,
+allerede avsluttet konkurranses live-fil. Anta aldri at neste års utgave deler ID-er, skjema eller
+endepunkt med en tidligere utgave uten å verifisere det empirisk på nytt (se diagnostikk-mønsteret).
+
 ## Neste arrangør - oppskrift (les dette først)
 
 Live-resultatene er hardkodet mot **matsport** sitt API (`api.athle.matsport.com`), samlet i
