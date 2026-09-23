@@ -180,7 +180,7 @@ export async function onRequestGet(){
       updatedAt:new Date().toISOString(),
       status:(men.completedEvents||women.completedEvents)?'live':'waiting',
       men,women
-    }),{headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store, no-cache, must-revalidate, max-age=0','access-control-allow-origin':'*'}});
+    }),{headers:{'content-type':'application/json; charset=utf-8','cache-control':'public, max-age=8','access-control-allow-origin':'*'}});
   }catch(err){
     return new Response(JSON.stringify({error:String(err?.message||err),updatedAt:new Date().toISOString()}),{status:502,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}});
   }
