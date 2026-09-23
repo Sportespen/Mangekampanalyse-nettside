@@ -1,9 +1,16 @@
 # Notater til Claude for dette repoet
 
-**Status:** Både Décastar Talence 2026 og EM Birmingham 2026 er avsluttet. Live-pollingen mot
-begge er stanset (se punkt 12 i sjekklisten). Resultatene ligger fast med vilje - ikke gjenopprett
-polling for disse to med mindre noen eksplisitt ber om det. Alt under er skrevet for å gjøre NESTE
-konkurranse (en annen arrangør) raskest og tryggest mulig å sette i drift.
+**Status:** Både Décastar Talence 2026 og EM Birmingham 2026 er avsluttet **for godt**. Live-pollingen
+mot begge er stanset (se punkt 12 i sjekklisten). Resultatene ligger fast med vilje - dette er IKKE
+noe som skal "gjenopptas" senere. Selv om Décastar og/eller EM arrangeres igjen et senere år, er det
+en HELT NY konkurranse (ny sesong, garantert nye konkurranse-ID-er/kalender hos arrangøren, mulig
+endret programoppsett) - ikke en fortsettelse av 2026-utgaven. En slik fremtidig utgave skal
+behandles nøyaktig som "neste arrangør" under (ny fil, ny diagnostikk, ny verifisering fra bunnen
+av), IKKE ved å bare skru `setInterval`-pollingen på igjen mot de eksisterende
+`live.js`/`live-decastar.js`-filene - de er hardkodet mot 2026-utgavens spesifikke ID-er/skjema og
+vil sannsynligvis feile eller vise feil data mot en ny utgave uten at det er åpenbart hvorfor. Alt
+under er skrevet for å gjøre NESTE konkurranse (uansett om det er en helt ny arrangør, eller en
+senere utgave av Décastar/EM) raskest og tryggest mulig å sette i drift.
 
 ## Neste arrangør - oppskrift (les dette først)
 
