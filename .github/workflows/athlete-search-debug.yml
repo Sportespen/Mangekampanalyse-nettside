@@ -11,6 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - name: Idle placeholder
+      - name: Verify the first-party visit counter works on both sites
+        timeout-minutes: 2
         run: |
-          echo "No active diagnostic. Rewrite this file's steps for the next investigation."
+          for site in "https://mangekampanalyse.no" "https://rankingstevner.no"; do
+            echo "=== $site ==="
+            echo "--- POST /api/track (should be 204, always public) ---"
+            code=$(curl -s -m 15 -o /dev/null -w "%{http_code}" -X POST "$site/api/track")
+            echo "HTTP $code"
+            echo "--- GET /api/stats ---"
+            curl -s -m 15 -w "\nHTTP %{http_code}\n" "$site/api/stats?nocache=$(date +%s)"
+            echo
+          done
