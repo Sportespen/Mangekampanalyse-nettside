@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-16T08:24:23.799Z",
+  "generatedAt": "2026-10-31T10:45:39.302Z",
   "athletes": {
     "Damian Warner": {
       "events": [
@@ -134,7 +134,7 @@
         "Spyd",
         "1500m"
       ],
-      "yearsFetched": 2
+      "yearsFetched": 3
     },
     "Jeff Tesselaar": {
       "events": [
@@ -174,12 +174,10 @@
         "Høyde",
         "400m",
         "110mh",
-        "Diskos",
         "Stav",
-        "Spyd",
-        "1500m"
+        "Spyd"
       ],
-      "yearsFetched": 2
+      "yearsFetched": 4
     },
     "Antoine Ferranti": {
       "events": [
