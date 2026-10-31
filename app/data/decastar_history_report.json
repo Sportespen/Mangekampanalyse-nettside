@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-31T10:48:54.552Z",
+  "generatedAt": "2026-10-31T10:50:44.744Z",
   "athletes": {
     "Damian Warner": {
       "events": [
@@ -537,7 +537,7 @@
         "Spyd",
         "800m"
       ],
-      "yearsFetched": 2
+      "yearsFetched": 3
     }
   },
   "missing": []
