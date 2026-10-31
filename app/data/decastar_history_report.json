@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-31T10:48:00.735Z",
+  "generatedAt": "2026-10-31T10:48:54.552Z",
   "athletes": {
     "Damian Warner": {
       "events": [
@@ -264,7 +264,7 @@
         "Spyd",
         "800m"
       ],
-      "yearsFetched": 3
+      "yearsFetched": 2
     },
     "Vanessa Grimm": {
       "events": [
@@ -288,7 +288,7 @@
         "Spyd",
         "800m"
       ],
-      "yearsFetched": 2
+      "yearsFetched": 4
     },
     "Niamh Emerson": {
       "events": [
