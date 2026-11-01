@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-16T08:24:23.799Z",
+  "generatedAt": "2026-11-01T11:43:21.196Z",
   "athletes": {
     "Damian Warner": {
       "events": [
@@ -44,7 +44,7 @@
         "Spyd",
         "1500m"
       ],
-      "yearsFetched": 2
+      "yearsFetched": 3
     },
     "Karel Tilga": {
       "events": [
@@ -179,7 +179,7 @@
         "Spyd",
         "1500m"
       ],
-      "yearsFetched": 2
+      "yearsFetched": 3
     },
     "Antoine Ferranti": {
       "events": [
@@ -461,7 +461,7 @@
         "Spyd",
         "1500m"
       ],
-      "yearsFetched": 3
+      "yearsFetched": 2
     },
     "Vilem Strasky": {
       "events": [
